@@ -1,0 +1,1722 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>DataForge — AI-Powered Intelligent Data Cleaning</title>
+  <meta name="description" content="Upload messy datasets. DataForge AI analyzes, plans, and executes precision data cleaning — giving you a quality score, before/after comparison, and downloadable reports." />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,300;1,400&family=DM+Mono:ital,wght@0,300;0,400;0,500;1,300&display=swap" rel="stylesheet" />
+
+  <style>
+    /* ============================================================
+       DESIGN TOKENS — Industrial BioLab
+    ============================================================ */
+    :root {
+      --ink:        #0a0b0d;
+      --ink-deep:   #060709;
+      --panel:      #111318;
+      --panel-mid:  #16191f;
+      --border:     rgba(255,255,255,0.06);
+      --border-hi:  rgba(255,255,255,0.12);
+      --acid:       #b4ff45;      /* primary accent — acid green */
+      --acid-dim:   #7ab828;
+      --acid-glow:  rgba(180,255,69,0.18);
+      --plasma:     #3af0c4;      /* secondary — teal plasma */
+      --plasma-dim: rgba(58,240,196,0.12);
+      --warn:       #ff6b35;      /* dirty-data warning orange */
+      --text-hi:    #f0ede6;
+      --text-mid:   #8e9099;
+      --text-lo:    #4a4d57;
+      --mono:       'DM Mono', monospace;
+      --serif:      'Cormorant Garamond', Georgia, serif;
+      --radius:     4px;
+    }
+
+    /* ============================================================
+       RESET + BASE
+    ============================================================ */
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    html { scroll-behavior: smooth; font-size: 16px; }
+
+    body {
+      background: var(--ink);
+      color: var(--text-hi);
+      font-family: var(--mono);
+      font-weight: 300;
+      line-height: 1.6;
+      overflow-x: hidden;
+      cursor: crosshair;
+    }
+
+    ::selection { background: var(--acid); color: var(--ink); }
+
+    a { color: inherit; text-decoration: none; }
+
+    /* ============================================================
+       NOISE OVERLAY
+    ============================================================ */
+    body::before {
+      content: '';
+      position: fixed;
+      inset: 0;
+      background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='1'/%3E%3C/svg%3E");
+      opacity: 0.022;
+      pointer-events: none;
+      z-index: 9999;
+    }
+
+    /* ============================================================
+       GRID BACKGROUND
+    ============================================================ */
+    .grid-bg {
+      position: fixed;
+      inset: 0;
+      background-image:
+        linear-gradient(rgba(180,255,69,0.03) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(180,255,69,0.03) 1px, transparent 1px);
+      background-size: 48px 48px;
+      pointer-events: none;
+      z-index: 0;
+    }
+
+    /* ============================================================
+       NAV
+    ============================================================ */
+    nav {
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      z-index: 100;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 3rem;
+      height: 64px;
+      background: rgba(10,11,13,0.85);
+      backdrop-filter: blur(12px);
+      border-bottom: 1px solid var(--border);
+    }
+
+    .nav-logo {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      font-family: var(--mono);
+      font-size: 0.95rem;
+      font-weight: 500;
+      letter-spacing: 0.08em;
+      color: var(--text-hi);
+    }
+
+    .nav-logo-mark {
+      width: 28px;
+      height: 28px;
+      border: 1.5px solid var(--acid);
+      display: grid;
+      place-items: center;
+      position: relative;
+    }
+
+    .nav-logo-mark::before {
+      content: '';
+      width: 10px;
+      height: 10px;
+      background: var(--acid);
+      display: block;
+      animation: pulse-mark 2s ease-in-out infinite;
+    }
+
+    @keyframes pulse-mark {
+      0%, 100% { transform: scale(1); opacity: 1; }
+      50% { transform: scale(0.6); opacity: 0.6; }
+    }
+
+    .nav-links {
+      display: flex;
+      align-items: center;
+      gap: 2.5rem;
+      list-style: none;
+    }
+
+    .nav-links a {
+      font-size: 0.75rem;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: var(--text-mid);
+      transition: color 0.2s;
+    }
+
+    .nav-links a:hover { color: var(--acid); }
+
+    .nav-cta {
+      font-size: 0.75rem;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      padding: 8px 20px;
+      border: 1px solid var(--acid);
+      color: var(--acid);
+      font-family: var(--mono);
+      cursor: crosshair;
+      transition: all 0.2s;
+      background: transparent;
+    }
+
+    .nav-cta:hover {
+      background: var(--acid);
+      color: var(--ink);
+    }
+
+    /* ============================================================
+       HERO SECTION
+    ============================================================ */
+    #hero {
+      position: relative;
+      min-height: 100vh;
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      align-items: center;
+      padding: 64px 3rem 0;
+      z-index: 1;
+      overflow: hidden;
+    }
+
+    .hero-glow {
+      position: absolute;
+      top: 10%;
+      left: -10%;
+      width: 600px;
+      height: 600px;
+      background: radial-gradient(ellipse, rgba(180,255,69,0.06) 0%, transparent 70%);
+      pointer-events: none;
+      animation: drift 8s ease-in-out infinite alternate;
+    }
+
+    @keyframes drift {
+      from { transform: translate(0, 0) scale(1); }
+      to   { transform: translate(40px, 30px) scale(1.08); }
+    }
+
+    .hero-left {
+      padding: 6rem 3rem 6rem 0;
+      z-index: 2;
+    }
+
+    .hero-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 6px 14px;
+      border: 1px solid var(--border-hi);
+      background: var(--panel);
+      font-size: 0.68rem;
+      letter-spacing: 0.16em;
+      text-transform: uppercase;
+      color: var(--acid);
+      margin-bottom: 2.5rem;
+      animation: fadeUp 0.6s ease both;
+    }
+
+    .hero-badge-dot {
+      width: 6px;
+      height: 6px;
+      background: var(--acid);
+      border-radius: 50%;
+      animation: blink 1.2s step-end infinite;
+    }
+
+    @keyframes blink {
+      0%, 100% { opacity: 1; }
+      50% { opacity: 0; }
+    }
+
+    h1 {
+      font-family: var(--serif);
+      font-size: clamp(3.5rem, 5.5vw, 5.8rem);
+      font-weight: 300;
+      line-height: 1.05;
+      letter-spacing: -0.01em;
+      color: var(--text-hi);
+      margin-bottom: 1.8rem;
+      animation: fadeUp 0.6s 0.1s ease both;
+    }
+
+    h1 em {
+      font-style: italic;
+      color: var(--acid);
+    }
+
+    h1 span {
+      display: block;
+    }
+
+    .hero-sub {
+      font-size: 0.88rem;
+      line-height: 1.8;
+      color: var(--text-mid);
+      max-width: 420px;
+      margin-bottom: 3rem;
+      animation: fadeUp 0.6s 0.2s ease both;
+    }
+
+    .hero-actions {
+      display: flex;
+      align-items: center;
+      gap: 1.5rem;
+      animation: fadeUp 0.6s 0.3s ease both;
+    }
+
+    .btn-primary {
+      display: inline-flex;
+      align-items: center;
+      gap: 10px;
+      padding: 14px 32px;
+      background: var(--acid);
+      color: var(--ink);
+      font-family: var(--mono);
+      font-size: 0.78rem;
+      font-weight: 500;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      cursor: crosshair;
+      border: none;
+      transition: all 0.2s;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .btn-primary::after {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: rgba(255,255,255,0.2);
+      transform: translateX(-100%);
+      transition: transform 0.3s;
+    }
+
+    .btn-primary:hover::after { transform: translateX(0); }
+    .btn-primary:hover { box-shadow: 0 0 32px rgba(180,255,69,0.4); }
+
+    .btn-ghost {
+      font-size: 0.78rem;
+      letter-spacing: 0.1em;
+      color: var(--text-mid);
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      transition: color 0.2s;
+      cursor: crosshair;
+    }
+
+    .btn-ghost:hover { color: var(--text-hi); }
+
+    .hero-stats {
+      display: flex;
+      gap: 2.5rem;
+      margin-top: 4rem;
+      padding-top: 2rem;
+      border-top: 1px solid var(--border);
+      animation: fadeUp 0.6s 0.4s ease both;
+    }
+
+    .stat-item { }
+
+    .stat-val {
+      font-family: var(--serif);
+      font-size: 2.2rem;
+      font-weight: 300;
+      color: var(--text-hi);
+      line-height: 1;
+      display: block;
+    }
+
+    .stat-val em { color: var(--acid); font-style: normal; }
+
+    .stat-label {
+      font-size: 0.68rem;
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+      color: var(--text-lo);
+      margin-top: 4px;
+      display: block;
+    }
+
+    /* ============================================================
+       HERO RIGHT — TERMINAL VISUALIZATION
+    ============================================================ */
+    .hero-right {
+      position: relative;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 6rem 0 6rem 3rem;
+      z-index: 2;
+    }
+
+    .terminal-wrap {
+      width: 100%;
+      max-width: 540px;
+      position: relative;
+      animation: fadeUp 0.8s 0.2s ease both;
+    }
+
+    .terminal {
+      background: var(--panel);
+      border: 1px solid var(--border-hi);
+      border-radius: 2px;
+      overflow: hidden;
+      box-shadow:
+        0 0 0 1px rgba(180,255,69,0.08),
+        0 32px 80px rgba(0,0,0,0.6),
+        0 0 60px rgba(180,255,69,0.05);
+      position: relative;
+    }
+
+    /* Scanlines */
+    .terminal::after {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: repeating-linear-gradient(
+        0deg,
+        transparent,
+        transparent 2px,
+        rgba(0,0,0,0.08) 2px,
+        rgba(0,0,0,0.08) 4px
+      );
+      pointer-events: none;
+      z-index: 10;
+    }
+
+    .terminal-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 12px 16px;
+      background: var(--ink-deep);
+      border-bottom: 1px solid var(--border);
+    }
+
+    .terminal-dots {
+      display: flex;
+      gap: 6px;
+    }
+
+    .terminal-dots span {
+      width: 10px;
+      height: 10px;
+      border-radius: 50%;
+    }
+
+    .dot-red   { background: #ff5f57; }
+    .dot-amber { background: #febc2e; }
+    .dot-green { background: var(--acid); }
+
+    .terminal-title {
+      font-size: 0.68rem;
+      letter-spacing: 0.12em;
+      color: var(--text-lo);
+    }
+
+    .terminal-status {
+      font-size: 0.65rem;
+      color: var(--acid);
+      display: flex;
+      align-items: center;
+      gap: 5px;
+    }
+
+    .terminal-status-dot {
+      width: 5px;
+      height: 5px;
+      background: var(--acid);
+      border-radius: 50%;
+      animation: blink 0.8s step-end infinite;
+    }
+
+    .terminal-body {
+      padding: 20px 20px 24px;
+      min-height: 360px;
+      font-size: 0.73rem;
+      line-height: 1.9;
+      overflow: hidden;
+    }
+
+    .term-line {
+      display: flex;
+      gap: 10px;
+      opacity: 0;
+      animation: termReveal 0.3s ease forwards;
+    }
+
+    .term-prefix {
+      color: var(--acid);
+      flex-shrink: 0;
+      user-select: none;
+    }
+
+    .term-text { color: var(--text-hi); }
+    .term-dim  { color: var(--text-lo); }
+    .term-warn { color: var(--warn); }
+    .term-ok   { color: var(--plasma); }
+    .term-acid { color: var(--acid); }
+
+    @keyframes termReveal {
+      from { opacity: 0; transform: translateX(-8px); }
+      to   { opacity: 1; transform: translateX(0); }
+    }
+
+    .term-table {
+      margin: 8px 0;
+      border-collapse: collapse;
+      width: 100%;
+    }
+
+    .term-table th {
+      font-size: 0.62rem;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: var(--text-lo);
+      text-align: left;
+      padding: 4px 12px 4px 0;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .term-table td {
+      padding: 4px 12px 4px 0;
+      font-size: 0.7rem;
+      vertical-align: top;
+    }
+
+    .term-score-bar {
+      height: 4px;
+      background: var(--border);
+      border-radius: 2px;
+      margin: 4px 0;
+      overflow: hidden;
+    }
+
+    .term-score-fill {
+      height: 100%;
+      border-radius: 2px;
+      transform: scaleX(0);
+      transform-origin: left;
+      transition: transform 1.2s cubic-bezier(0.25, 1, 0.5, 1);
+    }
+
+    .fill-before { background: var(--warn); width: 34%; }
+    .fill-after  { background: var(--acid); width: 94%; }
+
+    .term-cursor {
+      display: inline-block;
+      width: 7px;
+      height: 13px;
+      background: var(--acid);
+      animation: blink 0.8s step-end infinite;
+      vertical-align: middle;
+      margin-left: 2px;
+    }
+
+    /* Corner decorations on terminal */
+    .terminal-wrap::before,
+    .terminal-wrap::after {
+      content: '';
+      position: absolute;
+      width: 16px;
+      height: 16px;
+      border-color: var(--acid);
+      border-style: solid;
+      z-index: 5;
+      opacity: 0.5;
+    }
+
+    .terminal-wrap::before {
+      top: -6px; left: -6px;
+      border-width: 2px 0 0 2px;
+    }
+
+    .terminal-wrap::after {
+      bottom: -6px; right: -6px;
+      border-width: 0 2px 2px 0;
+    }
+
+    /* ============================================================
+       PIPELINE SECTION
+    ============================================================ */
+    #pipeline {
+      position: relative;
+      z-index: 1;
+      padding: 8rem 3rem;
+      border-top: 1px solid var(--border);
+    }
+
+    .section-label {
+      font-size: 0.68rem;
+      letter-spacing: 0.2em;
+      text-transform: uppercase;
+      color: var(--acid);
+      margin-bottom: 1.2rem;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .section-label::after {
+      content: '';
+      flex: 1;
+      height: 1px;
+      background: var(--border);
+      max-width: 100px;
+    }
+
+    .section-title {
+      font-family: var(--serif);
+      font-size: clamp(2.2rem, 3.5vw, 3.6rem);
+      font-weight: 300;
+      line-height: 1.1;
+      color: var(--text-hi);
+      max-width: 600px;
+      margin-bottom: 5rem;
+    }
+
+    .section-title em { font-style: italic; color: var(--acid); }
+
+    .pipeline-flow {
+      display: flex;
+      gap: 0;
+      position: relative;
+      overflow-x: auto;
+      padding-bottom: 1rem;
+    }
+
+    .pipeline-connector {
+      position: absolute;
+      top: 50%;
+      left: 0;
+      right: 0;
+      height: 1px;
+      background: linear-gradient(90deg, transparent, var(--border-hi), transparent);
+      transform: translateY(-50%);
+      pointer-events: none;
+    }
+
+    .pipe-step {
+      flex: 1;
+      min-width: 160px;
+      padding: 2rem 1.5rem;
+      border: 1px solid var(--border);
+      background: var(--panel);
+      position: relative;
+      transition: all 0.3s;
+      cursor: crosshair;
+    }
+
+    .pipe-step:not(:last-child)::after {
+      content: '→';
+      position: absolute;
+      right: -14px;
+      top: 50%;
+      transform: translateY(-50%);
+      color: var(--acid);
+      font-size: 1rem;
+      z-index: 5;
+      background: var(--panel);
+      padding: 2px 4px;
+    }
+
+    .pipe-step:hover {
+      border-color: var(--acid);
+      background: rgba(180,255,69,0.04);
+      box-shadow: 0 0 30px rgba(180,255,69,0.08);
+    }
+
+    .pipe-num {
+      font-size: 0.62rem;
+      color: var(--acid);
+      letter-spacing: 0.14em;
+      margin-bottom: 0.8rem;
+      opacity: 0.7;
+    }
+
+    .pipe-icon {
+      font-size: 1.4rem;
+      margin-bottom: 0.8rem;
+      display: block;
+    }
+
+    .pipe-name {
+      font-family: var(--serif);
+      font-size: 1.15rem;
+      font-weight: 400;
+      color: var(--text-hi);
+      margin-bottom: 0.5rem;
+    }
+
+    .pipe-desc {
+      font-size: 0.7rem;
+      color: var(--text-lo);
+      line-height: 1.7;
+    }
+
+    .pipe-tech {
+      margin-top: 1rem;
+      font-size: 0.62rem;
+      letter-spacing: 0.1em;
+      color: var(--acid);
+      opacity: 0.6;
+    }
+
+    /* ============================================================
+       FEATURES BENTO GRID
+    ============================================================ */
+    #features {
+      position: relative;
+      z-index: 1;
+      padding: 8rem 3rem;
+      border-top: 1px solid var(--border);
+    }
+
+    .bento {
+      display: grid;
+      grid-template-columns: repeat(12, 1fr);
+      grid-template-rows: auto;
+      gap: 1px;
+      background: var(--border);
+    }
+
+    .bento-card {
+      background: var(--panel);
+      padding: 2.5rem;
+      position: relative;
+      overflow: hidden;
+      transition: background 0.3s;
+      cursor: crosshair;
+    }
+
+    .bento-card:hover { background: var(--panel-mid); }
+
+    .bento-card.span-5 { grid-column: span 5; }
+    .bento-card.span-7 { grid-column: span 7; }
+    .bento-card.span-4 { grid-column: span 4; }
+    .bento-card.span-8 { grid-column: span 8; }
+    .bento-card.span-6 { grid-column: span 6; }
+    .bento-card.span-3 { grid-column: span 3; }
+
+    .bento-card-label {
+      font-size: 0.62rem;
+      letter-spacing: 0.16em;
+      text-transform: uppercase;
+      color: var(--acid);
+      margin-bottom: 1rem;
+    }
+
+    .bento-card-title {
+      font-family: var(--serif);
+      font-size: 1.7rem;
+      font-weight: 300;
+      color: var(--text-hi);
+      line-height: 1.2;
+      margin-bottom: 0.8rem;
+    }
+
+    .bento-card-body {
+      font-size: 0.75rem;
+      line-height: 1.8;
+      color: var(--text-mid);
+      max-width: 360px;
+    }
+
+    /* Quality Meter */
+    .quality-meter {
+      margin-top: 2rem;
+    }
+
+    .qm-row {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      margin-bottom: 10px;
+    }
+
+    .qm-label {
+      font-size: 0.67rem;
+      color: var(--text-lo);
+      width: 100px;
+      flex-shrink: 0;
+    }
+
+    .qm-bar {
+      flex: 1;
+      height: 3px;
+      background: var(--border);
+      border-radius: 2px;
+      overflow: hidden;
+      position: relative;
+    }
+
+    .qm-fill {
+      height: 100%;
+      border-radius: 2px;
+      position: absolute;
+      left: 0;
+      top: 0;
+      transform: scaleX(0);
+      transform-origin: left;
+      transition: transform 1.5s cubic-bezier(0.25,1,0.5,1);
+    }
+
+    .qm-val {
+      font-size: 0.67rem;
+      color: var(--text-mid);
+      width: 36px;
+      text-align: right;
+      flex-shrink: 0;
+    }
+
+    /* AI Reasoning Card */
+    .ai-reasoning {
+      margin-top: 1.5rem;
+      background: var(--ink-deep);
+      border: 1px solid var(--border);
+      padding: 16px;
+    }
+
+    .ai-reasoning-head {
+      font-size: 0.62rem;
+      letter-spacing: 0.14em;
+      color: var(--plasma);
+      text-transform: uppercase;
+      margin-bottom: 10px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .ai-reasoning-head::before {
+      content: '';
+      width: 8px; height: 8px;
+      border-radius: 50%;
+      background: var(--plasma);
+      animation: blink 1.4s step-end infinite;
+    }
+
+    .ai-step {
+      display: flex;
+      gap: 10px;
+      margin-bottom: 8px;
+      font-size: 0.7rem;
+      align-items: flex-start;
+    }
+
+    .ai-step-num {
+      width: 18px;
+      height: 18px;
+      border: 1px solid var(--border-hi);
+      display: grid;
+      place-items: center;
+      font-size: 0.6rem;
+      color: var(--plasma);
+      flex-shrink: 0;
+    }
+
+    .ai-step-text { color: var(--text-mid); line-height: 1.6; }
+
+    /* Score circle */
+    .score-ring {
+      position: absolute;
+      right: 2.5rem;
+      top: 50%;
+      transform: translateY(-50%);
+    }
+
+    .score-ring svg { width: 100px; height: 100px; }
+
+    .score-ring-track {
+      fill: none;
+      stroke: var(--border);
+      stroke-width: 4;
+    }
+
+    .score-ring-fill {
+      fill: none;
+      stroke: var(--acid);
+      stroke-width: 4;
+      stroke-linecap: round;
+      stroke-dasharray: 283;
+      stroke-dashoffset: 283;
+      transform: rotate(-90deg);
+      transform-origin: 50% 50%;
+      transition: stroke-dashoffset 2s cubic-bezier(0.25, 1, 0.5, 1);
+    }
+
+    .score-ring-num {
+      font-family: var(--serif);
+      font-size: 1.8rem;
+      font-weight: 300;
+      fill: var(--text-hi);
+      text-anchor: middle;
+      dominant-baseline: middle;
+    }
+
+    .score-ring-sub {
+      font-size: 0.48rem;
+      fill: var(--text-lo);
+      text-anchor: middle;
+      dominant-baseline: middle;
+      font-family: var(--mono);
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+    }
+
+    /* Diff display */
+    .diff-view {
+      margin-top: 1.5rem;
+      font-size: 0.68rem;
+      line-height: 2;
+    }
+
+    .diff-row {
+      display: flex;
+      gap: 0;
+    }
+
+    .diff-marker {
+      width: 24px;
+      flex-shrink: 0;
+      text-align: center;
+      opacity: 0.6;
+    }
+
+    .diff-row.del { background: rgba(255,107,53,0.08); color: var(--warn); }
+    .diff-row.add { background: rgba(180,255,69,0.06); color: var(--acid); }
+    .diff-row.ctx { color: var(--text-lo); }
+
+    /* ============================================================
+       UPLOAD SECTION
+    ============================================================ */
+    #upload {
+      position: relative;
+      z-index: 1;
+      padding: 8rem 3rem;
+      border-top: 1px solid var(--border);
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 5rem;
+      align-items: center;
+    }
+
+    .upload-zone {
+      border: 1px dashed var(--border-hi);
+      padding: 4rem 3rem;
+      text-align: center;
+      position: relative;
+      cursor: crosshair;
+      transition: all 0.3s;
+      background: var(--panel);
+    }
+
+    .upload-zone:hover {
+      border-color: var(--acid);
+      background: rgba(180,255,69,0.03);
+      box-shadow: 0 0 40px rgba(180,255,69,0.06);
+    }
+
+    .upload-zone::before,
+    .upload-zone::after {
+      content: '';
+      position: absolute;
+      width: 20px;
+      height: 20px;
+      border-color: var(--acid);
+      border-style: solid;
+      opacity: 0.3;
+      transition: opacity 0.3s;
+    }
+
+    .upload-zone::before { top: -1px; left: -1px; border-width: 2px 0 0 2px; }
+    .upload-zone::after  { bottom: -1px; right: -1px; border-width: 0 2px 2px 0; }
+
+    .upload-zone:hover::before,
+    .upload-zone:hover::after { opacity: 1; }
+
+    .upload-icon {
+      font-size: 3rem;
+      margin-bottom: 1.5rem;
+      display: block;
+      opacity: 0.6;
+    }
+
+    .upload-main {
+      font-family: var(--serif);
+      font-size: 1.5rem;
+      font-weight: 300;
+      color: var(--text-hi);
+      margin-bottom: 0.5rem;
+    }
+
+    .upload-sub {
+      font-size: 0.72rem;
+      color: var(--text-lo);
+      line-height: 1.8;
+    }
+
+    .upload-formats {
+      margin-top: 1.5rem;
+      display: flex;
+      gap: 8px;
+      justify-content: center;
+      flex-wrap: wrap;
+    }
+
+    .format-tag {
+      font-size: 0.62rem;
+      letter-spacing: 0.1em;
+      padding: 4px 10px;
+      border: 1px solid var(--border);
+      color: var(--text-lo);
+    }
+
+    /* ============================================================
+       PHASES STRIP
+    ============================================================ */
+    #phases {
+      position: relative;
+      z-index: 1;
+      padding: 8rem 3rem;
+      border-top: 1px solid var(--border);
+      overflow: hidden;
+    }
+
+    .phases-grid {
+      display: grid;
+      grid-template-columns: repeat(7, 1fr);
+      gap: 0;
+      margin-top: 4rem;
+    }
+
+    .phase-card {
+      padding: 2rem 1.5rem;
+      border-right: 1px solid var(--border);
+      border-top: 1px solid var(--border);
+      position: relative;
+      transition: all 0.3s;
+      cursor: crosshair;
+    }
+
+    .phase-card:first-child { border-left: 1px solid var(--border); }
+
+    .phase-card:hover {
+      background: rgba(180,255,69,0.03);
+    }
+
+    .phase-card.active {
+      background: rgba(180,255,69,0.05);
+      border-color: var(--acid);
+    }
+
+    .phase-num {
+      font-size: 0.62rem;
+      letter-spacing: 0.16em;
+      color: var(--acid);
+      margin-bottom: 1rem;
+      display: block;
+    }
+
+    .phase-title {
+      font-family: var(--serif);
+      font-size: 1rem;
+      font-weight: 400;
+      color: var(--text-hi);
+      margin-bottom: 0.5rem;
+      line-height: 1.3;
+    }
+
+    .phase-desc {
+      font-size: 0.65rem;
+      color: var(--text-lo);
+      line-height: 1.7;
+    }
+
+    .phase-status {
+      margin-top: 1.5rem;
+      font-size: 0.6rem;
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+    }
+
+    .status-planned { color: var(--text-lo); }
+    .status-active  { color: var(--acid); }
+    .status-done    { color: var(--plasma); }
+
+    /* ============================================================
+       FOOTER
+    ============================================================ */
+    footer {
+      position: relative;
+      z-index: 1;
+      padding: 4rem 3rem;
+      border-top: 1px solid var(--border);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .footer-left {
+      display: flex;
+      flex-direction: column;
+      gap: 0.5rem;
+    }
+
+    .footer-logo {
+      font-family: var(--mono);
+      font-size: 0.95rem;
+      font-weight: 500;
+      letter-spacing: 0.08em;
+      color: var(--text-hi);
+    }
+
+    .footer-tagline {
+      font-size: 0.7rem;
+      color: var(--text-lo);
+    }
+
+    .footer-right {
+      font-size: 0.68rem;
+      color: var(--text-lo);
+      text-align: right;
+      line-height: 1.8;
+    }
+
+    .footer-right span { color: var(--acid); }
+
+    /* ============================================================
+       ANIMATIONS
+    ============================================================ */
+    @keyframes fadeUp {
+      from { opacity: 0; transform: translateY(20px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+
+    .reveal {
+      opacity: 0;
+      transform: translateY(24px);
+      transition: opacity 0.7s ease, transform 0.7s ease;
+    }
+
+    .reveal.visible {
+      opacity: 1;
+      transform: translateY(0);
+    }
+
+    /* ============================================================
+       SCROLLBAR
+    ============================================================ */
+    ::-webkit-scrollbar { width: 4px; }
+    ::-webkit-scrollbar-track { background: var(--ink); }
+    ::-webkit-scrollbar-thumb { background: var(--border-hi); border-radius: 2px; }
+    ::-webkit-scrollbar-thumb:hover { background: var(--acid); }
+
+    /* ============================================================
+       RESPONSIVE — basic
+    ============================================================ */
+    @media (max-width: 900px) {
+      #hero { grid-template-columns: 1fr; padding-top: 80px; }
+      .hero-right { display: none; }
+      #upload { grid-template-columns: 1fr; }
+      .phases-grid { grid-template-columns: repeat(2, 1fr); }
+      .bento-card.span-5,
+      .bento-card.span-7,
+      .bento-card.span-4,
+      .bento-card.span-8,
+      .bento-card.span-3 { grid-column: span 12; }
+      nav { padding: 0 1.5rem; }
+      #hero, #pipeline, #features, #upload, #phases { padding-left: 1.5rem; padding-right: 1.5rem; }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Background grid -->
+  <div class="grid-bg"></div>
+
+  <!-- ============================================================
+       NAV
+  ============================================================ -->
+  <nav>
+    <div class="nav-logo">
+      <div class="nav-logo-mark"></div>
+      DATAFORGE
+    </div>
+    <ul class="nav-links">
+      <li><a href="#pipeline">Architecture</a></li>
+      <li><a href="#features">Features</a></li>
+      <li><a href="#phases">Roadmap</a></li>
+    </ul>
+    <button class="nav-cta" id="nav-upload-btn">Upload Dataset →</button>
+  </nav>
+
+  <!-- ============================================================
+       HERO
+  ============================================================ -->
+  <section id="hero">
+    <div class="hero-glow"></div>
+
+    <div class="hero-left">
+      <div class="hero-badge">
+        <span class="hero-badge-dot"></span>
+        AI-Powered · Orchestration-First · Production-Grade
+      </div>
+
+      <h1>
+        <span>Your data,</span>
+        <span><em>surgically</em></span>
+        <span>cleaned.</span>
+      </h1>
+
+      <p class="hero-sub">
+        Upload messy datasets. DataForge AI analyzes every column, plans a precision cleaning strategy, executes it safely, then hands you a quality-scored report — before and after.
+      </p>
+
+      <div class="hero-actions">
+        <button class="btn-primary" id="hero-upload-btn">
+          <span>⬆</span> Upload CSV
+        </button>
+        <a href="#pipeline" class="btn-ghost">
+          Explore architecture <span>↓</span>
+        </a>
+      </div>
+
+      <div class="hero-stats">
+        <div class="stat-item">
+          <span class="stat-val"><em>7</em></span>
+          <span class="stat-label">Pipeline Layers</span>
+        </div>
+        <div class="stat-item">
+          <span class="stat-val"><em>6</em></span>
+          <span class="stat-label">Build Phases</span>
+        </div>
+        <div class="stat-item">
+          <span class="stat-val"><em>∞</em></span>
+          <span class="stat-label">Dirty Datasets</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Terminal animation -->
+    <div class="hero-right">
+      <div class="terminal-wrap">
+        <div class="terminal">
+          <div class="terminal-header">
+            <div class="terminal-dots">
+              <span class="dot-red"></span>
+              <span class="dot-amber"></span>
+              <span class="dot-green"></span>
+            </div>
+            <span class="terminal-title">dataforge · analysis pipeline</span>
+            <span class="terminal-status">
+              <span class="terminal-status-dot"></span>
+              RUNNING
+            </span>
+          </div>
+          <div class="terminal-body" id="terminal-body">
+            <!-- JS-injected lines -->
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============================================================
+       PIPELINE SECTION
+  ============================================================ -->
+  <section id="pipeline">
+    <div class="section-label">System Architecture</div>
+    <h2 class="section-title">
+      An <em>orchestration-first</em> pipeline — each layer earns its place.
+    </h2>
+
+    <div class="pipeline-flow">
+      <div class="pipe-step reveal">
+        <div class="pipe-num">01</div>
+        <span class="pipe-icon">⬆</span>
+        <div class="pipe-name">Ingest</div>
+        <div class="pipe-desc">React drag-and-drop uploads CSV/XLSX to FastAPI endpoints</div>
+        <div class="pipe-tech">FastAPI · Pandas</div>
+      </div>
+      <div class="pipe-step reveal">
+        <div class="pipe-num">02</div>
+        <span class="pipe-icon">🔬</span>
+        <div class="pipe-name">Analyze</div>
+        <div class="pipe-desc">Dataprep scans for nulls, duplicates, outliers, type mismatches</div>
+        <div class="pipe-tech">Dataprep · Pandas</div>
+      </div>
+      <div class="pipe-step reveal">
+        <div class="pipe-num">03</div>
+        <span class="pipe-icon">🧠</span>
+        <div class="pipe-name">Plan</div>
+        <div class="pipe-desc">LLM reasons over findings and outputs a validated cleaning plan</div>
+        <div class="pipe-tech">LangChain · Pydantic</div>
+      </div>
+      <div class="pipe-step reveal">
+        <div class="pipe-num">04</div>
+        <span class="pipe-icon">⚙</span>
+        <div class="pipe-name">Execute</div>
+        <div class="pipe-desc">Tool router dispatches to PyJanitor and Pandas safely</div>
+        <div class="pipe-tech">PyJanitor · Pandas</div>
+      </div>
+      <div class="pipe-step reveal">
+        <div class="pipe-num">05</div>
+        <span class="pipe-icon">✓</span>
+        <div class="pipe-name">Validate</div>
+        <div class="pipe-desc">Post-clean checks: integrity, type consistency, null reduction</div>
+        <div class="pipe-tech">Pydantic · Pandas</div>
+      </div>
+      <div class="pipe-step reveal">
+        <div class="pipe-num">06</div>
+        <span class="pipe-icon">📊</span>
+        <div class="pipe-name">Report</div>
+        <div class="pipe-desc">ydata-profiling generates before/after reports with quality scores</div>
+        <div class="pipe-tech">ydata-profiling</div>
+      </div>
+      <div class="pipe-step reveal">
+        <div class="pipe-num">07</div>
+        <span class="pipe-icon">◈</span>
+        <div class="pipe-name">Visualize</div>
+        <div class="pipe-desc">Interactive dashboard shows AI reasoning, diffs, and improvements</div>
+        <div class="pipe-tech">React · Recharts</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============================================================
+       FEATURES BENTO
+  ============================================================ -->
+  <section id="features">
+    <div class="section-label">Platform Features</div>
+    <h2 class="section-title">
+      Intelligence you can <em>see</em> and <em>measure</em>.
+    </h2>
+
+    <div class="bento reveal">
+      <!-- Quality Score Card -->
+      <div class="bento-card span-5">
+        <div class="bento-card-label">Quality Engine</div>
+        <div class="bento-card-title">Dataset Quality<br/>Score</div>
+        <div class="bento-card-body">
+          Four-dimensional scoring: missing values, duplicates, type validity, and outlier density — unified into a single actionable metric.
+        </div>
+        <div class="quality-meter" id="qm">
+          <div class="qm-row">
+            <div class="qm-label">Missing Values</div>
+            <div class="qm-bar">
+              <div class="qm-fill" style="background: var(--acid); width: 88%;" id="qm1"></div>
+            </div>
+            <div class="qm-val">88%</div>
+          </div>
+          <div class="qm-row">
+            <div class="qm-label">Duplicates</div>
+            <div class="qm-bar">
+              <div class="qm-fill" style="background: var(--acid); width: 97%;" id="qm2"></div>
+            </div>
+            <div class="qm-val">97%</div>
+          </div>
+          <div class="qm-row">
+            <div class="qm-label">Type Validity</div>
+            <div class="qm-bar">
+              <div class="qm-fill" style="background: var(--acid); width: 100%;" id="qm3"></div>
+            </div>
+            <div class="qm-val">100%</div>
+          </div>
+          <div class="qm-row">
+            <div class="qm-label">Outliers</div>
+            <div class="qm-bar">
+              <div class="qm-fill" style="background: var(--plasma); width: 74%;" id="qm4"></div>
+            </div>
+            <div class="qm-val">74%</div>
+          </div>
+        </div>
+        <div class="score-ring">
+          <svg viewBox="0 0 100 100">
+            <circle class="score-ring-track" cx="50" cy="50" r="45"/>
+            <circle class="score-ring-fill" cx="50" cy="50" r="45" id="ring-fill"/>
+            <text class="score-ring-num" x="50" y="46">94</text>
+            <text class="score-ring-sub" x="50" y="60">/ 100</text>
+          </svg>
+        </div>
+      </div>
+
+      <!-- AI Reasoning -->
+      <div class="bento-card span-7">
+        <div class="bento-card-label">AI Planner</div>
+        <div class="bento-card-title">LLM Reasoning &<br/>Cleaning Strategy</div>
+        <div class="bento-card-body">
+          The LLM doesn't just clean — it explains. Every decision is reasoned, every action justified. Structured Pydantic outputs guarantee no hallucinated operations.
+        </div>
+        <div class="ai-reasoning">
+          <div class="ai-reasoning-head">AI Cleaning Plan — Generated</div>
+          <div class="ai-step">
+            <div class="ai-step-num">1</div>
+            <div class="ai-step-text">Drop 847 duplicate rows — exact matches on [user_id, timestamp]. Confidence: 0.99</div>
+          </div>
+          <div class="ai-step">
+            <div class="ai-step-num">2</div>
+            <div class="ai-step-text">Impute `age` nulls (n=142) using median strategy. Skew detected: 0.34 → median preferred over mean.</div>
+          </div>
+          <div class="ai-step">
+            <div class="ai-step-num">3</div>
+            <div class="ai-step-text">Cast `signup_date` → datetime64. Currently object dtype. 100% parseable. Confidence: 1.0</div>
+          </div>
+          <div class="ai-step">
+            <div class="ai-step-num">4</div>
+            <div class="ai-step-text">Standardize `country` column — 17 casing variants → ISO 3166-1 alpha-2 codes.</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Before/After diff -->
+      <div class="bento-card span-8">
+        <div class="bento-card-label">Before / After</div>
+        <div class="bento-card-title">Cell-Level Diff<br/>Visualization</div>
+        <div class="bento-card-body">
+          Inspect exactly what changed — row by row, cell by cell. DataForge renders a structured diff so nothing is a black box.
+        </div>
+        <div class="diff-view">
+          <div class="diff-row del"><span class="diff-marker">−</span><span>user_001 | 28.0 | NaN        | united states | 2024-01-05</span></div>
+          <div class="diff-row add"><span class="diff-marker">+</span><span>user_001 | 28.0 | Sales      | US            | 2024-01-05</span></div>
+          <div class="diff-row ctx"><span class="diff-marker"> </span><span>user_002 | 34.0 | Marketing  | CA            | 2024-01-07</span></div>
+          <div class="diff-row del"><span class="diff-marker">−</span><span>user_003 | NaN  | NaN        | uk            | 2024/01/09</span></div>
+          <div class="diff-row add"><span class="diff-marker">+</span><span>user_003 | 31.0 | Operations | GB            | 2024-01-09</span></div>
+          <div class="diff-row del"><span class="diff-marker">−</span><span>user_004 | 28.0 | Finance    | united states | 2024-01-05</span></div>
+          <div class="diff-row ctx"><span class="diff-marker"> </span><span>↑ duplicate removed</span></div>
+        </div>
+      </div>
+
+      <!-- Download Card -->
+      <div class="bento-card span-4">
+        <div class="bento-card-label">Outputs</div>
+        <div class="bento-card-title">Download<br/>Everything</div>
+        <div class="bento-card-body">
+          Cleaned CSV. Full HTML profiling reports. JSON action logs. Everything auditable.
+        </div>
+        <div style="margin-top: 2rem; display: flex; flex-direction: column; gap: 10px;">
+          <div style="display: flex; align-items: center; gap: 12px; padding: 12px; border: 1px solid var(--border); font-size: 0.7rem; color: var(--text-mid);">
+            <span style="color: var(--acid)">⬇</span> cleaned_dataset.csv
+          </div>
+          <div style="display: flex; align-items: center; gap: 12px; padding: 12px; border: 1px solid var(--border); font-size: 0.7rem; color: var(--text-mid);">
+            <span style="color: var(--plasma)">⬇</span> profiling_report.html
+          </div>
+          <div style="display: flex; align-items: center; gap: 12px; padding: 12px; border: 1px solid var(--border); font-size: 0.7rem; color: var(--text-mid);">
+            <span style="color: var(--text-lo)">⬇</span> cleaning_log.json
+          </div>
+        </div>
+      </div>
+
+      <!-- Tech Stack -->
+      <div class="bento-card span-6" style="background: var(--ink-deep);">
+        <div class="bento-card-label">Stack</div>
+        <div class="bento-card-title">Orchestration-First<br/>Architecture</div>
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1px; background: var(--border); margin-top: 1.5rem;">
+          <div style="background: var(--panel); padding: 1rem; font-size: 0.68rem;">
+            <div style="color: var(--acid); margin-bottom: 4px; font-size: 0.6rem; letter-spacing: 0.12em; text-transform: uppercase;">API Layer</div>
+            <div style="color: var(--text-mid);">FastAPI · Pydantic</div>
+          </div>
+          <div style="background: var(--panel); padding: 1rem; font-size: 0.68rem;">
+            <div style="color: var(--acid); margin-bottom: 4px; font-size: 0.6rem; letter-spacing: 0.12em; text-transform: uppercase;">AI Layer</div>
+            <div style="color: var(--text-mid);">LangChain · Gemini</div>
+          </div>
+          <div style="background: var(--panel); padding: 1rem; font-size: 0.68rem;">
+            <div style="color: var(--acid); margin-bottom: 4px; font-size: 0.6rem; letter-spacing: 0.12em; text-transform: uppercase;">Data Layer</div>
+            <div style="color: var(--text-mid);">Pandas · Dataprep</div>
+          </div>
+          <div style="background: var(--panel); padding: 1rem; font-size: 0.68rem;">
+            <div style="color: var(--acid); margin-bottom: 4px; font-size: 0.6rem; letter-spacing: 0.12em; text-transform: uppercase;">Execution</div>
+            <div style="color: var(--text-mid);">PyJanitor</div>
+          </div>
+          <div style="background: var(--panel); padding: 1rem; font-size: 0.68rem;">
+            <div style="color: var(--acid); margin-bottom: 4px; font-size: 0.6rem; letter-spacing: 0.12em; text-transform: uppercase;">Reports</div>
+            <div style="color: var(--text-mid);">ydata-profiling</div>
+          </div>
+          <div style="background: var(--panel); padding: 1rem; font-size: 0.68rem;">
+            <div style="color: var(--acid); margin-bottom: 4px; font-size: 0.6rem; letter-spacing: 0.12em; text-transform: uppercase;">Frontend</div>
+            <div style="color: var(--text-mid);">React · Tailwind · shadcn</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- CTA Mini -->
+      <div class="bento-card span-6" style="background: var(--acid); display: flex; flex-direction: column; justify-content: space-between;">
+        <div>
+          <div class="bento-card-label" style="color: var(--ink); opacity: 0.6;">Get Started</div>
+          <div class="bento-card-title" style="color: var(--ink); font-size: 2.5rem;">
+            Drop your first<br/>messy dataset.
+          </div>
+        </div>
+        <div>
+          <div style="font-size: 0.72rem; color: var(--ink); opacity: 0.7; margin-bottom: 1.5rem; font-family: var(--mono);">
+            CSV · XLSX · JSON — up to 500MB
+          </div>
+          <button class="btn-primary" style="background: var(--ink); color: var(--acid); width: 100%; justify-content: center;" id="bento-upload-btn">
+            Start Cleaning →
+          </button>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============================================================
+       UPLOAD SECTION
+  ============================================================ -->
+  <section id="upload">
+    <div>
+      <div class="section-label">Upload Interface</div>
+      <h2 class="section-title">
+        Drag, drop,<br/><em>transform</em>.
+      </h2>
+      <p style="font-size: 0.82rem; color: var(--text-mid); line-height: 1.9; max-width: 400px;">
+        The moment your file lands, the pipeline begins. Analysis in seconds. AI plan in under a minute. Clean dataset ready to download.
+      </p>
+      <div style="margin-top: 2.5rem; display: flex; flex-direction: column; gap: 12px;">
+        <div style="display: flex; gap: 12px; align-items: center; font-size: 0.72rem; color: var(--text-mid);">
+          <span style="color: var(--acid); font-size: 0.8rem;">◎</span> Automatic issue detection — no configuration needed
+        </div>
+        <div style="display: flex; gap: 12px; align-items: center; font-size: 0.72rem; color: var(--text-mid);">
+          <span style="color: var(--acid); font-size: 0.8rem;">◎</span> LLM plans cleaning strategy from detected issues
+        </div>
+        <div style="display: flex; gap: 12px; align-items: center; font-size: 0.72rem; color: var(--text-mid);">
+          <span style="color: var(--acid); font-size: 0.8rem;">◎</span> Review, approve, then execute — you stay in control
+        </div>
+        <div style="display: flex; gap: 12px; align-items: center; font-size: 0.72rem; color: var(--text-mid);">
+          <span style="color: var(--acid); font-size: 0.8rem;">◎</span> Download cleaned file + full audit report
+        </div>
+      </div>
+    </div>
+
+    <div
+      class="upload-zone"
+      id="upload-zone"
+      ondragover="event.preventDefault(); this.style.borderColor='var(--acid)'"
+      ondragleave="this.style.borderColor=''"
+    >
+      <span class="upload-icon">⬆</span>
+      <div class="upload-main">Drop your dataset here</div>
+      <div class="upload-sub">
+        Drag & drop your file, or click to browse.<br/>
+        DataForge handles the rest automatically.
+      </div>
+      <div class="upload-formats">
+        <span class="format-tag">.csv</span>
+        <span class="format-tag">.xlsx</span>
+        <span class="format-tag">.json</span>
+        <span class="format-tag">.parquet</span>
+      </div>
+      <div style="margin-top: 2rem;">
+        <button class="btn-primary" id="upload-btn-main" style="width: 100%; justify-content: center;">
+          Choose File →
+        </button>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============================================================
+       ROADMAP
+  ============================================================ -->
+  <section id="phases">
+    <div class="section-label">Build Roadmap</div>
+    <h2 class="section-title">
+      Six phases.<br/><em>One production system</em>.
+    </h2>
+
+    <div class="phases-grid reveal">
+      <div class="phase-card active">
+        <span class="phase-num">PHASE 0</span>
+        <div class="phase-title">Foundation & Setup</div>
+        <div class="phase-desc">FastAPI + React setup, CORS, file upload endpoints, clean architecture.</div>
+        <div class="phase-status status-active">⬤ Active</div>
+      </div>
+      <div class="phase-card">
+        <span class="phase-num">PHASE 1</span>
+        <div class="phase-title">Data Analysis Engine</div>
+        <div class="phase-desc">CSV ingestion, Dataprep analysis, structured JSON issue extraction.</div>
+        <div class="phase-status status-planned">○ Planned</div>
+      </div>
+      <div class="phase-card">
+        <span class="phase-num">PHASE 2</span>
+        <div class="phase-title">AI Planning System</div>
+        <div class="phase-desc">LangChain planner, prompt engineering, Pydantic-validated outputs.</div>
+        <div class="phase-status status-planned">○ Planned</div>
+      </div>
+      <div class="phase-card">
+        <span class="phase-num">PHASE 3</span>
+        <div class="phase-title">Execution Engine</div>
+        <div class="phase-desc">Tool router, PyJanitor + Pandas actions, validation layer.</div>
+        <div class="phase-status status-planned">○ Planned</div>
+      </div>
+      <div class="phase-card">
+        <span class="phase-num">PHASE 4</span>
+        <div class="phase-title">Reporting Engine</div>
+        <div class="phase-desc">ydata-profiling, quality scoring, before/after comparison reports.</div>
+        <div class="phase-status status-planned">○ Planned</div>
+      </div>
+      <div class="phase-card">
+        <span class="phase-num">PHASE 5</span>
+        <div class="phase-title">Advanced UX</div>
+        <div class="phase-desc">Intelligent dashboards, AI explanations, animated progress, diffs.</div>
+        <div class="phase-status status-planned">○ Planned</div>
+      </div>
+      <div class="phase-card">
+        <span class="phase-num">PHASE 6</span>
+        <div class="phase-title">Deployment</div>
+        <div class="phase-desc">Render backend + Vercel frontend. Production-ready MVP launch.</div>
+        <div class="phase-status status-planned">○ Planned</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============================================================
+       FOOTER
+  ============================================================ -->
+  <footer>
+    <div class="footer-left">
+      <div class="footer-logo">DATAFORGE</div>
+      <div class="footer-tagline">AI-Powered Intelligent Data Cleaning Platform</div>
+    </div>
+    <div class="footer-right">
+      Built with <span>LangChain · FastAPI · PyJanitor</span><br/>
+      Orchestration-first · Production-grade
+    </div>
+  </footer>
+
+  <!-- ============================================================
+       JAVASCRIPT
+  ============================================================ -->
+  <script>
+    /* ——————————————————————————————————
+       Terminal Animation
+    —————————————————————————————————— */
+    const termLines = [
+      { delay: 200,  prefix: '$',     text: 'dataforge analyze customer_data.csv', cls: '' },
+      { delay: 800,  prefix: '›',     text: 'Reading 12 columns × 1,200 rows…', cls: 'term-dim' },
+      { delay: 1400, prefix: '›',     text: 'Scanning for issues…', cls: 'term-dim' },
+      { delay: 2000, prefix: '!',     text: 'Missing values   → age: 142, dept: 89', cls: 'term-warn' },
+      { delay: 2300, prefix: '!',     text: 'Duplicates found → 847 rows', cls: 'term-warn' },
+      { delay: 2600, prefix: '!',     text: 'Type mismatch    → signup_date: object', cls: 'term-warn' },
+      { delay: 2900, prefix: '!',     text: 'Casing variants  → country: 17 forms', cls: 'term-warn' },
+      { delay: 3500, prefix: '$',     text: 'dataforge plan --model gemini-pro', cls: '' },
+      { delay: 4200, prefix: '✦',     text: 'LLM generating cleaning strategy…', cls: 'term-acid' },
+      { delay: 5000, prefix: '›',     text: '[1] drop_duplicates    ✓ confidence 0.99', cls: 'term-ok' },
+      { delay: 5300, prefix: '›',     text: '[2] fill_missing age   ✓ strategy: median', cls: 'term-ok' },
+      { delay: 5600, prefix: '›',     text: '[3] cast_dtype date    ✓ datetime64', cls: 'term-ok' },
+      { delay: 5900, prefix: '›',     text: '[4] standardize country✓ ISO 3166-1', cls: 'term-ok' },
+      { delay: 6500, prefix: '$',     text: 'dataforge execute --plan plan.json', cls: '' },
+      { delay: 7200, prefix: '✦',     text: 'Executing 4 operations via tool router…', cls: 'term-acid' },
+      { delay: 8200, prefix: '✓',     text: 'Quality score: 34 → 94 (+177%)', cls: 'term-acid' },
+      { delay: 8800, prefix: '✓',     text: 'cleaned_dataset.csv ready', cls: 'term-ok' },
+      { delay: 9100, prefix: '$',     text: '', cls: 'cursor-line' },
+    ];
+
+    const body = document.getElementById('terminal-body');
+
+    termLines.forEach((line, i) => {
+      setTimeout(() => {
+        const el = document.createElement('div');
+        el.className = 'term-line';
+        el.style.animationDelay = '0ms';
+
+        if (line.cls === 'cursor-line') {
+          el.innerHTML = `<span class="term-prefix term-acid">$</span><span class="term-text"> <span class="term-cursor"></span></span>`;
+        } else {
+          el.innerHTML = `<span class="term-prefix ${line.cls}">${line.prefix}</span><span class="term-text ${line.cls}">${line.text}</span>`;
+        }
+        body.appendChild(el);
+        body.scrollTop = body.scrollHeight;
+      }, line.delay);
+    });
+
+    /* Restart loop */
+    setTimeout(() => {
+      setInterval(() => {
+        body.innerHTML = '';
+        termLines.forEach((line, i) => {
+          setTimeout(() => {
+            const el = document.createElement('div');
+            el.className = 'term-line';
+            el.style.animationDelay = '0ms';
+            if (line.cls === 'cursor-line') {
+              el.innerHTML = `<span class="term-prefix term-acid">$</span><span class="term-text"> <span class="term-cursor"></span></span>`;
+            } else {
+              el.innerHTML = `<span class="term-prefix ${line.cls}">${line.prefix}</span><span class="term-text ${line.cls}">${line.text}</span>`;
+            }
+            body.appendChild(el);
+            body.scrollTop = body.scrollHeight;
+          }, line.delay);
+        });
+      }, 12000);
+    }, 9500);
+
+    /* ——————————————————————————————————
+       Scroll Reveal
+    —————————————————————————————————— */
+    const reveals = document.querySelectorAll('.reveal');
+    const observer = new IntersectionObserver((entries) => {
+      entries.forEach((entry, i) => {
+        if (entry.isIntersecting) {
+          entry.target.style.transitionDelay = (i * 60) + 'ms';
+          entry.target.classList.add('visible');
+          observer.unobserve(entry.target);
+        }
+      });
+    }, { threshold: 0.1 });
+    reveals.forEach(el => observer.observe(el));
+
+    /* ——————————————————————————————————
+       Score Ring & Quality Bars — trigger on visibility
+    —————————————————————————————————— */
+    let metricsAnimated = false;
+    const featureSection = document.getElementById('features');
+
+    const metricObserver = new IntersectionObserver((entries) => {
+      entries.forEach(entry => {
+        if (entry.isIntersecting && !metricsAnimated) {
+          metricsAnimated = true;
+          animateMetrics();
+          metricObserver.unobserve(entry.target);
+        }
+      });
+    }, { threshold: 0.3 });
+
+    if (featureSection) metricObserver.observe(featureSection);
+
+    function animateMetrics() {
+      /* QM bars */
+      setTimeout(() => { document.getElementById('qm1').style.transform = 'scaleX(1)'; }, 100);
+      setTimeout(() => { document.getElementById('qm2').style.transform = 'scaleX(1)'; }, 250);
+      setTimeout(() => { document.getElementById('qm3').style.transform = 'scaleX(1)'; }, 400);
+      setTimeout(() => { document.getElementById('qm4').style.transform = 'scaleX(1)'; }, 550);
+
+      /* Score ring — dashoffset 283 = 0%, 0 = 100% */
+      /* 94% fill → dashoffset = 283 * (1 - 0.94) = 16.98 */
+      setTimeout(() => {
+        const ring = document.getElementById('ring-fill');
+        if (ring) ring.style.strokeDashoffset = '17';
+      }, 300);
+
+      /* Term score bars in terminal section if visible */
+      document.querySelectorAll('.term-score-fill').forEach(el => {
+        el.style.transform = 'scaleX(1)';
+      });
+    }
+
+    /* Trigger if already in view on load */
+    if (featureSection) {
+      const rect = featureSection.getBoundingClientRect();
+      if (rect.top < window.innerHeight) {
+        setTimeout(animateMetrics, 600);
+        metricsAnimated = true;
+      }
+    }
+  </script>
+</body>
+</html>

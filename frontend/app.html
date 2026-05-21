@@ -3,2034 +3,1985 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>DATAPILOT — AI Data Cleaning Platform</title>
-  <link rel="preconnect" href="https://fonts.googleapis.com" />
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-  <link href="https://fonts.googleapis.com/css2?family=Cabinet+Grotesk:wght@800;900&family=JetBrains+Mono:wght@400;700;800&display=swap" rel="stylesheet" />
+  <title>DATAPILOT // APP</title>
+
+  <link href="https://api.fontshare.com/v2/css?f[]=cabinet-grotesk@800,900&display=swap" rel="stylesheet">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;700;800&display=swap" rel="stylesheet">
 
   <style>
     /* ============================================================
-       DESIGN TOKENS
+       DESIGN TOKENS — CLEAN BRUTALISM
     ============================================================ */
     :root {
-      --black:      #050505;
-      --white:      #FAFAFA;
-      --grey:       #E8E8E8;
-      --grey-dark:  #D0D0D0;
-      --red:        #E8000D;
-      --yellow:     #FFD600;
-      --green:      #00C44F;
-      --blue:       #0066FF;
-      --border:     3px solid #050505;
-      --shadow:     6px 6px 0px #050505;
-      --shadow-lg:  10px 10px 0px #050505;
-      --font-head:  'Cabinet Grotesk', sans-serif;
-      --font-mono:  'JetBrains Mono', monospace;
+      --black: #050505;
+      --white: #FAFAFA;
+      --grey: #E8E8E8;
+      --grey-dark: #D0D0D0;
+
+      --font-display: 'Cabinet Grotesk', sans-serif;
+      --font-mono: 'JetBrains Mono', monospace;
+
+      --border: 3px solid var(--black);
+      --border-light: 1px solid var(--black);
+      --shadow: 6px 6px 0px var(--black);
+      --shadow-lg: 10px 10px 0px var(--black);
     }
 
-    /* ============================================================
-       RESET & BASE
-    ============================================================ */
-    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    *, *::before, *::after {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      border-radius: 0 !important;
+    }
 
-    html { font-size: 14px; scroll-behavior: smooth; }
+    html { scroll-behavior: smooth; }
 
     body {
-      background: var(--white);
+      background: var(--grey);
       color: var(--black);
       font-family: var(--font-mono);
-      font-weight: 400;
-      line-height: 1.5;
-      letter-spacing: -0.02em;
+      font-size: 13px;
+      line-height: 1.6;
+      text-transform: uppercase;
+      -webkit-font-smoothing: antialiased;
+      overflow-x: hidden;
       min-height: 100vh;
     }
 
-    /* ============================================================
-       SCROLLBAR
-    ============================================================ */
-    ::-webkit-scrollbar { width: 6px; height: 6px; }
-    ::-webkit-scrollbar-track { background: var(--grey); }
-    ::-webkit-scrollbar-thumb { background: var(--black); }
+    body::after {
+      content: '';
+      position: fixed;
+      inset: 0;
+      background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+      opacity: 0.03;
+      pointer-events: none;
+      z-index: 9999;
+    }
+
+    a { color: inherit; text-decoration: none; cursor: pointer; }
+    button { cursor: pointer; font-family: var(--font-mono); }
 
     /* ============================================================
-       NAVBAR
+       SCREEN ROUTING
     ============================================================ */
-    .navbar {
+    .screen { display: none; min-height: 100vh; flex-direction: column; }
+    .screen.active { display: flex; }
+
+    /* ============================================================
+       SHARED NAV
+    ============================================================ */
+    nav {
       position: sticky;
       top: 0;
       z-index: 100;
-      background: var(--black);
-      color: var(--white);
+      background: var(--white);
       border-bottom: var(--border);
       display: flex;
-      align-items: center;
       justify-content: space-between;
-      padding: 0 2rem;
-      height: 56px;
+      align-items: stretch;
+      height: 54px;
+      flex-shrink: 0;
     }
 
-    .navbar-logo {
-      font-family: var(--font-head);
+    .nav-brand {
+      font-family: var(--font-display);
+      font-size: 1.3rem;
       font-weight: 900;
-      font-size: 1.5rem;
-      letter-spacing: -0.04em;
-      color: var(--white);
-      text-decoration: none;
-    }
-
-    .navbar-logo span {
-      color: var(--yellow);
-    }
-
-    .navbar-right {
+      padding: 0 1.5rem;
       display: flex;
       align-items: center;
-      gap: 1.5rem;
+      border-right: var(--border);
+      letter-spacing: -0.02em;
+      cursor: pointer;
     }
 
-    .status-indicator {
+    .nav-links {
+      display: flex;
+      flex-grow: 1;
+    }
+
+    .nav-link {
+      padding: 0 1.5rem;
       display: flex;
       align-items: center;
-      gap: 0.5rem;
-      font-size: 0.75rem;
       font-weight: 700;
-      text-transform: uppercase;
-      letter-spacing: 0.08em;
-      color: var(--grey);
+      border-right: var(--border);
+      transition: background 0.12s, color 0.12s;
+      font-size: 0.75rem;
+    }
+    .nav-link:hover { background: var(--black); color: var(--white); }
+
+    .nav-step {
+      padding: 0 1.5rem;
+      display: flex;
+      align-items: center;
+      font-weight: 800;
+      font-size: 0.75rem;
+      gap: 10px;
+      border-left: var(--border);
+    }
+
+    .nav-status {
+      padding: 0 1.5rem;
+      display: flex;
+      align-items: center;
+      font-weight: 800;
+      background: var(--black);
+      color: var(--white);
+      gap: 10px;
+      font-size: 0.75rem;
     }
 
     .status-dot {
-      width: 8px;
-      height: 8px;
-      background: var(--green);
-      border-radius: 50%;
-      animation: pulse 2s infinite;
+      width: 8px; height: 8px;
+      background: #10B981;
+      border: 1.5px solid var(--white);
+      animation: pulse 1.5s infinite;
     }
 
-    @keyframes pulse {
-      0%, 100% { opacity: 1; }
-      50%       { opacity: 0.3; }
-    }
-
-    .navbar-meta {
-      font-size: 0.7rem;
-      font-weight: 400;
-      color: var(--grey-dark);
-      text-transform: uppercase;
-      letter-spacing: 0.06em;
-      border-left: 1px solid #333;
-      padding-left: 1.5rem;
-    }
+    @keyframes pulse { 0%, 100% { opacity: 1; } 50% { opacity: 0.3; } }
 
     /* ============================================================
-       STEP BAR
+       SHARED STEP PROGRESS BAR
     ============================================================ */
-    .stepbar {
-      display: flex;
-      border-bottom: var(--border);
+    .step-bar {
       background: var(--white);
-      overflow-x: auto;
+      border-bottom: var(--border);
+      display: flex;
+      align-items: stretch;
+      height: 40px;
+      flex-shrink: 0;
     }
 
     .step-item {
-      flex: 1;
-      min-width: 160px;
       display: flex;
       align-items: center;
-      gap: 0.75rem;
-      padding: 0.85rem 1.5rem;
-      border-right: var(--border);
-      cursor: pointer;
-      user-select: none;
-      transition: background 0.1s, color 0.1s;
-      position: relative;
-      background: var(--white);
+      padding: 0 1.2rem;
+      font-size: 0.7rem;
+      font-weight: 800;
+      border-right: var(--border-light);
+      color: #999;
+      gap: 8px;
+      white-space: nowrap;
     }
 
-    .step-item:last-child { border-right: none; }
-
-    .step-item:hover {
-      background: var(--black);
-      color: var(--white);
-    }
-
-    .step-item:hover .step-num,
-    .step-item:hover .step-label,
-    .step-item:hover .step-check { color: var(--white); }
-
-    .step-item.active {
-      background: var(--black);
-      color: var(--white);
-    }
-
-    .step-item.active .step-num,
-    .step-item.active .step-label { color: var(--white); }
-
-    .step-item.completed .step-label { color: var(--black); }
+    .step-item.done { color: var(--black); }
+    .step-item.active { background: var(--black); color: var(--white); }
 
     .step-num {
-      font-family: var(--font-head);
+      font-family: var(--font-display);
+      font-size: 1rem;
       font-weight: 900;
-      font-size: 1.1rem;
-      color: var(--grey-dark);
-      min-width: 32px;
-    }
-
-    .step-item.active .step-num { color: var(--yellow); }
-    .step-item:hover .step-num  { color: var(--yellow); }
-
-    .step-label {
-      font-weight: 700;
-      font-size: 0.7rem;
-      text-transform: uppercase;
-      letter-spacing: 0.1em;
-    }
-
-    .step-check {
-      margin-left: auto;
-      font-size: 0.9rem;
-      color: var(--green);
-    }
-
-    .step-arrow {
-      position: absolute;
-      right: -1px;
-      top: 50%;
-      transform: translateY(-50%);
-      width: 0;
-      height: 0;
-      z-index: 1;
     }
 
     /* ============================================================
-       MAIN LAYOUT
+       BRUTALIST BUTTON
     ============================================================ */
-    .main-container {
-      min-height: calc(100vh - 56px - 58px);
-      padding: 2rem;
-      max-width: 1440px;
-      margin: 0 auto;
-    }
-
-    /* ============================================================
-       SCREEN SWITCHING
-    ============================================================ */
-    .screen {
-      display: none;
-      animation: screenIn 0.25s ease;
-    }
-
-    .screen.active { display: block; }
-
-    @keyframes screenIn {
-      from { opacity: 0; transform: translateY(12px); }
-      to   { opacity: 1; transform: translateY(0); }
-    }
-
-    /* ============================================================
-       UTILITY CLASSES
-    ============================================================ */
-    .card {
-      border: var(--border);
-      box-shadow: var(--shadow);
-      background: var(--white);
-      padding: 1.25rem 1.5rem;
-      transition: box-shadow 0.12s;
-    }
-
-    .card:hover { box-shadow: var(--shadow-lg); }
-
-    .label {
-      font-size: 0.65rem;
-      font-weight: 700;
-      text-transform: uppercase;
-      letter-spacing: 0.1em;
-      color: var(--grey-dark);
-    }
-
-    .big-num {
-      font-family: var(--font-head);
-      font-weight: 900;
-      font-size: 2.5rem;
-      line-height: 1;
-      letter-spacing: -0.04em;
-    }
-
     .btn {
       display: inline-flex;
       align-items: center;
-      gap: 0.5rem;
-      font-family: var(--font-mono);
-      font-weight: 800;
-      font-size: 0.75rem;
-      text-transform: uppercase;
-      letter-spacing: 0.08em;
-      padding: 0.75rem 1.5rem;
+      gap: 8px;
+      padding: 0.8rem 1.6rem;
+      font-family: var(--font-display);
+      font-size: 0.85rem;
+      font-weight: 900;
       border: var(--border);
-      box-shadow: var(--shadow);
-      cursor: pointer;
       background: var(--white);
       color: var(--black);
-      transition: background 0.1s, color 0.1s, box-shadow 0.1s, transform 0.1s;
-      text-decoration: none;
-    }
-
-    .btn:hover {
-      background: var(--black);
-      color: var(--white);
-      box-shadow: var(--shadow-lg);
-      transform: translate(-2px, -2px);
-    }
-
-    .btn:active { transform: translate(2px, 2px); box-shadow: 2px 2px 0 var(--black); }
-
-    .btn-primary {
-      background: var(--black);
-      color: var(--white);
-    }
-
-    .btn-primary:hover {
-      background: var(--yellow);
-      color: var(--black);
-    }
-
-    .btn-red    { background: var(--red);    color: var(--white); }
-    .btn-green  { background: var(--green);  color: var(--black); }
-    .btn-yellow { background: var(--yellow); color: var(--black); }
-
-    .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 1.5rem; }
-    .grid-3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 1rem; }
-    .grid-4 { display: grid; grid-template-columns: repeat(4, 1fr); gap: 1rem; }
-    .flex    { display: flex; }
-    .flex-col{ flex-direction: column; }
-    .gap-1   { gap: 1rem; }
-    .gap-15  { gap: 1.5rem; }
-    .gap-2   { gap: 2rem; }
-    .mb-1    { margin-bottom: 1rem; }
-    .mb-15   { margin-bottom: 1.5rem; }
-    .mb-2    { margin-bottom: 2rem; }
-    .mt-1    { margin-top: 1rem; }
-    .mt-15   { margin-top: 1.5rem; }
-    .mt-2    { margin-top: 2rem; }
-
-    .section-title {
-      font-family: var(--font-head);
-      font-weight: 900;
-      font-size: 1.1rem;
-      letter-spacing: -0.03em;
+      box-shadow: var(--shadow);
+      transition: all 0.1s;
+      cursor: pointer;
       text-transform: uppercase;
-      margin-bottom: 1rem;
-      padding-bottom: 0.5rem;
-      border-bottom: 2px solid var(--black);
     }
 
-    .tag {
-      display: inline-flex;
-      align-items: center;
-      font-size: 0.65rem;
-      font-weight: 700;
-      text-transform: uppercase;
-      letter-spacing: 0.08em;
-      padding: 0.2rem 0.5rem;
-      border: 2px solid var(--black);
-    }
+    .btn:hover { background: var(--black); color: var(--white); box-shadow: var(--shadow-lg); transform: translate(-2px, -2px); }
+    .btn:active { transform: translate(6px, 6px); box-shadow: none; }
 
-    .tag-red    { background: var(--red);    color: var(--white); border-color: var(--red); }
-    .tag-yellow { background: var(--yellow); color: var(--black); border-color: var(--yellow); }
-    .tag-green  { background: var(--green);  color: var(--black); border-color: var(--green); }
-    .tag-grey   { background: var(--grey);   color: var(--black); border-color: var(--grey-dark); }
-    .tag-blue   { background: var(--blue);   color: var(--white); border-color: var(--blue); }
+    .btn-primary { background: var(--black); color: var(--white); }
+    .btn-primary:hover { background: var(--white); color: var(--black); }
+
+    .btn-sm { padding: 0.5rem 1rem; font-size: 0.75rem; box-shadow: 4px 4px 0 var(--black); }
 
     /* ============================================================
-       SCREEN 1 — UPLOAD
+       SHARED SECTION LABEL
     ============================================================ */
-    .upload-zone {
-      border: 3px dashed var(--black);
-      padding: 4rem 2rem;
-      text-align: center;
-      cursor: pointer;
-      background: var(--white);
-      transition: background 0.15s;
-      position: relative;
-      min-height: 280px;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      justify-content: center;
-      gap: 1rem;
-    }
-
-    .upload-zone:hover,
-    .upload-zone.drag-over {
+    .label {
+      font-size: 0.7rem;
+      font-weight: 800;
+      display: inline-block;
+      padding: 0.25rem 0.5rem;
       background: var(--black);
       color: var(--white);
     }
 
-    .upload-zone:hover .upload-icon,
-    .upload-zone.drag-over .upload-icon { stroke: var(--yellow); }
+    /* ============================================================
+       FADE IN
+    ============================================================ */
+    .fade { opacity: 0; transform: translateY(12px); transition: opacity 0.6s ease, transform 0.6s ease; }
+    .fade.in { opacity: 1; transform: none; }
 
-    .upload-zone:hover .upload-note,
-    .upload-zone.drag-over .upload-note { color: var(--grey-dark); }
 
-    .upload-zone-title {
-      font-family: var(--font-head);
-      font-weight: 900;
-      font-size: 2.5rem;
-      letter-spacing: -0.04em;
-      text-transform: uppercase;
+    /* ============================================================
+       ████  SCREEN 1 — UPLOAD
+    ============================================================ */
+    #screen-upload .upload-body {
+      flex: 1;
+      display: grid;
+      grid-template-columns: 1fr 1.4fr;
+      min-height: 0;
     }
 
-    .upload-note {
-      font-size: 0.75rem;
-      color: var(--grey-dark);
-      font-weight: 700;
-      text-transform: uppercase;
-      letter-spacing: 0.06em;
-    }
-
-    .upload-formats {
+    .upload-left {
+      background: var(--white);
+      border-right: var(--border);
+      padding: 3rem;
       display: flex;
-      gap: 0.5rem;
+      flex-direction: column;
       justify-content: center;
+    }
+
+    .upload-left h2 {
+      font-family: var(--font-display);
+      font-size: clamp(2rem, 3vw, 3rem);
+      font-weight: 900;
+      line-height: 0.95;
+      letter-spacing: -0.03em;
+      margin-bottom: 1rem;
+    }
+
+    .upload-left h2 em {
+      font-style: italic;
+      text-decoration: underline;
+      text-decoration-thickness: 3px;
+      text-underline-offset: 3px;
+    }
+
+    .upload-left p {
+      font-size: 0.9rem;
+      font-weight: 700;
+      color: #444;
+      max-width: 340px;
+      margin-bottom: 2rem;
+      line-height: 1.7;
+    }
+
+    .format-tags {
+      display: flex;
+      gap: 8px;
       flex-wrap: wrap;
     }
 
-    .recent-file-row {
-      display: grid;
-      grid-template-columns: 2fr 1fr 1fr 1fr 120px;
-      align-items: center;
-      gap: 1rem;
-      padding: 0.85rem 1rem;
-      border-bottom: 2px solid var(--grey);
-      font-size: 0.75rem;
-      transition: background 0.1s;
+    .tag {
+      font-size: 0.7rem;
+      font-weight: 800;
+      padding: 0.3rem 0.6rem;
+      border: var(--border);
+      background: var(--grey);
     }
 
-    .recent-file-row:hover { background: var(--grey); }
-    .recent-file-row:last-child { border-bottom: none; }
+    .upload-right {
+      background: var(--grey);
+      padding: 3rem;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      gap: 1.5rem;
+    }
 
-    .recent-file-header {
+    .drop-zone {
+      border: 4px dashed var(--black);
+      background: var(--white);
+      padding: 4rem 2rem;
+      text-align: center;
+      transition: all 0.15s;
+      cursor: pointer;
+    }
+
+    .drop-zone:hover, .drop-zone.over {
+      background: var(--grey);
+      border-style: solid;
+      box-shadow: var(--shadow-lg);
+      transform: translate(-3px, -3px);
+    }
+
+    .drop-zone.dropped {
+      border-style: solid;
       background: var(--black);
       color: var(--white);
-      font-weight: 700;
-      text-transform: uppercase;
-      letter-spacing: 0.08em;
-      font-size: 0.65rem;
     }
 
-    .recent-file-header:hover { background: var(--black); }
+    .drop-icon {
+      font-family: var(--font-display);
+      font-size: 1.2rem;
+      font-weight: 900;
+      display: inline-block;
+      background: var(--black);
+      color: var(--white);
+      padding: 0.6rem 1.2rem;
+      margin-bottom: 1rem;
+      transform: rotate(-2deg);
+      transition: background 0.15s, color 0.15s;
+    }
 
-    .file-name {
+    .drop-zone.dropped .drop-icon {
+      background: var(--white);
+      color: var(--black);
+    }
+
+    .drop-zone h3 {
+      font-family: var(--font-display);
+      font-size: 1.3rem;
+      font-weight: 900;
+      margin-bottom: 0.5rem;
+    }
+
+    .drop-zone p {
+      font-size: 0.8rem;
       font-weight: 700;
+      color: #555;
+    }
+
+    .drop-zone.dropped p { color: #AAA; }
+
+    .recent-uploads {
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+    }
+
+    .recent-file {
       display: flex;
       align-items: center;
-      gap: 0.5rem;
+      gap: 8px;
+      padding: 0.5rem 0.8rem;
+      border: var(--border);
+      background: var(--white);
+      font-size: 0.75rem;
+      font-weight: 800;
+      cursor: pointer;
+      transition: all 0.12s;
     }
+
+    .recent-file:hover { background: var(--black); color: var(--white); }
 
     /* ============================================================
-       SCREEN 2 — ANALYSIS
+       ████  SCREEN 2 — ANALYSIS
     ============================================================ */
-    .analysis-layout {
-      display: grid;
-      grid-template-columns: 340px 1fr;
-      gap: 1.5rem;
-      align-items: start;
+    #screen-analysis .analysis-body {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
     }
 
-    .meta-card {
+    .analysis-top {
+      display: grid;
+      grid-template-columns: 280px 1fr;
+      border-bottom: var(--border);
+    }
+
+    .info-panel {
+      background: var(--white);
+      border-right: var(--border);
+      padding: 2rem;
+    }
+
+    .info-panel h3 {
+      font-family: var(--font-display);
+      font-size: 1.1rem;
+      font-weight: 900;
+      margin-bottom: 1.5rem;
+      padding-bottom: 0.5rem;
+      border-bottom: var(--border);
+    }
+
+    .info-row {
       display: flex;
-      align-items: center;
       justify-content: space-between;
-      gap: 1rem;
+      align-items: center;
+      padding: 0.5rem 0;
+      border-bottom: var(--border-light);
+      font-size: 0.8rem;
+      font-weight: 700;
+    }
+
+    .info-val {
+      font-family: var(--font-display);
+      font-size: 1rem;
+      font-weight: 900;
+    }
+
+    .score-block {
+      margin-top: 1.5rem;
+      padding: 1.2rem;
+      border: var(--border);
+      background: var(--grey);
+      text-align: center;
+    }
+
+    .score-big {
+      font-family: var(--font-display);
+      font-size: 3.5rem;
+      font-weight: 900;
+      line-height: 0.85;
+      display: block;
+    }
+
+    .score-label {
+      font-size: 0.7rem;
+      font-weight: 800;
+      color: #555;
+      margin-top: 4px;
+      display: block;
+    }
+
+    .issue-grid {
+      padding: 2rem;
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 12px;
+      align-content: start;
     }
 
     .issue-card {
       border: var(--border);
+      background: var(--white);
+      padding: 1.2rem;
       box-shadow: var(--shadow);
-      padding: 1rem 1.25rem;
-      transition: box-shadow 0.12s, transform 0.12s;
-      cursor: default;
+      transition: all 0.15s;
     }
 
     .issue-card:hover { box-shadow: var(--shadow-lg); transform: translate(-2px, -2px); }
 
-    .issue-count {
-      font-family: var(--font-head);
+    .issue-card-label {
+      font-size: 0.65rem;
+      font-weight: 800;
+      color: #555;
+      margin-bottom: 0.5rem;
+    }
+
+    .issue-num {
+      font-family: var(--font-display);
+      font-size: 2.5rem;
       font-weight: 900;
-      font-size: 2rem;
-      line-height: 1;
-      letter-spacing: -0.04em;
+      line-height: 0.85;
+      display: block;
     }
 
-    .quality-bar-wrap {
-      border: var(--border);
-      height: 20px;
+    .issue-num.warn { color: var(--black); }
+
+    .issue-desc {
+      font-size: 0.7rem;
+      font-weight: 700;
+      color: #555;
+      margin-top: 4px;
+      display: block;
+    }
+
+    .analysis-table-section {
+      flex: 1;
+      background: var(--white);
+      border-top: var(--border);
+    }
+
+    .table-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0.8rem 2rem;
+      border-bottom: var(--border);
       background: var(--grey);
-      position: relative;
-      overflow: hidden;
-    }
-
-    .quality-bar-fill {
-      height: 100%;
-      background: var(--red);
-      width: 34%;
-      position: relative;
-      transition: width 0.8s ease;
-    }
-
-    .quality-bar-fill::after {
-      content: '';
-      position: absolute;
-      top: 0; right: 0;
-      width: 3px; height: 100%;
-      background: var(--black);
     }
 
     .data-table {
       width: 100%;
       border-collapse: collapse;
-      font-size: 0.72rem;
+      font-size: 0.8rem;
     }
 
     .data-table th {
+      text-align: left;
+      padding: 0.6rem 1rem;
+      font-weight: 800;
       background: var(--black);
       color: var(--white);
-      padding: 0.5rem 0.75rem;
-      text-align: left;
-      font-weight: 700;
-      text-transform: uppercase;
-      letter-spacing: 0.06em;
-      font-size: 0.65rem;
-      border-right: 2px solid #222;
-      white-space: nowrap;
+      font-size: 0.7rem;
+      border-right: 1px solid #333;
     }
 
     .data-table td {
-      padding: 0.5rem 0.75rem;
-      border: 1px solid var(--grey-dark);
-      font-size: 0.72rem;
-      white-space: nowrap;
-      max-width: 140px;
-      overflow: hidden;
-      text-overflow: ellipsis;
-    }
-
-    .data-table tr:nth-child(even) td { background: var(--grey); }
-    .data-table tr:hover td { background: var(--grey-dark); }
-
-    .cell-missing  { background: #FFE0E0 !important; color: var(--red); font-weight: 700; }
-    .cell-outlier  { background: #FFF9D0 !important; color: #8B6914; font-weight: 700; }
-    .cell-dup      { background: #E0F0FF !important; color: var(--blue); font-weight: 700; }
-
-    /* Loading overlay */
-    .loading-overlay {
-      position: absolute;
-      inset: 0;
-      background: var(--white);
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      justify-content: center;
-      gap: 1rem;
-      z-index: 10;
-      border: var(--border);
-    }
-
-    .loading-overlay.hidden { display: none; }
-
-    .loader-bar-wrap {
-      width: 240px;
-      height: 8px;
-      border: 2px solid var(--black);
-      background: var(--grey);
-      overflow: hidden;
-    }
-
-    .loader-bar {
-      height: 100%;
-      background: var(--black);
-      animation: loadBar 1.8s ease forwards;
-    }
-
-    @keyframes loadBar {
-      from { width: 0%; }
-      to   { width: 100%; }
-    }
-
-    .loading-text {
-      font-size: 0.75rem;
+      padding: 0.5rem 1rem;
+      border-bottom: var(--border-light);
+      border-right: var(--border-light);
       font-weight: 700;
-      text-transform: uppercase;
-      letter-spacing: 0.1em;
+    }
+
+    .data-table tr:nth-child(even) td { background: #F5F5F5; }
+    .data-table tr:hover td { background: var(--grey); }
+
+    .cell-issue {
+      background: var(--black) !important;
+      color: var(--white);
+      font-weight: 800;
+    }
+
+    .cell-tag {
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      font-size: 0.65rem;
+      font-weight: 800;
+    }
+
+    .cell-dot { width: 6px; height: 6px; background: currentColor; display: inline-block; }
+
+    .analysis-footer {
+      border-top: var(--border);
+      background: var(--white);
+      padding: 1rem 2rem;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    /* Analysis loading bar */
+    .analysis-loading {
+      background: var(--black);
+      color: var(--white);
+      padding: 1rem 2rem;
+      display: flex;
+      align-items: center;
+      gap: 2rem;
+      font-weight: 800;
+      font-size: 0.75rem;
+    }
+
+    .progress-track {
+      flex: 1;
+      height: 6px;
+      background: #333;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .progress-fill {
+      height: 100%;
+      background: var(--white);
+      width: 0%;
+      transition: width 0.4s ease;
     }
 
     /* ============================================================
-       SCREEN 3 — AI PLAN
+       ████  SCREEN 3 — PLAN REVIEW
     ============================================================ */
-    .plan-layout {
+    #screen-plan .plan-body {
+      flex: 1;
       display: grid;
       grid-template-columns: 1fr 1fr;
-      gap: 1.5rem;
-      align-items: start;
     }
 
-    .terminal-panel {
-      background: var(--black);
-      color: #00FF66;
-      font-family: var(--font-mono);
-      font-size: 0.72rem;
-      padding: 1.25rem;
-      border: var(--border);
-      box-shadow: var(--shadow);
-      min-height: 480px;
-      overflow-y: auto;
-      position: relative;
+    .plan-left {
+      background: var(--white);
+      border-right: var(--border);
+      display: flex;
+      flex-direction: column;
     }
 
-    .terminal-title-bar {
+    .plan-left-header {
+      padding: 1.5rem 2rem;
+      border-bottom: var(--border);
+      background: var(--grey);
       display: flex;
       align-items: center;
-      gap: 0.5rem;
-      margin-bottom: 1rem;
-      padding-bottom: 0.75rem;
-      border-bottom: 1px solid #1a1a1a;
+      justify-content: space-between;
     }
 
-    .terminal-dot { width: 10px; height: 10px; border-radius: 50%; }
-    .td-red    { background: #FF5F57; }
-    .td-yellow { background: #FEBC2E; }
-    .td-green  { background: #28C840; }
-
-    .terminal-title {
-      font-size: 0.65rem;
-      font-weight: 700;
-      color: #555;
-      text-transform: uppercase;
-      letter-spacing: 0.08em;
-      margin-left: auto;
+    .plan-left-header h3 {
+      font-family: var(--font-display);
+      font-size: 1rem;
+      font-weight: 900;
     }
 
-    .terminal-line {
-      margin-bottom: 0.3rem;
-      line-height: 1.6;
-      opacity: 0;
-      animation: termLine 0.1s forwards;
-    }
-
-    @keyframes termLine {
-      to { opacity: 1; }
-    }
-
-    .term-prompt  { color: #555; }
-    .term-cmd     { color: #00FF66; font-weight: 700; }
-    .term-info    { color: #888; }
-    .term-success { color: #00C44F; }
-    .term-warn    { color: #FFD600; }
-    .term-error   { color: #FF4444; }
-    .term-ai      { color: #44AAFF; }
-
-    .cursor {
-      display: inline-block;
-      width: 8px;
-      height: 14px;
-      background: #00FF66;
-      vertical-align: middle;
-      animation: blink 0.9s step-end infinite;
-      margin-left: 2px;
-    }
-
-    @keyframes blink {
-      0%, 100% { opacity: 1; }
-      50%       { opacity: 0; }
+    .plan-steps {
+      flex: 1;
+      overflow-y: auto;
+      padding: 1.5rem;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
     }
 
     .plan-step-card {
       border: var(--border);
-      box-shadow: var(--shadow);
-      padding: 1rem 1.25rem;
-      display: grid;
-      grid-template-columns: 32px auto 1fr;
-      gap: 0.75rem;
-      align-items: start;
-      transition: box-shadow 0.12s, background 0.1s;
-      cursor: pointer;
-      margin-bottom: 0.75rem;
       background: var(--white);
+      box-shadow: var(--shadow);
+      transition: all 0.15s;
+      overflow: hidden;
     }
 
-    .plan-step-card:hover { background: var(--grey); box-shadow: var(--shadow-lg); }
-    .plan-step-card.checked { background: #F0FFF4; }
+    .plan-step-card.approved { border-color: var(--black); box-shadow: 4px 4px 0 var(--black); }
+    .plan-step-card.rejected { opacity: 0.4; }
 
-    .step-checkbox {
-      width: 24px;
-      height: 24px;
-      border: var(--border);
+    .plan-step-top {
+      display: flex;
+      align-items: stretch;
+      border-bottom: var(--border-light);
+    }
+
+    .plan-step-num {
+      font-family: var(--font-display);
+      font-size: 1.8rem;
+      font-weight: 900;
+      width: 64px;
       display: flex;
       align-items: center;
       justify-content: center;
+      border-right: var(--border-light);
+      background: var(--grey);
       flex-shrink: 0;
-      font-size: 0.9rem;
-      background: var(--white);
-      cursor: pointer;
+      -webkit-text-stroke: 1px var(--black);
+      color: transparent;
+      transition: all 0.2s;
     }
 
-    .step-checkbox.checked { background: var(--green); color: var(--white); border-color: var(--green); }
+    .plan-step-card:hover .plan-step-num,
+    .plan-step-card.approved .plan-step-num {
+      color: var(--black);
+      -webkit-text-stroke: 0;
+      background: var(--black);
+      color: var(--white);
+    }
 
-    .step-meta { }
+    .plan-step-info {
+      padding: 0.8rem 1rem;
+      flex: 1;
+    }
 
-    .step-action-desc {
+    .plan-step-name {
+      font-family: var(--font-display);
+      font-size: 1rem;
+      font-weight: 900;
+      margin-bottom: 0.2rem;
+    }
+
+    .plan-step-desc {
       font-size: 0.75rem;
-      color: #555;
-      margin-top: 0.2rem;
+      font-weight: 700;
+      color: #444;
     }
 
-    .step-meta-row {
+    .plan-step-meta {
+      padding: 0.8rem 1rem;
       display: flex;
       align-items: center;
-      gap: 0.5rem;
-      flex-wrap: wrap;
+      justify-content: space-between;
+      gap: 1rem;
     }
 
-    .confidence-bar {
+    .conf-bar-wrap {
       flex: 1;
-      min-width: 60px;
-      height: 6px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-size: 0.7rem;
+      font-weight: 800;
+    }
+
+    .conf-track {
+      flex: 1;
+      height: 4px;
       background: var(--grey-dark);
-      border: 1px solid var(--black);
     }
 
-    .confidence-fill {
+    .conf-fill {
       height: 100%;
-      background: var(--green);
-    }
-
-    /* ============================================================
-       SCREEN 4 — EXECUTION
-    ============================================================ */
-    .exec-layout {
-      display: grid;
-      grid-template-columns: 1fr 280px;
-      gap: 1.5rem;
-      align-items: start;
-    }
-
-    .exec-terminal {
       background: var(--black);
-      color: #FAFAFA;
-      font-family: var(--font-mono);
-      font-size: 0.72rem;
-      border: var(--border);
-      box-shadow: var(--shadow);
-      min-height: 500px;
-      overflow: hidden;
-      position: relative;
     }
 
-    .exec-terminal-body {
-      padding: 1rem 1.25rem;
-      height: 440px;
+    .plan-step-actions {
+      display: flex;
+      gap: 6px;
+    }
+
+    .action-btn {
+      width: 28px; height: 28px;
+      border: var(--border);
+      background: var(--white);
+      font-size: 0.8rem;
+      font-weight: 900;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      transition: all 0.1s;
+    }
+
+    .action-btn.approve:hover { background: var(--black); color: var(--white); }
+    .action-btn.reject:hover { background: #333; color: var(--white); }
+    .action-btn.active-approve { background: var(--black); color: var(--white); }
+    .action-btn.active-reject { background: #888; color: var(--white); }
+
+    .plan-footer {
+      padding: 1.2rem 2rem;
+      border-top: var(--border);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      background: var(--grey);
+    }
+
+    .plan-right {
+      background: var(--black);
+      color: var(--white);
+      display: flex;
+      flex-direction: column;
+    }
+
+    .plan-right-header {
+      padding: 1.2rem 1.5rem;
+      border-bottom: 2px solid #222;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      font-weight: 800;
+      font-size: 0.75rem;
+    }
+
+    .plan-terminal {
+      flex: 1;
+      padding: 1.5rem;
+      font-size: 0.75rem;
+      font-weight: 700;
+      line-height: 1.9;
       overflow-y: auto;
     }
 
-    .exec-line {
-      margin-bottom: 0.35rem;
-      display: flex;
-      align-items: flex-start;
-      gap: 0.75rem;
-      opacity: 0;
-      transform: translateY(4px);
-      animation: lineAppear 0.2s forwards;
-    }
+    .plan-terminal .t-sys { color: #666; }
+    .plan-terminal .t-ok { border-bottom: 2px solid var(--white); display: inline-block; }
+    .plan-terminal .t-warn { background: #333; display: inline-block; padding: 0 0.3rem; }
+    .plan-terminal .t-em { color: #AAA; }
 
-    @keyframes lineAppear {
-      to { opacity: 1; transform: translateY(0); }
-    }
-
-    .exec-time { color: #444; min-width: 60px; flex-shrink: 0; }
-    .exec-step-icon { min-width: 18px; text-align: center; }
-    .exec-text  { flex: 1; }
-    .exec-ok    { color: #00C44F; }
-    .exec-run   { color: #FFD600; }
-    .exec-info  { color: #888; }
-    .exec-err   { color: #FF4444; }
-
-    .spinner {
+    .term-cursor {
       display: inline-block;
-      animation: spin 0.6s linear infinite;
+      width: 6px; height: 1em;
+      background: var(--white);
+      vertical-align: middle;
+      animation: blink 1s step-end infinite;
     }
 
-    @keyframes spin { to { transform: rotate(360deg); } }
+    @keyframes blink { 0%, 49% { opacity: 1; } 50%, 100% { opacity: 0; } }
 
-    .exec-progress-bar-wrap {
-      border: var(--border);
-      height: 24px;
+    .plan-right-meta {
+      padding: 1rem 1.5rem;
+      border-top: 2px solid #222;
+      display: grid;
+      grid-template-columns: 1fr 1fr 1fr;
+      gap: 1rem;
+      font-size: 0.7rem;
+    }
+
+    .meta-item-label { color: #555; display: block; margin-bottom: 2px; }
+    .meta-item-val { font-family: var(--font-display); font-size: 0.9rem; font-weight: 900; }
+
+    /* ============================================================
+       ████  SCREEN 4 — EXECUTION
+    ============================================================ */
+    #screen-execute .execute-body {
+      flex: 1;
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+    }
+
+    .execute-left {
+      background: var(--white);
+      border-right: var(--border);
+      display: flex;
+      flex-direction: column;
+    }
+
+    .execute-header {
+      padding: 1.5rem 2rem;
+      border-bottom: var(--border);
       background: var(--grey);
+    }
+
+    .execute-header h3 {
+      font-family: var(--font-display);
+      font-size: 1rem;
+      font-weight: 900;
+      margin-bottom: 1rem;
+    }
+
+    .exec-progress-track {
+      height: 8px;
+      background: var(--grey-dark);
+      border: var(--border-light);
       overflow: hidden;
-      position: relative;
     }
 
     .exec-progress-fill {
       height: 100%;
-      background: var(--green);
-      transition: width 0.4s ease;
+      background: var(--black);
+      width: 0%;
+      transition: width 0.6s ease;
+    }
+
+    .exec-pct {
+      font-family: var(--font-display);
+      font-size: 1.5rem;
+      font-weight: 900;
+      margin-top: 0.5rem;
+      display: block;
+    }
+
+    .exec-steps {
+      flex: 1;
+      padding: 1.5rem;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      overflow-y: auto;
+    }
+
+    .exec-step {
       display: flex;
       align-items: center;
-      padding-left: 8px;
-    }
-
-    .exec-progress-label {
-      font-size: 0.65rem;
-      font-weight: 700;
-      color: var(--black);
-      white-space: nowrap;
-    }
-
-    .stat-live {
+      gap: 1rem;
+      padding: 0.8rem 1rem;
       border: var(--border);
-      box-shadow: var(--shadow);
-      padding: 1rem 1.25rem;
-      text-align: center;
-      margin-bottom: 1rem;
+      background: var(--white);
+      font-size: 0.8rem;
+      font-weight: 700;
+      transition: all 0.3s;
     }
 
-    .stat-live-num {
-      font-family: var(--font-head);
+    .exec-step.done { background: var(--black); color: var(--white); }
+    .exec-step.running { background: var(--grey); border-left: 4px solid var(--black); }
+    .exec-step.pending { opacity: 0.4; }
+
+    .exec-step-icon {
+      font-family: var(--font-display);
+      font-size: 0.9rem;
       font-weight: 900;
-      font-size: 2.2rem;
-      letter-spacing: -0.04em;
-      line-height: 1;
+      width: 24px;
+      text-align: center;
+      flex-shrink: 0;
     }
+
+    .exec-step-name { flex: 1; }
+
+    .exec-step-time {
+      font-size: 0.7rem;
+      font-weight: 800;
+      color: #888;
+    }
+
+    .exec-step.done .exec-step-time { color: #AAA; }
+
+    .spin {
+      display: inline-block;
+      animation: spin 0.8s linear infinite;
+    }
+    @keyframes spin { to { transform: rotate(360deg); } }
+
+    .execute-right {
+      background: var(--black);
+      color: var(--white);
+      display: flex;
+      flex-direction: column;
+    }
+
+    .exec-log-header {
+      padding: 1rem 1.5rem;
+      border-bottom: 2px solid #222;
+      font-weight: 800;
+      font-size: 0.75rem;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .exec-log-body {
+      flex: 1;
+      padding: 1.5rem;
+      font-size: 0.75rem;
+      font-weight: 700;
+      line-height: 1.9;
+      overflow-y: auto;
+    }
+
+    .log-done { color: #AAA; }
+    .log-action { color: var(--white); font-weight: 800; }
+    .log-result { border-bottom: 1px solid #333; display: inline-block; }
 
     /* ============================================================
-       SCREEN 5 — RESULTS
+       ████  SCREEN 5 — RESULTS
     ============================================================ */
-    .results-top {
+    #screen-results .results-body {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .results-hero {
+      background: var(--black);
+      color: var(--white);
       display: grid;
       grid-template-columns: 1fr 1fr;
-      gap: 1.5rem;
-      margin-bottom: 1.5rem;
+      border-bottom: var(--border);
     }
 
-    .score-panel {
-      border: var(--border);
-      box-shadow: var(--shadow);
-      padding: 1.5rem;
-      text-align: center;
+    .results-col {
+      padding: 2.5rem;
     }
 
-    .score-before { opacity: 0.4; }
+    .results-col:first-child {
+      border-right: 3px solid #222;
+    }
 
-    .score-num {
-      font-family: var(--font-head);
-      font-weight: 900;
+    .results-col-label {
+      font-size: 0.7rem;
+      font-weight: 800;
+      background: #222;
+      display: inline-block;
+      padding: 0.2rem 0.5rem;
+      margin-bottom: 1.2rem;
+    }
+
+    .results-col-label.after-label {
+      background: var(--white);
+      color: var(--black);
+    }
+
+    .results-score {
+      font-family: var(--font-display);
       font-size: 5rem;
-      line-height: 1;
-      letter-spacing: -0.06em;
+      font-weight: 900;
+      line-height: 0.8;
+      display: block;
+      margin-bottom: 1.2rem;
     }
 
-    .score-num.bad   { color: var(--red); }
-    .score-num.good  { color: var(--green); }
+    .results-score.after { color: var(--white); }
 
-    .score-arrow {
-      font-family: var(--font-head);
+    .results-metrics {
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+    }
+
+    .r-metric {
+      display: flex;
+      justify-content: space-between;
+      font-size: 0.8rem;
+      font-weight: 700;
+      padding: 0.4rem 0;
+      border-bottom: 1px solid #222;
+    }
+
+    .r-metric-val { font-weight: 800; }
+    .r-metric-val.improved { color: var(--white); }
+    .r-metric-val.zero {
+      background: var(--white);
+      color: var(--black);
+      padding: 0 0.4rem;
+      font-family: var(--font-display);
+    }
+
+    .improvement-badge {
+      display: inline-block;
+      background: var(--white);
+      color: var(--black);
+      font-family: var(--font-display);
+      font-size: 1.5rem;
       font-weight: 900;
-      font-size: 2rem;
+      padding: 0.4rem 1rem;
+      margin-top: 1rem;
+    }
+
+    .results-middle {
+      display: grid;
+      grid-template-columns: 1fr 1.4fr;
+      border-bottom: var(--border);
+      background: var(--white);
+    }
+
+    .audit-log {
+      border-right: var(--border);
+      padding: 1.5rem;
+    }
+
+    .audit-log h3 {
+      font-family: var(--font-display);
+      font-size: 1rem;
+      font-weight: 900;
+      margin-bottom: 1rem;
+      padding-bottom: 0.5rem;
+      border-bottom: var(--border);
+    }
+
+    .audit-row {
       display: flex;
       align-items: center;
-      justify-content: center;
-      padding: 1rem;
-    }
-
-    .improvement-grid {
-      display: grid;
-      grid-template-columns: repeat(4, 1fr);
       gap: 1rem;
-      margin-bottom: 1.5rem;
+      padding: 0.6rem 0;
+      border-bottom: var(--border-light);
+      font-size: 0.78rem;
+      font-weight: 700;
     }
 
-    .impr-card {
-      border: var(--border);
-      box-shadow: var(--shadow);
-      padding: 1rem;
-      text-align: center;
-      transition: box-shadow 0.12s, transform 0.12s;
-    }
-
-    .impr-card:hover { box-shadow: var(--shadow-lg); transform: translate(-2px, -2px); }
-
-    .impr-num {
-      font-family: var(--font-head);
+    .audit-row-num {
+      font-family: var(--font-display);
+      font-size: 1.1rem;
       font-weight: 900;
-      font-size: 2rem;
-      letter-spacing: -0.04em;
-      color: var(--green);
-      line-height: 1;
+      width: 28px;
+      flex-shrink: 0;
+      -webkit-text-stroke: 1px var(--black);
+      color: transparent;
     }
 
-    .download-row {
+    .audit-action { font-weight: 800; }
+    .audit-result { color: #555; }
+
+    .diff-preview {
+      padding: 1.5rem;
+    }
+
+    .diff-preview h3 {
+      font-family: var(--font-display);
+      font-size: 1rem;
+      font-weight: 900;
+      margin-bottom: 1rem;
+      padding-bottom: 0.5rem;
+      border-bottom: var(--border);
+    }
+
+    .diff-table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 0.78rem;
+    }
+
+    .diff-table th {
+      background: var(--black);
+      color: var(--white);
+      padding: 0.5rem 0.8rem;
+      text-align: left;
+      font-size: 0.7rem;
+      font-weight: 800;
+    }
+
+    .diff-table td {
+      padding: 0.45rem 0.8rem;
+      border-bottom: var(--border-light);
+      font-weight: 700;
+    }
+
+    .diff-before { background: #FDEAEA; text-decoration: line-through; color: #999; }
+    .diff-after { background: var(--black); color: var(--white); font-weight: 800; }
+    .diff-unchanged { color: #666; }
+
+    .results-actions {
+      padding: 1.5rem 2rem;
+      background: var(--grey);
       display: flex;
+      align-items: center;
       gap: 1rem;
-      margin-bottom: 2rem;
     }
 
     .btn-download {
-      flex: 1;
-      justify-content: center;
-      font-size: 0.8rem;
-    }
-
-    .compare-table-wrap {
-      overflow-x: auto;
-    }
-
-    .compare-header {
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 1.5rem;
-      margin-bottom: 0.5rem;
-    }
-
-    .compare-label {
-      font-size: 0.7rem;
-      font-weight: 700;
-      text-transform: uppercase;
-      letter-spacing: 0.08em;
-      padding: 0.4rem 0.75rem;
       display: inline-flex;
       align-items: center;
-      gap: 0.5rem;
+      gap: 8px;
+      padding: 0.8rem 1.5rem;
+      border: var(--border);
+      background: var(--black);
+      color: var(--white);
+      font-family: var(--font-display);
+      font-size: 0.85rem;
+      font-weight: 900;
+      box-shadow: var(--shadow);
+      cursor: pointer;
+      transition: all 0.1s;
     }
 
-    .compare-label.before { background: var(--red); color: var(--white); }
-    .compare-label.after  { background: var(--green); color: var(--black); }
+    .btn-download:hover { background: var(--white); color: var(--black); box-shadow: var(--shadow-lg); transform: translate(-2px, -2px); }
 
     /* ============================================================
-       ANIMATED COUNTER
+       TRANSITIONS
     ============================================================ */
-    .animated-counter { display: inline; }
+    .screen { animation: none; }
+    .screen.entering { animation: screenIn 0.4s cubic-bezier(0.16, 1, 0.3, 1) forwards; }
 
-    /* ============================================================
-       RESPONSIVE TWEAKS
-    ============================================================ */
-    @media (max-width: 900px) {
-      .analysis-layout,
-      .plan-layout,
-      .exec-layout { grid-template-columns: 1fr; }
-      .improvement-grid { grid-template-columns: repeat(2, 1fr); }
-      .results-top { grid-template-columns: 1fr; }
+    @keyframes screenIn {
+      from { opacity: 0; transform: translateY(20px); }
+      to { opacity: 1; transform: none; }
     }
+
+    /* scrollbars */
+    ::-webkit-scrollbar { width: 6px; height: 6px; }
+    ::-webkit-scrollbar-track { background: var(--grey); }
+    ::-webkit-scrollbar-thumb { background: var(--black); }
+
   </style>
 </head>
-
 <body>
 
-  <!-- ============================================================
-       NAVBAR
-  ============================================================ -->
-  <nav class="navbar">
-    <a class="navbar-logo" href="#">DATA<span>PILOT</span></a>
-    <div class="navbar-right">
-      <div class="status-indicator">
-        <div class="status-dot"></div>
-        AI ENGINE ONLINE
-      </div>
-      <div class="navbar-meta">v2.4.1 &nbsp;|&nbsp; GPT-4o</div>
+<!-- ============================================================
+     SCREEN 1 — UPLOAD
+============================================================ -->
+<div id="screen-upload" class="screen active">
+  <nav>
+    <div class="nav-brand" onclick="window.location.href='landing4.html'">DATAPILOT</div>
+    <div class="nav-links">
+      <a href="#" class="nav-link">PIPELINE</a>
+      <a href="#" class="nav-link">FEATURES</a>
+    </div>
+    <div class="nav-step">
+      <span style="font-size:0.65rem;color:#999;font-weight:800;">STEP</span>
+      <span style="font-family:var(--font-display);font-size:1rem;font-weight:900;">01/05</span>
+      <span>UPLOAD_DATASET</span>
+    </div>
+    <div class="nav-status">
+      <div class="status-dot"></div>SYS_ONLINE
     </div>
   </nav>
 
-  <!-- ============================================================
-       STEP BAR
-  ============================================================ -->
-  <div class="stepbar" id="stepbar">
-    <div class="step-item completed" data-screen="1" onclick="switchScreen(1)">
-      <span class="step-num">01</span>
-      <span class="step-label">Upload</span>
-      <span class="step-check">✓</span>
-    </div>
-    <div class="step-item active" data-screen="2" onclick="switchScreen(2)">
-      <span class="step-num">02</span>
-      <span class="step-label">Analyze</span>
-    </div>
-    <div class="step-item" data-screen="3" onclick="switchScreen(3)">
-      <span class="step-num">03</span>
-      <span class="step-label">AI Plan</span>
-    </div>
-    <div class="step-item" data-screen="4" onclick="switchScreen(4)">
-      <span class="step-num">04</span>
-      <span class="step-label">Execute</span>
-    </div>
-    <div class="step-item" data-screen="5" onclick="switchScreen(5)">
-      <span class="step-num">05</span>
-      <span class="step-label">Results</span>
-    </div>
+  <div class="step-bar">
+    <div class="step-item active"><span class="step-num">01</span>UPLOAD</div>
+    <div class="step-item"><span class="step-num">02</span>ANALYZE</div>
+    <div class="step-item"><span class="step-num">03</span>AI PLAN</div>
+    <div class="step-item"><span class="step-num">04</span>EXECUTE</div>
+    <div class="step-item"><span class="step-num">05</span>RESULTS</div>
   </div>
 
-  <!-- ============================================================
-       MAIN CONTAINER
-  ============================================================ -->
-  <div class="main-container">
-
-    <!-- ==========================================
-         SCREEN 1 — UPLOAD
-    ========================================== -->
-    <div class="screen" id="screen-1">
-      <div class="section-title">📂 Data Upload</div>
-
-      <div
-        class="upload-zone mb-15"
-        id="dropzone"
-        onclick="document.getElementById('file-input').click()"
-        ondragover="event.preventDefault(); this.classList.add('drag-over')"
-        ondragleave="this.classList.remove('drag-over')"
-        ondrop="handleDrop(event)"
-      >
-        <svg class="upload-icon" width="64" height="64" viewBox="0 0 64 64" fill="none" stroke="#050505" stroke-width="3" stroke-linecap="round" stroke-linejoin="round">
-          <rect x="8" y="8" width="48" height="48" rx="0"/>
-          <path d="M32 44V24M24 32l8-8 8 8"/>
-          <path d="M20 48h24"/>
-        </svg>
-        <div class="upload-zone-title">DROP CSV HERE</div>
-        <div class="upload-note">Drag & drop your dataset or click to browse</div>
-        <div class="upload-formats">
+  <div class="upload-body">
+    <div class="upload-left">
+      <div class="label" style="margin-bottom:1.2rem;">PROTOCOL_01</div>
+      <h2>DROP YOUR<br><em>MESSY</em><br>DATASET.</h2>
+      <p>DataPilot reads every column, detects every issue, and hands it to the AI planner. You stay in control at every step.</p>
+      <div style="margin-bottom:1.5rem;">
+        <div style="font-size:0.75rem;font-weight:800;margin-bottom:0.8rem;">SUPPORTED FORMATS</div>
+        <div class="format-tags">
           <span class="tag">.CSV</span>
-          <span class="tag">.TSV</span>
           <span class="tag">.XLSX</span>
-          <span class="tag">.PARQUET</span>
           <span class="tag">.JSON</span>
+          <span class="tag">.PARQUET</span>
         </div>
-        <span class="tag tag-grey" style="margin-top:0.5rem">MAX 500MB</span>
-        <input type="file" id="file-input" style="display:none" accept=".csv,.tsv,.xlsx,.parquet,.json" />
+      </div>
+      <div style="display:flex;flex-direction:column;gap:8px;font-size:0.8rem;font-weight:800;">
+        <div>[+] MAX FILE SIZE: 500MB</div>
+        <div>[+] NO DATA STORED SERVER-SIDE</div>
+        <div>[+] PROCESSING IN MEMORY ONLY</div>
+      </div>
+    </div>
+
+    <div class="upload-right">
+      <div class="label">UPLOAD_ZONE</div>
+
+      <div class="drop-zone" id="drop-zone" onclick="simulateUpload()">
+        <span class="drop-icon" id="drop-icon">⬆ DRAG & DROP</span>
+        <h3 id="drop-title">DROP YOUR FILE HERE</h3>
+        <p id="drop-sub">Or click to browse files<br>DataPilot handles the rest automatically.</p>
+        <div style="margin-top:1.5rem;">
+          <button class="btn btn-primary" style="width:100%;justify-content:center;" onclick="simulateUpload();event.stopPropagation()">CHOOSE FILE →</button>
+        </div>
       </div>
 
-      <div style="text-align:center; margin-bottom:1.5rem; display:flex; align-items:center; gap:1rem;">
-        <div style="flex:1; height:2px; background:var(--grey-dark);"></div>
-        <span style="font-size:0.65rem; font-weight:700; text-transform:uppercase; letter-spacing:0.1em; color:var(--grey-dark)">Or</span>
-        <div style="flex:1; height:2px; background:var(--grey-dark);"></div>
+      <div>
+        <div style="font-size:0.7rem;font-weight:800;margin-bottom:0.8rem;color:#555;">RECENT UPLOADS</div>
+        <div class="recent-uploads">
+          <div class="recent-file" onclick="simulateUpload()">📄 CUSTOMER_DATA.CSV</div>
+          <div class="recent-file" onclick="simulateUpload()">📄 SALES_Q1.XLSX</div>
+          <div class="recent-file" onclick="simulateUpload()">📄 USERS_DB.CSV</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ============================================================
+     SCREEN 2 — ANALYSIS
+============================================================ -->
+<div id="screen-analysis" class="screen">
+  <nav>
+    <div class="nav-brand" onclick="window.location.href='landing4.html'">DATAPILOT</div>
+    <div class="nav-links">
+      <a href="#" class="nav-link">CUSTOMER_DATA.CSV</a>
+    </div>
+    <div class="nav-step">
+      <span style="font-size:0.65rem;color:#999;font-weight:800;">STEP</span>
+      <span style="font-family:var(--font-display);font-size:1rem;font-weight:900;">02/05</span>
+      <span>ANALYZING...</span>
+    </div>
+    <div class="nav-status">
+      <div class="status-dot"></div>SYS_ONLINE
+    </div>
+  </nav>
+
+  <div class="step-bar">
+    <div class="step-item done"><span class="step-num">01</span>UPLOAD</div>
+    <div class="step-item active"><span class="step-num">02</span>ANALYZE</div>
+    <div class="step-item"><span class="step-num">03</span>AI PLAN</div>
+    <div class="step-item"><span class="step-num">04</span>EXECUTE</div>
+    <div class="step-item"><span class="step-num">05</span>RESULTS</div>
+  </div>
+
+  <!-- Analysis loading bar -->
+  <div class="analysis-loading">
+    <span id="analysis-status-text">RUNNING DATAPREP ANALYSIS ENGINE...</span>
+    <div class="progress-track">
+      <div class="progress-fill" id="analysis-fill"></div>
+    </div>
+    <span id="analysis-pct">0%</span>
+  </div>
+
+  <div class="analysis-body">
+    <div class="analysis-top">
+      <!-- Info Panel -->
+      <div class="info-panel">
+        <h3>DATASET_INFO</h3>
+        <div class="info-row"><span>FILENAME</span><span class="info-val" style="font-size:0.75rem;font-family:var(--font-mono)">CUSTOMER.CSV</span></div>
+        <div class="info-row"><span>ROWS</span><span class="info-val">1,200</span></div>
+        <div class="info-row"><span>COLUMNS</span><span class="info-val">12</span></div>
+        <div class="info-row"><span>SIZE</span><span class="info-val">48KB</span></div>
+        <div class="info-row"><span>ENCODING</span><span class="info-val" style="font-size:0.8rem;">UTF-8</span></div>
+        <div class="score-block">
+          <span class="score-big" id="score-counter">--</span>
+          <span class="score-label">QUALITY SCORE [BEFORE]</span>
+        </div>
       </div>
 
-      <div style="text-align:center; margin-bottom:2rem;">
-        <button class="btn btn-primary" onclick="document.getElementById('file-input').click()">
-          ↑ &nbsp; Browse Files
-        </button>
-      </div>
-
-      <!-- Recent Files -->
-      <div class="card" style="padding:0; overflow:hidden;">
-        <div class="recent-file-row recent-file-header">
-          <span>Filename</span>
-          <span>Size</span>
-          <span>Rows</span>
-          <span>Last Modified</span>
-          <span>Action</span>
+      <!-- Issue Grid -->
+      <div class="issue-grid">
+        <div class="issue-card">
+          <div class="issue-card-label">MISSING VALUES</div>
+          <span class="issue-num warn" id="ic-nulls">--</span>
+          <span class="issue-desc">ACROSS 3 COLUMNS</span>
         </div>
-        <div class="recent-file-row">
-          <span class="file-name">📄 customer_transactions.csv</span>
-          <span>2.3 MB</span>
-          <span>12,847</span>
-          <span>21 May 2026</span>
-          <button class="btn" style="padding:0.35rem 0.75rem; font-size:0.65rem;" onclick="switchScreen(2)">LOAD →</button>
+        <div class="issue-card">
+          <div class="issue-card-label">DUPLICATES</div>
+          <span class="issue-num warn" id="ic-dupes">--</span>
+          <span class="issue-desc">EXACT ROW MATCHES</span>
         </div>
-        <div class="recent-file-row">
-          <span class="file-name">📄 product_inventory.csv</span>
-          <span>890 KB</span>
-          <span>4,231</span>
-          <span>19 May 2026</span>
-          <button class="btn" style="padding:0.35rem 0.75rem; font-size:0.65rem;">LOAD →</button>
+        <div class="issue-card">
+          <div class="issue-card-label">OUTLIERS</div>
+          <span class="issue-num" id="ic-outliers">--</span>
+          <span class="issue-desc">SALARY COLUMN</span>
         </div>
-        <div class="recent-file-row">
-          <span class="file-name">📄 sales_q1_2026.xlsx</span>
-          <span>1.1 MB</span>
-          <span>7,550</span>
-          <span>15 May 2026</span>
-          <button class="btn" style="padding:0.35rem 0.75rem; font-size:0.65rem;">LOAD →</button>
-        </div>
-        <div class="recent-file-row">
-          <span class="file-name">📄 user_profiles_raw.tsv</span>
-          <span>4.7 MB</span>
-          <span>31,002</span>
-          <span>10 May 2026</span>
-          <button class="btn" style="padding:0.35rem 0.75rem; font-size:0.65rem;">LOAD →</button>
-        </div>
-        <div class="recent-file-row">
-          <span class="file-name">📄 logistics_data_may.csv</span>
-          <span>560 KB</span>
-          <span>2,988</span>
-          <span>08 May 2026</span>
-          <button class="btn" style="padding:0.35rem 0.75rem; font-size:0.65rem;">LOAD →</button>
+        <div class="issue-card">
+          <div class="issue-card-label">TYPE ERRORS</div>
+          <span class="issue-num" id="ic-types">--</span>
+          <span class="issue-desc">ALL TYPES VALID</span>
         </div>
       </div>
     </div>
 
-    <!-- ==========================================
-         SCREEN 2 — ANALYSIS
-    ========================================== -->
-    <div class="screen active" id="screen-2">
+    <!-- Table Preview -->
+    <div class="analysis-table-section">
+      <div class="table-header">
+        <div class="label">DATASET_PREVIEW // FIRST 8 ROWS</div>
+        <span style="font-size:0.7rem;font-weight:800;color:#555;">● = ISSUE DETECTED</span>
+      </div>
+      <div style="overflow-x:auto;">
+        <table class="data-table">
+          <thead>
+            <tr>
+              <th>ID</th><th>NAME</th><th>AGE</th><th>DEPARTMENT</th><th>SALARY</th><th>COUNTRY</th><th>STATUS</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr><td>001</td><td>Alice Johnson</td><td>28</td><td class="cell-issue"><span class="cell-tag"><span class="cell-dot"></span>NaN</span></td><td>54,000</td><td>US</td><td>Active</td></tr>
+            <tr><td>002</td><td>Bob Smith</td><td class="cell-issue"><span class="cell-tag"><span class="cell-dot"></span>NaN</span></td><td>Sales</td><td>61,000</td><td>United States</td><td>Active</td></tr>
+            <tr><td>003</td><td>Carol White</td><td>34</td><td>Engineering</td><td>78,000</td><td>UK</td><td>Active</td></tr>
+            <tr><td>004</td><td>Bob Smith</td><td class="cell-issue"><span class="cell-tag"><span class="cell-dot"></span>NaN</span></td><td>Sales</td><td>61,000</td><td>United States</td><td class="cell-issue"><span class="cell-tag"><span class="cell-dot"></span>DUPE</span></td></tr>
+            <tr><td>005</td><td>David Lee</td><td>41</td><td>Marketing</td><td class="cell-issue"><span class="cell-tag"><span class="cell-dot"></span>999999</span></td><td>Canada</td><td>Inactive</td></tr>
+            <tr><td>006</td><td>Eva Martinez</td><td>29</td><td class="cell-issue"><span class="cell-tag"><span class="cell-dot"></span>NaN</span></td><td>52,000</td><td>CA</td><td>Active</td></tr>
+            <tr><td>007</td><td>Frank Chen</td><td>37</td><td>Engineering</td><td>82,000</td><td>US</td><td>Active</td></tr>
+            <tr><td>008</td><td>Grace Kim</td><td>25</td><td>HR</td><td>47,000</td><td>Korea</td><td>Active</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
 
-      <div style="display:flex; align-items:center; justify-content:space-between; margin-bottom:1.5rem;">
-        <div class="section-title" style="margin-bottom:0; border-bottom:none;">🔬 Dataset Analysis</div>
-        <div style="display:flex; align-items:center; gap:1rem;">
-          <span class="tag tag-grey">customer_transactions.csv</span>
-          <button class="btn btn-primary" onclick="switchScreen(3)">→ &nbsp; GENERATE AI PLAN</button>
+    <div class="analysis-footer">
+      <div style="font-size:0.8rem;font-weight:800;color:#555;">ANALYSIS COMPLETE. ISSUES DETECTED ACROSS 3 COLUMNS.</div>
+      <div style="display:flex;gap:10px;">
+        <button class="btn" onclick="goTo('upload')">← BACK</button>
+        <button class="btn btn-primary" onclick="goTo('plan')">GENERATE AI PLAN →</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ============================================================
+     SCREEN 3 — AI PLAN REVIEW
+============================================================ -->
+<div id="screen-plan" class="screen">
+  <nav>
+    <div class="nav-brand" onclick="window.location.href='landing4.html'">DATAPILOT</div>
+    <div class="nav-links">
+      <a href="#" class="nav-link">CUSTOMER_DATA.CSV</a>
+    </div>
+    <div class="nav-step">
+      <span style="font-size:0.65rem;color:#999;font-weight:800;">STEP</span>
+      <span style="font-family:var(--font-display);font-size:1rem;font-weight:900;">03/05</span>
+      <span>AI_PLAN_READY</span>
+    </div>
+    <div class="nav-status">
+      <div class="status-dot"></div>SYS_ONLINE
+    </div>
+  </nav>
+
+  <div class="step-bar">
+    <div class="step-item done"><span class="step-num">01</span>UPLOAD</div>
+    <div class="step-item done"><span class="step-num">02</span>ANALYZE</div>
+    <div class="step-item active"><span class="step-num">03</span>AI PLAN</div>
+    <div class="step-item"><span class="step-num">04</span>EXECUTE</div>
+    <div class="step-item"><span class="step-num">05</span>RESULTS</div>
+  </div>
+
+  <div class="plan-body">
+    <!-- Left: Cleaning Steps -->
+    <div class="plan-left">
+      <div class="plan-left-header">
+        <h3>CLEANING_PLAN // 5 STEPS</h3>
+        <div style="font-size:0.7rem;font-weight:800;color:#555;">REVIEW &amp; APPROVE EACH STEP</div>
+      </div>
+
+      <div class="plan-steps">
+        <!-- Step 1 -->
+        <div class="plan-step-card" id="pstep-1">
+          <div class="plan-step-top">
+            <div class="plan-step-num">01</div>
+            <div class="plan-step-info">
+              <div class="plan-step-name">DROP_DUPLICATES</div>
+              <div class="plan-step-desc">Remove 847 exact duplicate rows from dataset</div>
+            </div>
+          </div>
+          <div class="plan-step-meta">
+            <div class="conf-bar-wrap">
+              <span>CONF</span>
+              <div class="conf-track"><div class="conf-fill" style="width:99%"></div></div>
+              <span>0.99</span>
+            </div>
+            <div class="plan-step-actions">
+              <button class="action-btn approve" title="Approve" onclick="approveStep(1, true)">✓</button>
+              <button class="action-btn reject" title="Reject" onclick="approveStep(1, false)">✗</button>
+            </div>
+          </div>
+        </div>
+
+        <!-- Step 2 -->
+        <div class="plan-step-card" id="pstep-2">
+          <div class="plan-step-top">
+            <div class="plan-step-num">02</div>
+            <div class="plan-step-info">
+              <div class="plan-step-name">IMPUTE_NULL_AGE</div>
+              <div class="plan-step-desc">Fill 142 null values in `age` column using median strategy. Right skew detected.</div>
+            </div>
+          </div>
+          <div class="plan-step-meta">
+            <div class="conf-bar-wrap">
+              <span>CONF</span>
+              <div class="conf-track"><div class="conf-fill" style="width:87%"></div></div>
+              <span>0.87</span>
+            </div>
+            <div class="plan-step-actions">
+              <button class="action-btn approve" title="Approve" onclick="approveStep(2, true)">✓</button>
+              <button class="action-btn reject" title="Reject" onclick="approveStep(2, false)">✗</button>
+            </div>
+          </div>
+        </div>
+
+        <!-- Step 3 -->
+        <div class="plan-step-card" id="pstep-3">
+          <div class="plan-step-top">
+            <div class="plan-step-num">03</div>
+            <div class="plan-step-info">
+              <div class="plan-step-name">FILL_NULL_DEPT</div>
+              <div class="plan-step-desc">Fill 89 null values in `department` using mode (most frequent value)</div>
+            </div>
+          </div>
+          <div class="plan-step-meta">
+            <div class="conf-bar-wrap">
+              <span>CONF</span>
+              <div class="conf-track"><div class="conf-fill" style="width:82%"></div></div>
+              <span>0.82</span>
+            </div>
+            <div class="plan-step-actions">
+              <button class="action-btn approve" title="Approve" onclick="approveStep(3, true)">✓</button>
+              <button class="action-btn reject" title="Reject" onclick="approveStep(3, false)">✗</button>
+            </div>
+          </div>
+        </div>
+
+        <!-- Step 4 -->
+        <div class="plan-step-card" id="pstep-4">
+          <div class="plan-step-top">
+            <div class="plan-step-num">04</div>
+            <div class="plan-step-info">
+              <div class="plan-step-name">STANDARDIZE_COUNTRY</div>
+              <div class="plan-step-desc">Normalize country field to ISO 3166-1 alpha-2. Found variants: "United States", "US", "CA"</div>
+            </div>
+          </div>
+          <div class="plan-step-meta">
+            <div class="conf-bar-wrap">
+              <span>CONF</span>
+              <div class="conf-track"><div class="conf-fill" style="width:91%"></div></div>
+              <span>0.91</span>
+            </div>
+            <div class="plan-step-actions">
+              <button class="action-btn approve" title="Approve" onclick="approveStep(4, true)">✓</button>
+              <button class="action-btn reject" title="Reject" onclick="approveStep(4, false)">✗</button>
+            </div>
+          </div>
+        </div>
+
+        <!-- Step 5 -->
+        <div class="plan-step-card" id="pstep-5">
+          <div class="plan-step-top">
+            <div class="plan-step-num">05</div>
+            <div class="plan-step-info">
+              <div class="plan-step-name">CAP_SALARY_OUTLIERS</div>
+              <div class="plan-step-desc">Winsorize salary column at 99th percentile. Detected 23 extreme values (max: 999,999)</div>
+            </div>
+          </div>
+          <div class="plan-step-meta">
+            <div class="conf-bar-wrap">
+              <span>CONF</span>
+              <div class="conf-track"><div class="conf-fill" style="width:79%"></div></div>
+              <span>0.79</span>
+            </div>
+            <div class="plan-step-actions">
+              <button class="action-btn approve" title="Approve" onclick="approveStep(5, true)">✓</button>
+              <button class="action-btn reject" title="Reject" onclick="approveStep(5, false)">✗</button>
+            </div>
+          </div>
         </div>
       </div>
 
-      <div class="analysis-layout">
-        <!-- LEFT COLUMN -->
-        <div style="display:flex; flex-direction:column; gap:1rem;">
-
-          <!-- Metadata cards -->
-          <div class="section-title" style="font-size:0.8rem;">Dataset Metadata</div>
-
-          <div class="grid-3" style="gap:0.75rem;">
-            <div class="card" style="padding:1rem; text-align:center;">
-              <div class="label" style="margin-bottom:0.4rem;">Rows</div>
-              <div class="big-num" style="font-size:1.8rem;">12,847</div>
-            </div>
-            <div class="card" style="padding:1rem; text-align:center;">
-              <div class="label" style="margin-bottom:0.4rem;">Columns</div>
-              <div class="big-num" style="font-size:1.8rem;">18</div>
-            </div>
-            <div class="card" style="padding:1rem; text-align:center;">
-              <div class="label" style="margin-bottom:0.4rem;">File Size</div>
-              <div class="big-num" style="font-size:1.8rem;">2.3MB</div>
-            </div>
-          </div>
-
-          <!-- Quality Score -->
-          <div class="card">
-            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:0.75rem;">
-              <div class="label">Data Quality Score</div>
-              <div style="font-family:var(--font-head); font-weight:900; font-size:1.5rem; color:var(--red);">34<span style="font-size:0.9rem; color:var(--grey-dark)">/100</span></div>
-            </div>
-            <div class="quality-bar-wrap">
-              <div class="quality-bar-fill" id="quality-bar" style="width:34%"></div>
-            </div>
-            <div style="display:flex; justify-content:space-between; margin-top:0.4rem;">
-              <span class="label" style="color:var(--red);">POOR</span>
-              <span class="label">NEEDS CLEANING</span>
-              <span class="label" style="color:var(--green);">EXCELLENT</span>
-            </div>
-          </div>
-
-          <!-- Issue Detection -->
-          <div class="section-title" style="font-size:0.8rem;">Issues Detected</div>
-
-          <div class="issue-card" style="border-left: 5px solid var(--red);">
-            <div style="display:flex; justify-content:space-between; align-items:center;">
-              <div>
-                <div class="label" style="margin-bottom:0.25rem;">Missing Values</div>
-                <div class="issue-count" style="color:var(--red);">847</div>
-              </div>
-              <div style="text-align:right;">
-                <div class="tag tag-red">CRITICAL</div>
-                <div class="label" style="margin-top:0.4rem;">6.6% of cells</div>
-              </div>
-            </div>
-          </div>
-
-          <div class="issue-card" style="border-left: 5px solid var(--blue);">
-            <div style="display:flex; justify-content:space-between; align-items:center;">
-              <div>
-                <div class="label" style="margin-bottom:0.25rem;">Duplicates</div>
-                <div class="issue-count" style="color:var(--blue);">234</div>
-              </div>
-              <div style="text-align:right;">
-                <div class="tag tag-blue">HIGH</div>
-                <div class="label" style="margin-top:0.4rem;">1.8% of rows</div>
-              </div>
-            </div>
-          </div>
-
-          <div class="issue-card" style="border-left: 5px solid var(--yellow);">
-            <div style="display:flex; justify-content:space-between; align-items:center;">
-              <div>
-                <div class="label" style="margin-bottom:0.25rem;">Outliers</div>
-                <div class="issue-count" style="color:#B8860B;">12</div>
-              </div>
-              <div style="text-align:right;">
-                <div class="tag tag-yellow">MEDIUM</div>
-                <div class="label" style="margin-top:0.4rem;">3 columns affected</div>
-              </div>
-            </div>
-          </div>
-
-          <div class="issue-card" style="border-left: 5px solid var(--grey-dark);">
-            <div style="display:flex; justify-content:space-between; align-items:center;">
-              <div>
-                <div class="label" style="margin-bottom:0.25rem;">Type Mismatches</div>
-                <div class="issue-count" style="color:#555;">5</div>
-              </div>
-              <div style="text-align:right;">
-                <div class="tag tag-grey">LOW</div>
-                <div class="label" style="margin-top:0.4rem;">2 columns affected</div>
-              </div>
-            </div>
-          </div>
-
-          <!-- Column breakdown -->
-          <div class="card" style="padding:0; overflow:hidden;">
-            <div style="background:var(--black); color:var(--white); padding:0.5rem 0.75rem; font-size:0.65rem; font-weight:700; text-transform:uppercase; letter-spacing:0.08em;">Column Breakdown</div>
-            <div style="padding: 0;">
-              <div style="display:grid; grid-template-columns:1fr 60px 70px; font-size:0.65rem; font-weight:700; text-transform:uppercase; letter-spacing:0.06em; padding:0.5rem 0.75rem; background:var(--grey); border-bottom: 2px solid var(--grey-dark);">
-                <span>Column</span><span>Type</span><span>Missing %</span>
-              </div>
-              <div style="display:grid; grid-template-columns:1fr 60px 70px; font-size:0.7rem; padding:0.4rem 0.75rem; border-bottom:1px solid var(--grey);">
-                <span>customer_id</span><span class="tag tag-grey" style="padding:0.1rem 0.3rem;">INT</span><span style="color:var(--green);">0.0%</span>
-              </div>
-              <div style="display:grid; grid-template-columns:1fr 60px 70px; font-size:0.7rem; padding:0.4rem 0.75rem; border-bottom:1px solid var(--grey); background:var(--grey);">
-                <span>email</span><span class="tag tag-blue" style="padding:0.1rem 0.3rem; color:white; background:var(--blue);">STR</span><span style="color:var(--red); font-weight:700;">14.2%</span>
-              </div>
-              <div style="display:grid; grid-template-columns:1fr 60px 70px; font-size:0.7rem; padding:0.4rem 0.75rem; border-bottom:1px solid var(--grey);">
-                <span>purchase_amt</span><span class="tag tag-grey" style="padding:0.1rem 0.3rem;">FLOAT</span><span style="color:var(--yellow); font-weight:700;">3.1%</span>
-              </div>
-              <div style="display:grid; grid-template-columns:1fr 60px 70px; font-size:0.7rem; padding:0.4rem 0.75rem; border-bottom:1px solid var(--grey); background:var(--grey);">
-                <span>txn_date</span><span class="tag tag-grey" style="padding:0.1rem 0.3rem;">STR*</span><span style="color:var(--red); font-weight:700;">0.8%</span>
-              </div>
-              <div style="display:grid; grid-template-columns:1fr 60px 70px; font-size:0.7rem; padding:0.4rem 0.75rem;">
-                <span style="color:var(--grey-dark);">+13 more…</span><span></span><span></span>
-              </div>
-            </div>
-          </div>
-        </div>
-
-        <!-- RIGHT COLUMN — Data Preview -->
-        <div style="display:flex; flex-direction:column; gap:1rem;">
-          <div class="section-title" style="font-size:0.8rem;">Data Preview <span style="font-size:0.6rem; font-weight:400; color:var(--grey-dark);">(First 5 rows · Issues highlighted)</span></div>
-
-          <div style="position:relative;">
-            <!-- Loading overlay -->
-            <div class="loading-overlay" id="analysis-loader">
-              <div class="loading-text">🔍 Scanning dataset…</div>
-              <div class="loader-bar-wrap">
-                <div class="loader-bar"></div>
-              </div>
-              <div class="label">RUNNING 7 DETECTION ALGORITHMS</div>
-            </div>
-
-            <div style="overflow-x:auto; border: var(--border); box-shadow: var(--shadow);">
-              <table class="data-table">
-                <thead>
-                  <tr>
-                    <th>#</th>
-                    <th>customer_id</th>
-                    <th>email</th>
-                    <th>first_name</th>
-                    <th>last_name</th>
-                    <th>purchase_amt</th>
-                    <th>txn_date</th>
-                    <th>country</th>
-                    <th>status</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  <tr>
-                    <td>1</td>
-                    <td>10042</td>
-                    <td>alice@example.com</td>
-                    <td>Alice</td>
-                    <td>Morgan</td>
-                    <td>$129.99</td>
-                    <td>2026-01-15</td>
-                    <td>USA</td>
-                    <td><span class="tag tag-green">active</span></td>
-                  </tr>
-                  <tr>
-                    <td>2</td>
-                    <td>10043</td>
-                    <td class="cell-missing">NULL</td>
-                    <td>Bob</td>
-                    <td>Chen</td>
-                    <td>$89.50</td>
-                    <td>2026-01-16</td>
-                    <td>CAN</td>
-                    <td><span class="tag tag-green">active</span></td>
-                  </tr>
-                  <tr>
-                    <td>3</td>
-                    <td>10044</td>
-                    <td>carol@biz.io</td>
-                    <td>Carol</td>
-                    <td class="cell-missing">NULL</td>
-                    <td class="cell-outlier">$9,847.00</td>
-                    <td>01/17/26</td>
-                    <td>GBR</td>
-                    <td><span class="tag tag-yellow">pending</span></td>
-                  </tr>
-                  <tr>
-                    <td>4</td>
-                    <td>10042</td>
-                    <td>alice@example.com</td>
-                    <td>Alice</td>
-                    <td>Morgan</td>
-                    <td class="cell-dup">$129.99</td>
-                    <td>2026-01-15</td>
-                    <td>USA</td>
-                    <td class="cell-dup"><span class="tag tag-blue">DUPE</span></td>
-                  </tr>
-                  <tr>
-                    <td>5</td>
-                    <td>10045</td>
-                    <td>dan@co.net</td>
-                    <td>Dan</td>
-                    <td>Fisher</td>
-                    <td class="cell-missing">NULL</td>
-                    <td>2026-01-18</td>
-                    <td class="cell-missing">NULL</td>
-                    <td><span class="tag tag-red">inactive</span></td>
-                  </tr>
-                </tbody>
-              </table>
-            </div>
-          </div>
-
-          <!-- Legend -->
-          <div style="display:flex; gap:1rem; flex-wrap:wrap;">
-            <div style="display:flex; align-items:center; gap:0.4rem; font-size:0.65rem; font-weight:700; text-transform:uppercase; letter-spacing:0.06em;">
-              <div style="width:14px; height:14px; background:#FFE0E0; border:1px solid var(--red);"></div>
-              Missing Value
-            </div>
-            <div style="display:flex; align-items:center; gap:0.4rem; font-size:0.65rem; font-weight:700; text-transform:uppercase; letter-spacing:0.06em;">
-              <div style="width:14px; height:14px; background:#FFF9D0; border:1px solid var(--yellow);"></div>
-              Outlier
-            </div>
-            <div style="display:flex; align-items:center; gap:0.4rem; font-size:0.65rem; font-weight:700; text-transform:uppercase; letter-spacing:0.06em;">
-              <div style="width:14px; height:14px; background:#E0F0FF; border:1px solid var(--blue);"></div>
-              Duplicate
-            </div>
-          </div>
-
-          <!-- Column stats chart -->
-          <div class="card">
-            <div class="section-title" style="font-size:0.75rem; margin-bottom:1rem;">Missing Values by Column</div>
-            <div style="display:flex; flex-direction:column; gap:0.6rem;">
-              <div style="display:grid; grid-template-columns:100px 1fr 45px; align-items:center; gap:0.75rem; font-size:0.7rem;">
-                <span>email</span>
-                <div style="height:14px; background:var(--grey); border:1px solid var(--grey-dark); overflow:hidden;">
-                  <div style="height:100%; width:14.2%; background:var(--red);"></div>
-                </div>
-                <span style="color:var(--red); font-weight:700;">14.2%</span>
-              </div>
-              <div style="display:grid; grid-template-columns:100px 1fr 45px; align-items:center; gap:0.75rem; font-size:0.7rem;">
-                <span>phone</span>
-                <div style="height:14px; background:var(--grey); border:1px solid var(--grey-dark); overflow:hidden;">
-                  <div style="height:100%; width:11.7%; background:var(--red);"></div>
-                </div>
-                <span style="color:var(--red); font-weight:700;">11.7%</span>
-              </div>
-              <div style="display:grid; grid-template-columns:100px 1fr 45px; align-items:center; gap:0.75rem; font-size:0.7rem;">
-                <span>purchase_amt</span>
-                <div style="height:14px; background:var(--grey); border:1px solid var(--grey-dark); overflow:hidden;">
-                  <div style="height:100%; width:3.1%; background:var(--yellow);"></div>
-                </div>
-                <span style="color:#B8860B; font-weight:700;">3.1%</span>
-              </div>
-              <div style="display:grid; grid-template-columns:100px 1fr 45px; align-items:center; gap:0.75rem; font-size:0.7rem;">
-                <span>country</span>
-                <div style="height:14px; background:var(--grey); border:1px solid var(--grey-dark); overflow:hidden;">
-                  <div style="height:100%; width:1.9%; background:var(--yellow);"></div>
-                </div>
-                <span style="color:#B8860B; font-weight:700;">1.9%</span>
-              </div>
-              <div style="display:grid; grid-template-columns:100px 1fr 45px; align-items:center; gap:0.75rem; font-size:0.7rem;">
-                <span>txn_date</span>
-                <div style="height:14px; background:var(--grey); border:1px solid var(--grey-dark); overflow:hidden;">
-                  <div style="height:100%; width:0.8%; background:var(--grey-dark);"></div>
-                </div>
-                <span style="font-weight:700;">0.8%</span>
-              </div>
-            </div>
-          </div>
+      <div class="plan-footer">
+        <button class="btn btn-sm" onclick="goTo('analysis')">← BACK</button>
+        <div style="display:flex;align-items:center;gap:1rem;">
+          <span style="font-size:0.75rem;font-weight:800;color:#555;" id="plan-approval-status">APPROVE STEPS TO CONTINUE</span>
+          <button class="btn btn-primary btn-sm" onclick="goTo('execute')" id="plan-execute-btn">APPROVE ALL &amp; EXECUTE →</button>
         </div>
       </div>
     </div>
 
-    <!-- ==========================================
-         SCREEN 3 — AI PLAN
-    ========================================== -->
-    <div class="screen" id="screen-3">
-      <div style="display:flex; align-items:center; justify-content:space-between; margin-bottom:1.5rem;">
-        <div class="section-title" style="margin-bottom:0; border-bottom:none;">🤖 AI Cleaning Plan</div>
-        <div style="display:flex; align-items:center; gap:1rem;">
-          <span class="tag tag-green">GPT-4O &nbsp;·&nbsp; 99% CONFIDENCE</span>
-          <button class="btn btn-primary" onclick="switchScreen(4); startExecution()">▶ &nbsp; APPROVE & EXECUTE</button>
+    <!-- Right: AI Reasoning Terminal -->
+    <div class="plan-right">
+      <div class="plan-right-header">
+        <span>AI_REASONING_LOG // GEMINI-1.5-PRO</span>
+        <span style="color:#555;">LIVE</span>
+      </div>
+      <div class="plan-terminal" id="plan-terminal">
+        <div class="t-sys">> INITIALIZING LANGCHAIN PLANNER...</div>
+      </div>
+      <div class="plan-right-meta">
+        <div>
+          <span class="meta-item-label">MODEL</span>
+          <span class="meta-item-val">GEMINI-1.5</span>
+        </div>
+        <div>
+          <span class="meta-item-label">TOKENS</span>
+          <span class="meta-item-val" id="token-count">0</span>
+        </div>
+        <div>
+          <span class="meta-item-label">LATENCY</span>
+          <span class="meta-item-val">2.1S</span>
         </div>
       </div>
+    </div>
+  </div>
+</div>
 
-      <div class="plan-layout">
-        <!-- Terminal reasoning -->
-        <div>
-          <div class="section-title" style="font-size:0.8rem; margin-bottom:0.75rem;">AI Reasoning Log</div>
-          <div class="terminal-panel" id="ai-terminal">
-            <div class="terminal-title-bar">
-              <div class="terminal-dot td-red"></div>
-              <div class="terminal-dot td-yellow"></div>
-              <div class="terminal-dot td-green"></div>
-              <span class="terminal-title">datapilot-ai — reasoning.log</span>
-            </div>
-            <div id="term-output">
-              <!-- Lines injected by JS -->
-            </div>
-          </div>
+<!-- ============================================================
+     SCREEN 4 — EXECUTION
+============================================================ -->
+<div id="screen-execute" class="screen">
+  <nav>
+    <div class="nav-brand" onclick="window.location.href='landing4.html'">DATAPILOT</div>
+    <div class="nav-links">
+      <a href="#" class="nav-link">CUSTOMER_DATA.CSV</a>
+    </div>
+    <div class="nav-step">
+      <span style="font-size:0.65rem;color:#999;font-weight:800;">STEP</span>
+      <span style="font-family:var(--font-display);font-size:1rem;font-weight:900;">04/05</span>
+      <span>EXECUTING...</span>
+    </div>
+    <div class="nav-status">
+      <div class="status-dot"></div>SYS_ONLINE
+    </div>
+  </nav>
+
+  <div class="step-bar">
+    <div class="step-item done"><span class="step-num">01</span>UPLOAD</div>
+    <div class="step-item done"><span class="step-num">02</span>ANALYZE</div>
+    <div class="step-item done"><span class="step-num">03</span>AI PLAN</div>
+    <div class="step-item active"><span class="step-num">04</span>EXECUTE</div>
+    <div class="step-item"><span class="step-num">05</span>RESULTS</div>
+  </div>
+
+  <div class="execute-body">
+    <!-- Left: Step Checklist -->
+    <div class="execute-left">
+      <div class="execute-header">
+        <h3>PIPELINE_STATUS</h3>
+        <div class="exec-progress-track">
+          <div class="exec-progress-fill" id="exec-fill"></div>
         </div>
+        <span class="exec-pct" id="exec-pct">0%</span>
+      </div>
 
-        <!-- Plan steps -->
-        <div>
-          <div style="display:flex; align-items:center; justify-content:space-between; margin-bottom:0.75rem;">
-            <div class="section-title" style="font-size:0.8rem; margin-bottom:0;">Cleaning Steps <span style="font-size:0.65rem; font-weight:400; color:var(--grey-dark);">(click to toggle)</span></div>
-            <div style="display:flex; gap:0.5rem;">
-              <button class="btn" style="padding:0.3rem 0.75rem; font-size:0.65rem;" onclick="toggleAllSteps(true)">SELECT ALL</button>
-              <button class="btn" style="padding:0.3rem 0.75rem; font-size:0.65rem;" onclick="toggleAllSteps(false)">CLEAR</button>
-            </div>
-          </div>
-
-          <div id="plan-steps">
-            <!-- Steps injected by JS -->
-          </div>
-
-          <div style="display:flex; gap:1rem; margin-top:1rem;">
-            <div class="card" style="flex:1; text-align:center; padding:0.75rem;">
-              <div class="label">Est. Time</div>
-              <div style="font-family:var(--font-head); font-weight:900; font-size:1.3rem;">~12s</div>
-            </div>
-            <div class="card" style="flex:1; text-align:center; padding:0.75rem;">
-              <div class="label">Steps Selected</div>
-              <div style="font-family:var(--font-head); font-weight:900; font-size:1.3rem;" id="selected-count">7/7</div>
-            </div>
-            <div class="card" style="flex:1; text-align:center; padding:0.75rem;">
-              <div class="label">Expected Score</div>
-              <div style="font-family:var(--font-head); font-weight:900; font-size:1.3rem; color:var(--green);">97</div>
-            </div>
-          </div>
-
-          <div style="margin-top:1rem; display:flex; gap:1rem;">
-            <button class="btn btn-primary" style="flex:1; justify-content:center; font-size:0.85rem; padding:1rem;" onclick="switchScreen(4); startExecution()">
-              ▶ &nbsp; APPROVE PLAN &amp; EXECUTE
-            </button>
-            <button class="btn" onclick="switchScreen(2)">← BACK</button>
-          </div>
+      <div class="exec-steps">
+        <div class="exec-step pending" id="estep-1">
+          <span class="exec-step-icon" id="estep-icon-1">[ ]</span>
+          <span class="exec-step-name">DROP_DUPLICATES</span>
+          <span class="exec-step-time" id="estep-time-1">—</span>
+        </div>
+        <div class="exec-step pending" id="estep-2">
+          <span class="exec-step-icon" id="estep-icon-2">[ ]</span>
+          <span class="exec-step-name">IMPUTE_NULL_AGE</span>
+          <span class="exec-step-time" id="estep-time-2">—</span>
+        </div>
+        <div class="exec-step pending" id="estep-3">
+          <span class="exec-step-icon" id="estep-icon-3">[ ]</span>
+          <span class="exec-step-name">FILL_NULL_DEPT</span>
+          <span class="exec-step-time" id="estep-time-3">—</span>
+        </div>
+        <div class="exec-step pending" id="estep-4">
+          <span class="exec-step-icon" id="estep-icon-4">[ ]</span>
+          <span class="exec-step-name">STANDARDIZE_COUNTRY</span>
+          <span class="exec-step-time" id="estep-time-4">—</span>
+        </div>
+        <div class="exec-step pending" id="estep-5">
+          <span class="exec-step-icon" id="estep-icon-5">[ ]</span>
+          <span class="exec-step-name">CAP_SALARY_OUTLIERS</span>
+          <span class="exec-step-time" id="estep-time-5">—</span>
+        </div>
+        <div class="exec-step pending" id="estep-6">
+          <span class="exec-step-icon" id="estep-icon-6">[ ]</span>
+          <span class="exec-step-name">VALIDATE_INTEGRITY</span>
+          <span class="exec-step-time" id="estep-time-6">—</span>
+        </div>
+        <div class="exec-step pending" id="estep-7">
+          <span class="exec-step-icon" id="estep-icon-7">[ ]</span>
+          <span class="exec-step-name">GENERATE_REPORT</span>
+          <span class="exec-step-time" id="estep-time-7">—</span>
         </div>
       </div>
     </div>
 
-    <!-- ==========================================
-         SCREEN 4 — EXECUTION
-    ========================================== -->
-    <div class="screen" id="screen-4">
-      <div style="display:flex; align-items:center; justify-content:space-between; margin-bottom:1.5rem;">
-        <div class="section-title" style="margin-bottom:0; border-bottom:none;">⚙️ Live Execution</div>
-        <div style="display:flex; align-items:center; gap:1rem;">
-          <span class="tag tag-green" id="exec-status-tag">RUNNING</span>
+    <!-- Right: Live Log -->
+    <div class="execute-right">
+      <div class="exec-log-header">
+        <div class="status-dot"></div>
+        <span>EXECUTION_LOG // LIVE</span>
+      </div>
+      <div class="exec-log-body" id="exec-log">
+        <div class="log-done">> EXECUTION ENGINE INITIALIZED</div>
+        <div class="log-done">> LOADING APPROVED PLAN: 5 STEPS</div>
+        <div class="log-done">> LOADING DATASET: 1200 × 12...</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ============================================================
+     SCREEN 5 — RESULTS
+============================================================ -->
+<div id="screen-results" class="screen">
+  <nav>
+    <div class="nav-brand" onclick="window.location.href='landing4.html'">DATAPILOT</div>
+    <div class="nav-links">
+      <a href="#" class="nav-link">CUSTOMER_DATA.CSV</a>
+      <a href="#" class="nav-link" style="background:var(--black);color:var(--white);">✓ CLEANING_COMPLETE</a>
+    </div>
+    <div class="nav-step">
+      <span style="font-size:0.65rem;color:#999;font-weight:800;">STEP</span>
+      <span style="font-family:var(--font-display);font-size:1rem;font-weight:900;">05/05</span>
+      <span>RESULTS</span>
+    </div>
+    <div class="nav-status">
+      <div class="status-dot"></div>SYS_ONLINE
+    </div>
+  </nav>
+
+  <div class="step-bar">
+    <div class="step-item done"><span class="step-num">01</span>UPLOAD</div>
+    <div class="step-item done"><span class="step-num">02</span>ANALYZE</div>
+    <div class="step-item done"><span class="step-num">03</span>AI PLAN</div>
+    <div class="step-item done"><span class="step-num">04</span>EXECUTE</div>
+    <div class="step-item active"><span class="step-num">05</span>RESULTS</div>
+  </div>
+
+  <div class="results-body">
+    <!-- Before / After Hero -->
+    <div class="results-hero">
+      <div class="results-col">
+        <span class="results-col-label">BEFORE CLEANING</span>
+        <span class="results-score">34</span>
+        <div class="results-metrics">
+          <div class="r-metric"><span>QUALITY SCORE</span><span class="r-metric-val">34 / 100</span></div>
+          <div class="r-metric"><span>MISSING VALUES</span><span class="r-metric-val">231</span></div>
+          <div class="r-metric"><span>DUPLICATES</span><span class="r-metric-val">847</span></div>
+          <div class="r-metric"><span>OUTLIERS</span><span class="r-metric-val">23</span></div>
+          <div class="r-metric"><span>TOTAL ROWS</span><span class="r-metric-val">1,200</span></div>
         </div>
       </div>
-
-      <div class="exec-layout">
-        <!-- Left: Terminal log -->
-        <div>
-          <div class="exec-terminal">
-            <div style="background:#111; padding:0.6rem 1rem; display:flex; align-items:center; gap:0.5rem; border-bottom:2px solid var(--black);">
-              <div class="terminal-dot td-red"></div>
-              <div class="terminal-dot td-yellow"></div>
-              <div class="terminal-dot td-green"></div>
-              <span style="font-size:0.65rem; font-weight:700; color:#555; text-transform:uppercase; letter-spacing:0.08em; margin-left:auto;">datapilot — execution.log</span>
-            </div>
-            <div class="exec-terminal-body" id="exec-log">
-              <!-- Lines injected by JS -->
-            </div>
-          </div>
-
-          <!-- Progress bar -->
-          <div style="margin-top:1rem;">
-            <div style="display:flex; justify-content:space-between; margin-bottom:0.4rem;">
-              <span class="label">Execution Progress</span>
-              <span class="label" id="exec-step-label">0 / 7 STEPS</span>
-            </div>
-            <div class="exec-progress-bar-wrap">
-              <div class="exec-progress-fill" id="exec-progress" style="width:0%">
-                <span class="exec-progress-label" id="exec-pct">0%</span>
-              </div>
-            </div>
-          </div>
+      <div class="results-col">
+        <span class="results-col-label after-label">AFTER CLEANING</span>
+        <span class="results-score after" id="result-score-anim">94</span>
+        <div class="results-metrics">
+          <div class="r-metric"><span>QUALITY SCORE</span><span class="r-metric-val improved">94 / 100</span></div>
+          <div class="r-metric"><span>MISSING VALUES</span><span class="r-metric-val zero">0</span></div>
+          <div class="r-metric"><span>DUPLICATES</span><span class="r-metric-val zero">0</span></div>
+          <div class="r-metric"><span>OUTLIERS</span><span class="r-metric-val improved">4</span></div>
+          <div class="r-metric"><span>TOTAL ROWS</span><span class="r-metric-val improved">353</span></div>
         </div>
-
-        <!-- Right: Live stats -->
-        <div>
-          <div class="section-title" style="font-size:0.8rem; margin-bottom:0.75rem;">Live Stats</div>
-
-          <div class="stat-live">
-            <div class="label" style="margin-bottom:0.4rem;">Rows Processed</div>
-            <div class="stat-live-num" id="stat-rows">0</div>
-          </div>
-
-          <div class="stat-live">
-            <div class="label" style="margin-bottom:0.4rem;">Rows Cleaned</div>
-            <div class="stat-live-num" id="stat-cleaned" style="color:var(--green);">0</div>
-          </div>
-
-          <div class="stat-live">
-            <div class="label" style="margin-bottom:0.4rem;">Duplicates Removed</div>
-            <div class="stat-live-num" id="stat-dupes" style="color:var(--blue);">0</div>
-          </div>
-
-          <div class="stat-live">
-            <div class="label" style="margin-bottom:0.4rem;">Missing Filled</div>
-            <div class="stat-live-num" id="stat-missing" style="color:var(--yellow);">0</div>
-          </div>
-
-          <div class="stat-live">
-            <div class="label" style="margin-bottom:0.4rem;">Time Elapsed</div>
-            <div class="stat-live-num" id="stat-time" style="font-size:1.4rem;">00:00</div>
-          </div>
-
-          <div style="margin-top:1rem;">
-            <div class="label" style="margin-bottom:0.5rem;">Steps Complete</div>
-            <div id="exec-step-indicators" style="display:flex; flex-direction:column; gap:0.4rem;">
-              <!-- Injected by JS -->
-            </div>
-          </div>
-        </div>
+        <div class="improvement-badge">▲ +177% IMPROVEMENT</div>
       </div>
     </div>
 
-    <!-- ==========================================
-         SCREEN 5 — RESULTS
-    ========================================== -->
-    <div class="screen" id="screen-5">
-      <div style="display:flex; align-items:center; justify-content:space-between; margin-bottom:1.5rem;">
-        <div class="section-title" style="margin-bottom:0; border-bottom:none;">✅ Results</div>
-        <span class="tag tag-green" style="font-size:0.75rem; padding:0.4rem 1rem;">CLEANING COMPLETE</span>
-      </div>
-
-      <!-- Score comparison -->
-      <div style="display:flex; align-items:stretch; gap:0; border:var(--border); box-shadow:var(--shadow); margin-bottom:1.5rem; overflow:hidden;">
-        <div class="score-panel score-before" style="flex:1; border:none; box-shadow:none; border-right:var(--border);">
-          <div class="label" style="margin-bottom:0.75rem;">QUALITY SCORE — BEFORE</div>
-          <div class="score-num bad">34</div>
-          <div style="margin-top:0.75rem;">
-            <div class="quality-bar-wrap">
-              <div style="height:100%; width:34%; background:var(--red);"></div>
-            </div>
-          </div>
-          <div class="label" style="margin-top:0.5rem; color:var(--red);">POOR — NEEDS ATTENTION</div>
+    <!-- Audit + Diff -->
+    <div class="results-middle">
+      <div class="audit-log">
+        <h3>AUDIT_LOG // ACTIONS TAKEN</h3>
+        <div class="audit-row">
+          <span class="audit-row-num">01</span>
+          <div><div class="audit-action">DROP_DUPLICATES</div><div class="audit-result">847 ROWS REMOVED</div></div>
         </div>
-
-        <div class="score-arrow" style="width:80px; flex-shrink:0; background:var(--black); color:var(--yellow); font-size:2.5rem;">→</div>
-
-        <div class="score-panel" style="flex:1; border:none; box-shadow:none; border-left:var(--border); background:#F0FFF4;">
-          <div class="label" style="margin-bottom:0.75rem; color:var(--green);">QUALITY SCORE — AFTER</div>
-          <div class="score-num good" id="final-score">97</div>
-          <div style="margin-top:0.75rem;">
-            <div class="quality-bar-wrap">
-              <div style="height:100%; width:97%; background:var(--green);"></div>
-            </div>
-          </div>
-          <div class="label" style="margin-top:0.5rem; color:var(--green);">EXCELLENT — PRODUCTION READY</div>
+        <div class="audit-row">
+          <span class="audit-row-num">02</span>
+          <div><div class="audit-action">IMPUTE_NULL_AGE</div><div class="audit-result">142 VALUES FILLED (MEDIAN: 34.2)</div></div>
+        </div>
+        <div class="audit-row">
+          <span class="audit-row-num">03</span>
+          <div><div class="audit-action">FILL_NULL_DEPT</div><div class="audit-result">89 VALUES FILLED (MODE: SALES)</div></div>
+        </div>
+        <div class="audit-row">
+          <span class="audit-row-num">04</span>
+          <div><div class="audit-action">STANDARDIZE_COUNTRY</div><div class="audit-result">NORMALIZED TO ISO 3166-1</div></div>
+        </div>
+        <div class="audit-row">
+          <span class="audit-row-num">05</span>
+          <div><div class="audit-action">CAP_SALARY_OUTLIERS</div><div class="audit-result">23 VALUES CAPPED AT P99</div></div>
+        </div>
+        <div class="audit-row">
+          <span class="audit-row-num">06</span>
+          <div><div class="audit-action">VALIDATION_PASSED</div><div class="audit-result">INTEGRITY: ✓ TYPES: ✓ NULLS: ✓</div></div>
         </div>
       </div>
 
-      <!-- Improvement cards -->
-      <div class="improvement-grid">
-        <div class="impr-card" style="border-left:5px solid var(--blue);">
-          <div class="label" style="margin-bottom:0.4rem;">Duplicates Removed</div>
-          <div class="impr-num">234</div>
-          <div class="label" style="margin-top:0.4rem;">rows eliminated</div>
-        </div>
-        <div class="impr-card" style="border-left:5px solid var(--green);">
-          <div class="label" style="margin-bottom:0.4rem;">Missing Values Filled</div>
-          <div class="impr-num">847</div>
-          <div class="label" style="margin-top:0.4rem;">cells imputed</div>
-        </div>
-        <div class="impr-card" style="border-left:5px solid var(--yellow);">
-          <div class="label" style="margin-bottom:0.4rem;">Outliers Handled</div>
-          <div class="impr-num">12</div>
-          <div class="label" style="margin-top:0.4rem;">values capped</div>
-        </div>
-        <div class="impr-card" style="border-left:5px solid var(--grey-dark);">
-          <div class="label" style="margin-bottom:0.4rem;">Type Fixes</div>
-          <div class="impr-num">5</div>
-          <div class="label" style="margin-top:0.4rem;">columns retyped</div>
-        </div>
-        <div class="impr-card" style="border-left:5px solid var(--green);">
-          <div class="label" style="margin-bottom:0.4rem;">Final Row Count</div>
-          <div class="impr-num">12,613</div>
-          <div class="label" style="margin-top:0.4rem;">clean rows</div>
-        </div>
-        <div class="impr-card" style="border-left:5px solid var(--black);">
-          <div class="label" style="margin-bottom:0.4rem;">Columns Retained</div>
-          <div class="impr-num">18</div>
-          <div class="label" style="margin-top:0.4rem;">all columns kept</div>
-        </div>
-        <div class="impr-card" style="border-left:5px solid var(--black);">
-          <div class="label" style="margin-bottom:0.4rem;">Processing Time</div>
-          <div class="impr-num" style="font-size:1.5rem; color:var(--black);">11.4s</div>
-          <div class="label" style="margin-top:0.4rem;">total runtime</div>
-        </div>
-        <div class="impr-card" style="border-left:5px solid var(--green); background:#F0FFF4;">
-          <div class="label" style="margin-bottom:0.4rem;">Score Gain</div>
-          <div class="impr-num" style="font-size:2.5rem;">+63</div>
-          <div class="label" style="margin-top:0.4rem; color:var(--green);">pts improvement</div>
-        </div>
-      </div>
-
-      <!-- Download buttons -->
-      <div class="download-row">
-        <a class="btn btn-primary btn-download" href="#" onclick="alert('Downloading clean CSV…')">
-          ↓ &nbsp; DOWNLOAD CLEAN CSV
-        </a>
-        <a class="btn btn-download" href="#" onclick="alert('Downloading report…')" style="background:var(--grey);">
-          ↓ &nbsp; DOWNLOAD REPORT (PDF)
-        </a>
-        <a class="btn btn-download" href="#" onclick="alert('Copying shareable link…')" style="background:var(--grey);">
-          ⎘ &nbsp; SHARE LINK
-        </a>
-      </div>
-
-      <!-- Before / After table comparison -->
-      <div class="section-title" style="font-size:0.8rem; margin-bottom:1rem;">Before / After Data Comparison</div>
-
-      <div class="compare-header">
-        <div><span class="compare-label before">● BEFORE — RAW DATA</span></div>
-        <div><span class="compare-label after">● AFTER — CLEANED DATA</span></div>
-      </div>
-
-      <div style="display:grid; grid-template-columns:1fr 1fr; gap:1.5rem;">
-        <div style="overflow-x:auto; border:var(--border); box-shadow:var(--shadow);">
-          <table class="data-table">
+      <div class="diff-preview">
+        <h3>DATASET_DIFF // CELL-LEVEL CHANGES</h3>
+        <div style="overflow-x:auto;">
+          <table class="diff-table">
             <thead>
-              <tr>
-                <th>customer_id</th><th>email</th><th>purchase_amt</th><th>country</th>
-              </tr>
+              <tr><th>ID</th><th>AGE</th><th>DEPARTMENT</th><th>COUNTRY</th><th>STATUS</th></tr>
             </thead>
             <tbody>
-              <tr><td>10042</td><td>alice@example.com</td><td>$129.99</td><td>USA</td></tr>
-              <tr><td>10043</td><td class="cell-missing">NULL</td><td>$89.50</td><td>CAN</td></tr>
-              <tr><td>10044</td><td>carol@biz.io</td><td class="cell-outlier">$9,847.00</td><td>GBR</td></tr>
-              <tr><td>10042</td><td class="cell-dup">alice@example.com</td><td class="cell-dup">$129.99</td><td class="cell-dup">USA</td></tr>
-              <tr><td>10045</td><td>dan@co.net</td><td class="cell-missing">NULL</td><td class="cell-missing">NULL</td></tr>
-            </tbody>
-          </table>
-        </div>
-        <div style="overflow-x:auto; border:3px solid var(--green); box-shadow:var(--shadow);">
-          <table class="data-table">
-            <thead>
               <tr>
-                <th style="background:var(--green); color:var(--black);">customer_id</th>
-                <th style="background:var(--green); color:var(--black);">email</th>
-                <th style="background:var(--green); color:var(--black);">purchase_amt</th>
-                <th style="background:var(--green); color:var(--black);">country</th>
+                <td>001</td>
+                <td class="diff-unchanged">28</td>
+                <td class="diff-before">NaN</td>
+                <td class="diff-unchanged">US</td>
+                <td class="diff-unchanged">ACTIVE</td>
               </tr>
-            </thead>
-            <tbody>
-              <tr><td>10042</td><td>alice@example.com</td><td>$129.99</td><td>USA</td></tr>
-              <tr><td>10043</td><td style="background:#F0FFF4; color:var(--green); font-weight:700;">bob.chen@inferred.ai</td><td>$89.50</td><td>CAN</td></tr>
-              <tr><td>10044</td><td>carol@biz.io</td><td style="background:#F0FFF4; color:var(--green); font-weight:700;">$487.22</td><td>GBR</td></tr>
-              <tr><td>10045</td><td>dan@co.net</td><td style="background:#F0FFF4; color:var(--green); font-weight:700;">$104.33</td><td style="background:#F0FFF4; color:var(--green); font-weight:700;">USA</td></tr>
+              <tr>
+                <td>001</td>
+                <td class="diff-unchanged">28</td>
+                <td class="diff-after">SALES</td>
+                <td class="diff-unchanged">US</td>
+                <td class="diff-unchanged">ACTIVE</td>
+              </tr>
+              <tr>
+                <td style="color:#555;font-style:italic;" colspan="5">———  [↑ ROW 001: DEPT IMPUTED]  ———</td>
+              </tr>
+              <tr>
+                <td>002</td>
+                <td class="diff-before">NaN</td>
+                <td class="diff-before">NaN</td>
+                <td class="diff-before">United States</td>
+                <td class="diff-unchanged">ACTIVE</td>
+              </tr>
+              <tr>
+                <td>002</td>
+                <td class="diff-after">34.2</td>
+                <td class="diff-after">SALES</td>
+                <td class="diff-after">US</td>
+                <td class="diff-unchanged">ACTIVE</td>
+              </tr>
+              <tr>
+                <td style="color:#555;font-style:italic;" colspan="5">———  [↑ ROW 002: AGE + DEPT + COUNTRY FIXED]  ———</td>
+              </tr>
             </tbody>
           </table>
         </div>
       </div>
-
-      <div style="margin-top:1.5rem; text-align:center;">
-        <button class="btn" onclick="switchScreen(1); resetAll()" style="margin-right:1rem;">↺ &nbsp; CLEAN ANOTHER FILE</button>
-        <button class="btn btn-primary" onclick="alert('Opening pipeline view…')">⊞ &nbsp; VIEW FULL PIPELINE REPORT</button>
-      </div>
     </div>
 
-  </div> <!-- /main-container -->
+    <!-- Actions / Downloads -->
+    <div class="results-actions">
+      <button class="btn-download">⬇ CLEANED_DATASET.CSV</button>
+      <button class="btn-download">⬇ PROFILING_REPORT.HTML</button>
+      <button class="btn-download">⬇ AUDIT_LOG.JSON</button>
+      <div style="flex:1;"></div>
+      <button class="btn btn-sm" onclick="goTo('upload')">← UPLOAD ANOTHER DATASET</button>
+    </div>
+  </div>
+</div>
 
 
-  <!-- ============================================================
-       JAVASCRIPT
-  ============================================================ -->
-  <script>
+<!-- ============================================================
+     JAVASCRIPT — ROUTING + ANIMATIONS
+============================================================ -->
+<script>
+  /* ── ROUTING ──────────────────────────────────────────────── */
+  const screens = {
+    upload:   document.getElementById('screen-upload'),
+    analysis: document.getElementById('screen-analysis'),
+    plan:     document.getElementById('screen-plan'),
+    execute:  document.getElementById('screen-execute'),
+    results:  document.getElementById('screen-results'),
+  };
 
-    /* ==========================================
-       TAB SWITCHING
-    ========================================== */
-    let currentScreen = 2;
-    const completedScreens = new Set([1]);
+  let current = 'upload';
 
-    function switchScreen(n) {
-      // Hide all screens
-      document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
-      // Show target
-      document.getElementById('screen-' + n).classList.add('active');
+  function goTo(name) {
+    if (!screens[name]) return;
+    screens[current].classList.remove('active', 'entering');
+    current = name;
+    const target = screens[name];
+    target.classList.add('active', 'entering');
+    setTimeout(() => target.classList.remove('entering'), 500);
+    window.scrollTo(0, 0);
 
-      // Update step bar
-      document.querySelectorAll('.step-item').forEach(item => {
-        item.classList.remove('active');
-        const num = parseInt(item.dataset.screen);
-        const check = item.querySelector('.step-check');
+    // Trigger per-screen logic
+    if (name === 'analysis') startAnalysis();
+    if (name === 'plan')     startPlanTerminal();
+    if (name === 'execute')  startExecution();
+  }
 
-        if (num === n) {
-          item.classList.add('active');
-        }
-        if (completedScreens.has(num) && num !== n) {
-          item.classList.add('completed');
-          if (!check) {
-            const s = document.createElement('span');
-            s.className = 'step-check';
-            s.textContent = '✓';
-            item.appendChild(s);
-          }
-        }
-      });
+  /* ── SCREEN 1: UPLOAD SIMULATION ─────────────────────────── */
+  function simulateUpload() {
+    const zone   = document.getElementById('drop-zone');
+    const icon   = document.getElementById('drop-icon');
+    const title  = document.getElementById('drop-title');
+    const sub    = document.getElementById('drop-sub');
 
-      currentScreen = n;
+    zone.classList.add('dropped');
+    icon.textContent = '✓ FILE LOADED';
+    title.textContent = 'CUSTOMER_DATA.CSV';
+    sub.textContent = '1,200 ROWS · 12 COLUMNS · 48KB';
 
-      // Screen-specific init
-      if (n === 2) initAnalysis();
-      if (n === 3) initAIPlan();
-    }
+    setTimeout(() => goTo('analysis'), 900);
+  }
 
-    /* ==========================================
-       SCREEN 2 — ANALYSIS LOADING ANIMATION
-    ========================================== */
-    function initAnalysis() {
-      const loader = document.getElementById('analysis-loader');
-      if (!loader) return;
-      loader.classList.remove('hidden');
+  /* ── SCREEN 2: ANALYSIS ANIMATION ────────────────────────── */
+  function startAnalysis() {
+    const fill   = document.getElementById('analysis-fill');
+    const pct    = document.getElementById('analysis-pct');
+    const status = document.getElementById('analysis-status-text');
+    const score  = document.getElementById('score-counter');
+
+    // Reset
+    fill.style.width = '0%';
+    pct.textContent = '0%';
+    score.textContent = '--';
+    document.getElementById('ic-nulls').textContent = '--';
+    document.getElementById('ic-dupes').textContent = '--';
+    document.getElementById('ic-outliers').textContent = '--';
+    document.getElementById('ic-types').textContent = '--';
+
+    const stages = [
+      { p: 15, t: 400,  label: 'READING CSV STRUCTURE...' },
+      { p: 30, t: 800,  label: 'COUNTING ROWS & COLUMNS...' },
+      { p: 50, t: 1200, label: 'DETECTING NULL VALUES...',   nulls: '231' },
+      { p: 68, t: 1600, label: 'SCANNING FOR DUPLICATES...', dupes: '847' },
+      { p: 80, t: 2000, label: 'RUNNING OUTLIER DETECTION...', outliers: '23' },
+      { p: 92, t: 2400, label: 'VALIDATING DATA TYPES...',   types: '0' },
+      { p: 100, t: 2900, label: 'ANALYSIS COMPLETE.', score: '34' },
+    ];
+
+    stages.forEach(({ p, t, label, nulls, dupes, outliers, types, score: sc }) => {
       setTimeout(() => {
-        loader.classList.add('hidden');
-      }, 1900);
-    }
-
-    /* ==========================================
-       SCREEN 3 — AI TERMINAL + PLAN STEPS
-    ========================================== */
-    const planStepsData = [
-      { num:'01', tool:'PYJANITOR', method:'remove_duplicates()',   desc:'Remove 234 duplicate rows using exact match across all columns',     conf:99 },
-      { num:'02', tool:'PANDAS',    method:'fillna(method="knn")',   desc:'Impute 847 missing values using KNN imputation (k=5)',               conf:94 },
-      { num:'03', tool:'PYJANITOR', method:'convert_dtypes()',       desc:'Fix 5 type mismatches — cast txn_date to datetime64, zip to str',   conf:98 },
-      { num:'04', tool:'PANDAS',    method:'clip(upper=IQR×1.5)',    desc:'Cap 12 outliers in purchase_amt using IQR method × 1.5 fence',       conf:87 },
-      { num:'05', tool:'PYJANITOR', method:'clean_names()',          desc:'Standardize all column names to snake_case, strip whitespace',      conf:99 },
-      { num:'06', tool:'PANDAS',    method:'str.strip().lower()',    desc:'Normalize email addresses — lowercase, remove leading/trailing spaces', conf:96 },
-      { num:'07', tool:'PYJANITOR', method:'encode_categorical()',   desc:'Encode "status" column to binary int (active=1, inactive=0)',        conf:91 },
-    ];
-
-    const terminalLines = [
-      { cls:'term-prompt', text:'$ datapilot analyze --file customer_transactions.csv' },
-      { cls:'term-info',   text:'[00:00.01]  Loading dataset → 12,847 rows × 18 cols' },
-      { cls:'term-info',   text:'[00:00.14]  Running profiler…' },
-      { cls:'term-success',text:'[00:00.31]  ✓ Profiling complete — 847 missing, 234 dupes, 12 outliers' },
-      { cls:'term-ai',     text:'[00:00.35]  GPT-4o reasoning…' },
-      { cls:'term-ai',     text:'[00:00.38]  → "I see 14.2% missing rate on email column."' },
-      { cls:'term-ai',     text:'[00:00.41]  → "KNN imputation optimal — correlated with country field."' },
-      { cls:'term-ai',     text:'[00:00.45]  → "234 duplicates — exact row matches, safe to drop."' },
-      { cls:'term-ai',     text:'[00:00.49]  → "IQR fence capping preferred over removal for outliers."' },
-      { cls:'term-ai',     text:'[00:00.53]  → "txn_date mixed format (YYYY-MM-DD vs MM/DD/YY) — cast."' },
-      { cls:'term-warn',   text:'[00:00.57]  ⚠  zip_code inferred as INT — should be STR, flagged.' },
-      { cls:'term-success',text:'[00:00.61]  ✓ Plan generated — 7 steps, est. 12s runtime' },
-      { cls:'term-ai',     text:'[00:00.63]  → Expected quality score: 34 → 97 (+63 pts)' },
-      { cls:'term-info',   text:'[00:00.65]  Awaiting user approval…' },
-    ];
-
-    let planInited = false;
-    function initAIPlan() {
-      if (planInited) return;
-      planInited = true;
-
-      // Terminal lines
-      const output = document.getElementById('term-output');
-      output.innerHTML = '';
-      terminalLines.forEach((line, i) => {
-        setTimeout(() => {
-          const div = document.createElement('div');
-          div.className = 'terminal-line ' + line.cls;
-          div.style.animationDelay = '0ms';
-          div.textContent = line.text;
-          output.appendChild(div);
-          // cursor
-          if (i === terminalLines.length - 1) {
-            const cur = document.createElement('span');
-            cur.className = 'cursor';
-            div.appendChild(cur);
-          }
-          output.scrollTop = output.scrollHeight;
-        }, i * 220);
-      });
-
-      // Plan step cards
-      const container = document.getElementById('plan-steps');
-      container.innerHTML = '';
-      planStepsData.forEach((step, i) => {
-        const card = document.createElement('div');
-        card.className = 'plan-step-card checked';
-        card.dataset.index = i;
-        card.onclick = () => toggleStep(i);
-
-        card.innerHTML = `
-          <div class="step-checkbox checked" id="chk-${i}">✓</div>
-          <div class="step-meta">
-            <div class="step-meta-row">
-              <span style="font-family:var(--font-head);font-weight:900;font-size:0.85rem;">${step.num}</span>
-              <span class="tag tag-grey">${step.tool}</span>
-              <code style="font-size:0.68rem; font-weight:700; background:var(--grey); padding:0.15rem 0.4rem; border:1px solid var(--grey-dark);">${step.method}</code>
-            </div>
-            <div class="step-action-desc">${step.desc}</div>
-          </div>
-          <div style="text-align:right; min-width:70px;">
-            <div class="label" style="margin-bottom:0.3rem;">${step.conf}%</div>
-            <div class="confidence-bar">
-              <div class="confidence-fill" style="width:${step.conf}%;"></div>
-            </div>
-          </div>
-        `;
-        container.appendChild(card);
-      });
-
-      updateSelectedCount();
-    }
-
-    const checkedSteps = new Set([0,1,2,3,4,5,6]);
-
-    function toggleStep(i) {
-      const card = document.querySelector(`.plan-step-card[data-index="${i}"]`);
-      const chk  = document.getElementById('chk-' + i);
-      if (checkedSteps.has(i)) {
-        checkedSteps.delete(i);
-        chk.classList.remove('checked');
-        chk.textContent = '';
-        card.classList.remove('checked');
-      } else {
-        checkedSteps.add(i);
-        chk.classList.add('checked');
-        chk.textContent = '✓';
-        card.classList.add('checked');
-      }
-      updateSelectedCount();
-    }
-
-    function toggleAllSteps(val) {
-      planStepsData.forEach((_, i) => {
-        const card = document.querySelector(`.plan-step-card[data-index="${i}"]`);
-        const chk  = document.getElementById('chk-' + i);
-        if (val) {
-          checkedSteps.add(i);
-          chk.classList.add('checked');
-          chk.textContent = '✓';
-          card.classList.add('checked');
-        } else {
-          checkedSteps.delete(i);
-          chk.classList.remove('checked');
-          chk.textContent = '';
-          card.classList.remove('checked');
-        }
-      });
-      updateSelectedCount();
-    }
-
-    function updateSelectedCount() {
-      document.getElementById('selected-count').textContent = `${checkedSteps.size}/7`;
-    }
-
-    /* ==========================================
-       SCREEN 4 — EXECUTION
-    ========================================== */
-    const execSteps = [
-      { label:'INITIALIZING ENVIRONMENT',    duration:600,  rows:0,    cleaned:0,   dupes:0,   missing:0 },
-      { label:'LOADING DATASET',             duration:800,  rows:12847,cleaned:0,   dupes:0,   missing:0 },
-      { label:'REMOVING DUPLICATES',         duration:1100, rows:12847,cleaned:234, dupes:234, missing:0 },
-      { label:'KNN IMPUTATION (EMAIL)',       duration:1400, rows:12613,cleaned:847, dupes:234, missing:401},
-      { label:'KNN IMPUTATION (OTHER COLS)', duration:1000, rows:12613,cleaned:847, dupes:234, missing:847},
-      { label:'FIXING TYPE MISMATCHES',      duration:700,  rows:12613,cleaned:852, dupes:234, missing:847},
-      { label:'CAPPING OUTLIERS (IQR)',      duration:600,  rows:12613,cleaned:864, dupes:234, missing:847},
-    ];
-
-    const execLogs = [
-      { t:'00:00', icon:'▶', txt:'Starting DataPilot execution engine v2.4.1…',                cls:'exec-info' },
-      { t:'00:01', icon:'▶', txt:'Loading Python runtime + pyjanitor 0.29.0…',                 cls:'exec-info' },
-      { t:'00:02', icon:'✓', txt:'Environment ready.',                                          cls:'exec-ok'   },
-      { t:'00:03', icon:'▶', txt:'Reading customer_transactions.csv → 12,847 rows × 18 cols',  cls:'exec-info' },
-      { t:'00:04', icon:'✓', txt:'Dataset loaded into memory (14.2MB DataFrame).',              cls:'exec-ok'   },
-      { t:'00:05', icon:'▶', txt:'STEP 01 — remove_duplicates() via pyjanitor…',               cls:'exec-run'  },
-      { t:'00:06', icon:'✓', txt:'Removed 234 duplicate rows. Remaining: 12,613',              cls:'exec-ok'   },
-      { t:'00:07', icon:'▶', txt:'STEP 02 — KNN imputation k=5 on email (14.2% missing)…',    cls:'exec-run'  },
-      { t:'00:09', icon:'✓', txt:'Imputed 401 email values via KNN-5 correlation model.',      cls:'exec-ok'   },
-      { t:'00:10', icon:'▶', txt:'STEP 02b — Continuing imputation on remaining columns…',     cls:'exec-run'  },
-      { t:'00:11', icon:'✓', txt:'Total 847 missing values filled. Null rate: 0.0%',           cls:'exec-ok'   },
-      { t:'00:12', icon:'▶', txt:'STEP 03 — convert_dtypes: txn_date → datetime64, zip → str', cls:'exec-run' },
-      { t:'00:12', icon:'✓', txt:'5 type mismatches resolved.',                                cls:'exec-ok'   },
-      { t:'00:12', icon:'▶', txt:'STEP 04 — IQR outlier capping on purchase_amt…',             cls:'exec-run'  },
-      { t:'00:13', icon:'✓', txt:'12 outliers capped at IQR×1.5 upper fence ($487.22).',       cls:'exec-ok'   },
-      { t:'00:13', icon:'▶', txt:'STEP 05 — clean_names(): standardize column headers…',       cls:'exec-run'  },
-      { t:'00:13', icon:'✓', txt:'All 18 column names normalized to snake_case.',              cls:'exec-ok'   },
-      { t:'00:13', icon:'▶', txt:'STEP 06 — Normalizing email addresses…',                     cls:'exec-run'  },
-      { t:'00:13', icon:'✓', txt:'12,613 email values stripped and lowercased.',               cls:'exec-ok'   },
-      { t:'00:14', icon:'▶', txt:'STEP 07 — encode_categorical: status column…',               cls:'exec-run'  },
-      { t:'00:14', icon:'✓', txt:'Status encoded: active→1, inactive→0, pending→2',           cls:'exec-ok'   },
-      { t:'00:14', icon:'✓', txt:'Pipeline complete. Final quality score: 97/100',             cls:'exec-ok'   },
-      { t:'00:14', icon:'✓', txt:'Writing clean output → customer_transactions_clean.csv',     cls:'exec-ok'   },
-    ];
-
-    let execStarted = false;
-    let execTimer   = null;
-    let execElapsed = 0;
-    let execClockTimer = null;
-
-    function startExecution() {
-      if (execStarted) return;
-      execStarted = true;
-
-      // Build step indicators
-      const indic = document.getElementById('exec-step-indicators');
-      indic.innerHTML = '';
-      execSteps.forEach((s, i) => {
-        const row = document.createElement('div');
-        row.id = 'step-ind-' + i;
-        row.style = 'display:flex; align-items:center; gap:0.5rem; font-size:0.7rem; padding:0.3rem 0; border-bottom:1px solid var(--grey);';
-        row.innerHTML = `<span id="step-ind-icon-${i}" style="min-width:16px;">○</span><span style="font-weight:700;">${String(i+1).padStart(2,'0')} ${s.label}</span>`;
-        indic.appendChild(row);
-      });
-
-      // Start clock
-      execClockTimer = setInterval(() => {
-        execElapsed++;
-        const m = String(Math.floor(execElapsed/60)).padStart(2,'0');
-        const sc = String(execElapsed%60).padStart(2,'0');
-        document.getElementById('stat-time').textContent = m + ':' + sc;
-      }, 1000);
-
-      // Inject log lines
-      const log = document.getElementById('exec-log');
-      log.innerHTML = '';
-
-      execLogs.forEach((line, i) => {
-        setTimeout(() => {
-          const div = document.createElement('div');
-          div.className = 'exec-line';
-          div.innerHTML = `<span class="exec-time">${line.t}</span><span class="exec-step-icon ${line.cls}">${line.icon}</span><span class="exec-text ${line.cls}">${line.txt}</span>`;
-          log.appendChild(div);
-          log.scrollTop = log.scrollHeight;
-
-          // Determine step progress from log index
-          const stepMap = {3:0, 4:1, 6:2, 10:3, 11:4, 13:5, 15:6};
-          if (stepMap[i] !== undefined) {
-            const stepIdx = stepMap[i];
-            updateStepProgress(stepIdx);
-          }
-          if (i >= 5 && i <= 21) {
-            const stepN = Math.floor((i - 5) / 3);
-            updateStepRunning(Math.min(stepN, 6));
-          }
-
-          // Final
-          if (i === execLogs.length - 1) {
-            clearInterval(execClockTimer);
-            updateStepProgress(6);
-            document.getElementById('exec-status-tag').textContent = 'COMPLETE';
-            document.getElementById('exec-status-tag').className = 'tag tag-green';
-            // Update all stats to final
-            animateStat('stat-rows',    0, 12613, 1200);
-            animateStat('stat-cleaned', 0, 1098,  1400);
-            animateStat('stat-dupes',   0, 234,   1000);
-            animateStat('stat-missing', 0, 847,   1200);
-
-            setTimeout(() => {
-              completedScreens.add(4);
-              // Pulse "Results" tab
-              const tab5 = document.querySelector('.step-item[data-screen="5"]');
-              tab5.style.background = '#00C44F';
-              tab5.style.color = '#050505';
-              setTimeout(() => {
-                tab5.style.background = '';
-                tab5.style.color = '';
-                switchScreen(5);
-                completedScreens.add(5);
-              }, 1000);
-            }, 1000);
-          }
-        }, i * 480);
-      });
-    }
-
-    function updateStepProgress(completedIdx) {
-      const pct = Math.round((completedIdx + 1) / execSteps.length * 100);
-      document.getElementById('exec-progress').style.width = pct + '%';
-      document.getElementById('exec-pct').textContent = pct + '%';
-      document.getElementById('exec-step-label').textContent = (completedIdx + 1) + ' / ' + execSteps.length + ' STEPS';
-
-      for (let i = 0; i <= completedIdx; i++) {
-        const icon = document.getElementById('step-ind-icon-' + i);
-        if (icon) { icon.textContent = '✓'; icon.style.color = 'var(--green)'; }
-        const row = document.getElementById('step-ind-' + i);
-        if (row) { row.style.color = 'var(--green)'; }
-      }
-
-      // Update stats
-      const s = execSteps[completedIdx];
-      if (s) {
-        document.getElementById('stat-rows').textContent    = s.rows.toLocaleString();
-        document.getElementById('stat-cleaned').textContent = s.cleaned.toLocaleString();
-        document.getElementById('stat-dupes').textContent   = s.dupes.toLocaleString();
-        document.getElementById('stat-missing').textContent = s.missing.toLocaleString();
-      }
-    }
-
-    function updateStepRunning(idx) {
-      const icon = document.getElementById('step-ind-icon-' + idx);
-      if (icon && icon.textContent !== '✓') {
-        icon.innerHTML = '<span class="spinner">↻</span>';
-        icon.style.color = 'var(--yellow)';
-      }
-    }
-
-    function animateStat(id, from, to, duration) {
-      const el = document.getElementById(id);
-      const start = performance.now();
-      function step(now) {
-        const t = Math.min((now - start) / duration, 1);
-        const val = Math.round(from + (to - from) * t);
-        el.textContent = val.toLocaleString();
-        if (t < 1) requestAnimationFrame(step);
-      }
-      requestAnimationFrame(step);
-    }
-
-    /* ==========================================
-       RESET
-    ========================================== */
-    function resetAll() {
-      execStarted = false;
-      clearInterval(execClockTimer);
-      execElapsed = 0;
-      completedScreens.clear();
-      completedScreens.add(1);
-      document.getElementById('exec-log').innerHTML = '';
-      document.getElementById('exec-progress').style.width = '0%';
-      document.getElementById('exec-pct').textContent = '0%';
-      document.getElementById('exec-step-label').textContent = '0 / 7 STEPS';
-      document.getElementById('stat-rows').textContent = '0';
-      document.getElementById('stat-cleaned').textContent = '0';
-      document.getElementById('stat-dupes').textContent = '0';
-      document.getElementById('stat-missing').textContent = '0';
-      document.getElementById('stat-time').textContent = '00:00';
-      planInited = false;
-    }
-
-    /* ==========================================
-       DRAG & DROP
-    ========================================== */
-    function handleDrop(e) {
-      e.preventDefault();
-      document.getElementById('dropzone').classList.remove('drag-over');
-      const file = e.dataTransfer.files[0];
-      if (file) {
-        alert(`File received: ${file.name}\nSize: ${(file.size/1024/1024).toFixed(2)} MB\n\nSwitching to Analysis…`);
-        switchScreen(2);
-      }
-    }
-
-    /* ==========================================
-       INIT
-    ========================================== */
-    window.addEventListener('DOMContentLoaded', () => {
-      initAnalysis();
-      // Pre-mark screen 2 as active in step bar
-      document.querySelector('.step-item[data-screen="2"]').classList.add('active');
-      completedScreens.add(2);
-      completedScreens.add(3);
+        fill.style.width = p + '%';
+        pct.textContent = p + '%';
+        status.textContent = label;
+        if (nulls) document.getElementById('ic-nulls').textContent = nulls;
+        if (dupes) document.getElementById('ic-dupes').textContent = dupes;
+        if (outliers) document.getElementById('ic-outliers').textContent = outliers;
+        if (types) document.getElementById('ic-types').textContent = types;
+        if (sc) score.textContent = sc;
+      }, t);
     });
-  </script>
+  }
 
+  /* ── SCREEN 3: PLAN TERMINAL ─────────────────────────────── */
+  const planLogs = [
+    { t: '> CONNECTING TO LANGCHAIN PLANNER...', c: 't-sys', delay: 200 },
+    { t: '> LOADING ANALYSIS REPORT...', c: 't-sys', delay: 700 },
+    { t: '> ROWS: 1200  COLS: 12  SCORE: 34/100', c: 't-em', delay: 1100 },
+    { t: '> ISSUES: NULLS(231) DUPES(847) OUTLIERS(23)', c: 't-warn', delay: 1500 },
+    { t: '> GENERATING CLEANING STRATEGY...', c: 't-sys', delay: 2100 },
+    { t: '> [PLAN_01] DROP_DUPLICATES → conf: 0.99', c: 't-ok', delay: 2700 },
+    { t: '> [PLAN_02] IMPUTE_NULL_AGE → MEDIAN → conf: 0.87', c: 't-ok', delay: 3100 },
+    { t: '> [PLAN_03] FILL_NULL_DEPT → MODE → conf: 0.82', c: 't-ok', delay: 3500 },
+    { t: '> [PLAN_04] STANDARDIZE_COUNTRY → ISO → conf: 0.91', c: 't-ok', delay: 3900 },
+    { t: '> [PLAN_05] CAP_SALARY_OUTLIERS → P99 → conf: 0.79', c: 't-ok', delay: 4300 },
+    { t: '> PLAN FINALIZED. AWAITING USER APPROVAL.', c: 't-sys', delay: 4800 },
+  ];
+
+  let planTimers = [];
+
+  function startPlanTerminal() {
+    const term = document.getElementById('plan-terminal');
+    const tokens = document.getElementById('token-count');
+    term.innerHTML = '';
+    planTimers.forEach(clearTimeout);
+    planTimers = [];
+
+    let tc = 0;
+    planLogs.forEach(({ t, c, delay }) => {
+      const tid = setTimeout(() => {
+        const old = term.querySelector('.term-cursor');
+        if (old) old.remove();
+        const div = document.createElement('div');
+        div.className = c;
+        div.textContent = t;
+        term.appendChild(div);
+        term.scrollTop = term.scrollHeight;
+        tc += Math.floor(Math.random() * 120 + 80);
+        tokens.textContent = tc;
+      }, delay);
+      planTimers.push(tid);
+    });
+
+    // Add cursor at end
+    const curTid = setTimeout(() => {
+      const cur = document.createElement('span');
+      cur.className = 'term-cursor';
+      term.appendChild(cur);
+    }, 5100);
+    planTimers.push(curTid);
+  }
+
+  /* ── PLAN STEP APPROVE / REJECT ──────────────────────────── */
+  const stepStates = { 1: null, 2: null, 3: null, 4: null, 5: null };
+
+  function approveStep(n, approved) {
+    stepStates[n] = approved;
+    const card = document.getElementById(`pstep-${n}`);
+    const btns = card.querySelectorAll('.action-btn');
+    
+    card.classList.remove('approved', 'rejected');
+    btns[0].classList.remove('active-approve');
+    btns[1].classList.remove('active-reject');
+
+    if (approved) {
+      card.classList.add('approved');
+      btns[0].classList.add('active-approve');
+    } else {
+      card.classList.add('rejected');
+      btns[1].classList.add('active-reject');
+    }
+
+    const approved_count = Object.values(stepStates).filter(v => v === true).length;
+    const total_decided  = Object.values(stepStates).filter(v => v !== null).length;
+    const status = document.getElementById('plan-approval-status');
+    status.textContent = `${approved_count} APPROVED · ${Object.values(stepStates).filter(v=>v===false).length} REJECTED`;
+  }
+
+  /* ── SCREEN 4: EXECUTION ANIMATION ──────────────────────── */
+  const execSteps = [
+    { id: 1, name: 'DROP_DUPLICATES',     time: '0.3S', log: ['> SCANNING FOR DUPLICATES...', '> EXACT MATCH: 847 ROWS FLAGGED', '> ROWS REMOVED: 847  REMAINING: 353'] },
+    { id: 2, name: 'IMPUTE_NULL_AGE',     time: '0.5S', log: ['> LOADING age COLUMN...', '> MEDIAN CALCULATED: 34.2', '> IMPUTED 142 NULL VALUES'] },
+    { id: 3, name: 'FILL_NULL_DEPT',      time: '0.4S', log: ['> LOADING department COLUMN...', '> MODE DETECTED: SALES', '> FILLED 89 NULL VALUES'] },
+    { id: 4, name: 'STANDARDIZE_COUNTRY', time: '0.6S', log: ['> LOADING country COLUMN...', '> VARIANTS FOUND: "United States", "US", "CA"...', '> NORMALIZED TO ISO 3166-1 ALPHA-2'] },
+    { id: 5, name: 'CAP_SALARY_OUTLIERS', time: '0.7S', log: ['> CALCULATING P99 THRESHOLD...', '> THRESHOLD: $142,000', '> CAPPED 23 OUTLIER VALUES'] },
+    { id: 6, name: 'VALIDATE_INTEGRITY',  time: '0.3S', log: ['> RUNNING VALIDATION SUITE...', '> INTEGRITY: ✓ PASS', '> TYPE CONSISTENCY: ✓ PASS', '> NULL REDUCTION: 231 → 0 ✓'] },
+    { id: 7, name: 'GENERATE_REPORT',     time: '1.2S', log: ['> RUNNING YDATA-PROFILING...', '> BEFORE: 34/100 → AFTER: 94/100', '> REPORT GENERATED: profiling_report.html'] },
+  ];
+
+  let execTimers = [];
+
+  function startExecution() {
+    execTimers.forEach(clearTimeout);
+    execTimers = [];
+
+    const fillEl = document.getElementById('exec-fill');
+    const pctEl  = document.getElementById('exec-pct');
+    const logEl  = document.getElementById('exec-log');
+
+    // Reset all steps
+    for (let i = 1; i <= 7; i++) {
+      const step = document.getElementById(`estep-${i}`);
+      step.className = 'exec-step pending';
+      document.getElementById(`estep-icon-${i}`).textContent = '[ ]';
+      document.getElementById(`estep-time-${i}`).textContent = '—';
+    }
+    fillEl.style.width = '0%';
+    pctEl.textContent = '0%';
+    logEl.innerHTML = '<div class="log-done">> EXECUTION ENGINE INITIALIZED</div><div class="log-done">> LOADING APPROVED PLAN: 5 STEPS</div>';
+
+    let elapsed = 500;
+
+    execSteps.forEach((step, idx) => {
+      const stepDelay = elapsed;
+      const runDuration = 1000 + idx * 200;
+
+      // Mark as running
+      const t1 = setTimeout(() => {
+        const el = document.getElementById(`estep-${step.id}`);
+        el.className = 'exec-step running';
+        document.getElementById(`estep-icon-${step.id}`).innerHTML = '<span class="spin">/</span>';
+
+        // Add log lines
+        step.log.forEach((line, li) => {
+          setTimeout(() => {
+            const div = document.createElement('div');
+            div.className = 'log-action';
+            div.textContent = line;
+            logEl.appendChild(div);
+            logEl.scrollTop = logEl.scrollHeight;
+          }, li * 250);
+        });
+      }, stepDelay);
+      execTimers.push(t1);
+
+      // Mark as done
+      const t2 = setTimeout(() => {
+        const el = document.getElementById(`estep-${step.id}`);
+        el.className = 'exec-step done';
+        document.getElementById(`estep-icon-${step.id}`).textContent = '[✓]';
+        document.getElementById(`estep-time-${step.id}`).textContent = step.time;
+
+        const pct = Math.round(((idx + 1) / execSteps.length) * 100);
+        fillEl.style.width = pct + '%';
+        pctEl.textContent = pct + '%';
+
+        // Final step → go to results
+        if (idx === execSteps.length - 1) {
+          setTimeout(() => {
+            const div = document.createElement('div');
+            div.className = 'log-result';
+            div.textContent = '> ✓ ALL STEPS COMPLETE. QUALITY: 34 → 94/100';
+            logEl.appendChild(div);
+            logEl.scrollTop = logEl.scrollHeight;
+            setTimeout(() => goTo('results'), 1200);
+          }, 500);
+        }
+      }, stepDelay + runDuration);
+      execTimers.push(t2);
+
+      elapsed += runDuration + 200;
+    });
+  }
+
+</script>
 </body>
 </html>

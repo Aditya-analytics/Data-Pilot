@@ -3,1233 +3,876 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>DATAPILOT — AI-POWERED DATA CLEANING</title>
-  <link rel="preconnect" href="https://fonts.googleapis.com" />
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-  <link href="https://fonts.googleapis.com/css2?family=Cabinet+Grotesk:wght@800;900&family=JetBrains+Mono:wght@400;700;800&display=swap" rel="stylesheet" />
+  <title>DATAPILOT // SYSTEM</title>
+  
+  <!-- Fonts -->
+  <link href="https://api.fontshare.com/v2/css?f[]=cabinet-grotesk@800,900&display=swap" rel="stylesheet">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;700;800&display=swap" rel="stylesheet">
 
   <style>
-    /* ── RESET & BASE ─────────────────────────────────────────── */
-    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-
+    /* ============================================================
+       CLEAN BRUTALISM // PREMIUM TOKENS
+    ============================================================ */
     :root {
-      --black:     #050505;
-      --white:     #FAFAFA;
-      --grey:      #E8E8E8;
-      --grey-dark: #D0D0D0;
-      --border:    3px solid #050505;
-      --shadow:    6px 6px 0px #050505;
-      --shadow-lg: 10px 10px 0px #050505;
+      --black: #050505;
+      --white: #FAFAFA;
+      --grey:  #E8E8E8;
+      
+      --font-display: 'Cabinet Grotesk', sans-serif;
+      --font-mono: 'JetBrains Mono', monospace;
+      
+      --border-heavy: 3px solid var(--black);
+      --border-light: 1px solid var(--black);
+      
+      --shadow-brutal: 6px 6px 0px 0px var(--black);
+      --shadow-hover:  10px 10px 0px 0px var(--black);
     }
 
-    html { scroll-behavior: smooth; }
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      border-radius: 0 !important;
+    }
+
+    html {
+      scroll-behavior: smooth;
+    }
 
     body {
-      background: var(--white);
+      background-color: var(--grey);
       color: var(--black);
-      font-family: 'JetBrains Mono', monospace;
-      font-weight: 400;
-      line-height: 1.5;
+      font-family: var(--font-mono);
+      font-size: 13px; /* SCALED DOWN */
+      line-height: 1.6;
+      text-transform: uppercase;
+      -webkit-font-smoothing: antialiased;
+      cursor: default;
       overflow-x: hidden;
     }
 
-    /* ── TYPOGRAPHY HELPERS ───────────────────────────────────── */
-    h1, h2, h3, h4 {
-      font-family: 'Cabinet Grotesk', sans-serif;
-      font-weight: 900;
-      letter-spacing: -0.02em;
-      line-height: 1;
+    /* Subtle SVG Noise Texture */
+    body::before {
+      content: '';
+      position: fixed;
+      inset: 0;
+      background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.8' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)'/%3E%3C/svg%3E");
+      opacity: 0.04;
+      pointer-events: none;
+      z-index: 9999;
     }
 
-    .label {
-      font-family: 'JetBrains Mono', monospace;
-      font-weight: 700;
-      font-size: 0.7rem;
-      letter-spacing: 0.12em;
-      text-transform: uppercase;
-    }
-
-    /* ── BUTTONS ──────────────────────────────────────────────── */
-    .btn {
-      display: inline-block;
-      font-family: 'JetBrains Mono', monospace;
-      font-weight: 800;
-      font-size: 0.78rem;
-      letter-spacing: 0.1em;
-      text-transform: uppercase;
-      padding: 14px 28px;
-      border: var(--border);
-      background: var(--black);
-      color: var(--white);
-      cursor: pointer;
+    a {
+      color: inherit;
       text-decoration: none;
-      box-shadow: var(--shadow);
-      transition: box-shadow 0.08s ease, transform 0.08s ease, background 0.08s ease, color 0.08s ease;
-      user-select: none;
-    }
-    .btn:hover {
-      box-shadow: var(--shadow-lg);
-      transform: translate(-2px, -2px);
-      background: var(--white);
-      color: var(--black);
-    }
-    .btn:active { transform: translate(0,0); box-shadow: 2px 2px 0px var(--black); }
-
-    .btn-outline {
-      background: var(--white);
-      color: var(--black);
-    }
-    .btn-outline:hover {
-      background: var(--black);
-      color: var(--white);
+      cursor: pointer;
     }
 
-    /* ── ANIMATIONS ───────────────────────────────────────────── */
-    @keyframes blink {
-      0%, 100% { opacity: 1; }
-      50%       { opacity: 0; }
-    }
-    @keyframes fadeUp {
-      from { opacity: 0; transform: translateY(32px); }
-      to   { opacity: 1; transform: translateY(0);    }
-    }
-    @keyframes fadeIn {
-      from { opacity: 0; }
-      to   { opacity: 1; }
-    }
-    @keyframes typeIn {
-      from { max-height: 0; opacity: 0; }
-      to   { max-height: 400px; opacity: 1; }
-    }
-    @keyframes slideLeft {
-      from { transform: translateX(-24px); opacity: 0; }
-      to   { transform: translateX(0);     opacity: 1; }
-    }
-    @keyframes countUp { from { opacity: 0; } to { opacity: 1; } }
+    button { cursor: pointer; }
 
-    .anim-fade-up  { animation: fadeUp  0.55s cubic-bezier(.22,1,.36,1) both; }
-    .anim-fade-in  { animation: fadeIn  0.5s ease both; }
-    .anim-slide-left { animation: slideLeft 0.5s cubic-bezier(.22,1,.36,1) both; }
+    /* Minimal Fade Animation */
+    .fade-in {
+      opacity: 0;
+      transform: translateY(15px);
+      transition: opacity 0.8s cubic-bezier(0.16, 1, 0.3, 1), transform 0.8s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+    .fade-in.visible {
+      opacity: 1;
+      transform: translateY(0);
+    }
 
-    .d1 { animation-delay: 0.05s; }
-    .d2 { animation-delay: 0.15s; }
-    .d3 { animation-delay: 0.25s; }
-    .d4 { animation-delay: 0.40s; }
-    .d5 { animation-delay: 0.55s; }
-    .d6 { animation-delay: 0.70s; }
-
-    /* ── NAV ──────────────────────────────────────────────────── */
+    /* ============================================================
+       NAVIGATION (MINIMAL)
+    ============================================================ */
     nav {
       position: sticky;
       top: 0;
       z-index: 100;
       background: var(--white);
-      border-bottom: var(--border);
+      border-bottom: var(--border-heavy);
       display: flex;
-      align-items: center;
       justify-content: space-between;
-      padding: 0 48px;
-      height: 68px;
+      align-items: stretch;
+      height: 54px; /* SCALED DOWN from 72px */
     }
 
-    .nav-logo {
-      font-family: 'Cabinet Grotesk', sans-serif;
+    .nav-brand {
+      font-family: var(--font-display);
+      font-size: 1.3rem; /* SCALED DOWN from 1.8rem */
       font-weight: 900;
-      font-size: 1.35rem;
-      letter-spacing: -0.02em;
-      text-decoration: none;
-      color: var(--black);
+      padding: 0 1.5rem;
       display: flex;
       align-items: center;
-      gap: 10px;
-    }
-    .nav-logo span.logo-dot {
-      display: inline-block;
-      width: 10px; height: 10px;
-      background: var(--black);
-      border: var(--border);
+      border-right: var(--border-heavy);
+      letter-spacing: -0.02em;
+      background: var(--white);
     }
 
     .nav-links {
       display: flex;
-      align-items: center;
-      gap: 0;
-      list-style: none;
+      flex-grow: 1;
     }
-    .nav-links li a {
-      display: block;
-      padding: 8px 20px;
-      font-family: 'JetBrains Mono', monospace;
+
+    .nav-link {
+      padding: 0 1.5rem;
+      display: flex;
+      align-items: center;
       font-weight: 700;
-      font-size: 0.7rem;
-      letter-spacing: 0.12em;
-      text-transform: uppercase;
-      text-decoration: none;
-      color: var(--black);
-      border: var(--border);
-      border-right: none;
-      transition: background 0.08s, color 0.08s;
-    }
-    .nav-links li:last-of-type a { border-right: var(--border); }
-    .nav-links li a:hover { background: var(--black); color: var(--white); }
-
-    .nav-cta { margin-left: 20px; }
-
-    /* ── SECTION WRAPPER ──────────────────────────────────────── */
-    section { width: 100%; }
-
-    .container {
-      max-width: 1280px;
-      margin: 0 auto;
-      padding: 0 48px;
+      border-right: var(--border-heavy);
+      transition: background-color 0.15s, color 0.15s;
+      font-size: 0.75rem; /* SCALED DOWN */
     }
 
-    /* ── HERO ─────────────────────────────────────────────────── */
-    #hero {
-      border-bottom: var(--border);
-      background: var(--white);
-      padding: 80px 0 0;
-      overflow: hidden;
+    .nav-link:hover {
+      background-color: var(--black);
+      color: var(--white);
     }
 
-    .hero-inner {
-      max-width: 1280px;
-      margin: 0 auto;
-      padding: 0 48px;
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 64px;
-      align-items: start;
-    }
-
-    .hero-left {}
-
-    .hero-badge {
-      display: inline-flex;
+    .nav-status {
+      padding: 0 1.5rem;
+      display: flex;
       align-items: center;
-      gap: 8px;
-      border: var(--border);
-      padding: 6px 14px;
+      font-weight: 800;
       background: var(--black);
       color: var(--white);
-      margin-bottom: 32px;
-    }
-    .hero-badge .blink-dot {
-      width: 8px; height: 8px;
-      background: #00FF88;
-      display: inline-block;
-      animation: blink 1.2s step-start infinite;
+      gap: 10px;
+      font-size: 0.75rem; /* SCALED DOWN */
     }
 
-    .hero-h1 {
-      font-size: clamp(2.8rem, 5vw, 4.4rem);
-      line-height: 0.95;
-      margin-bottom: 28px;
-      color: var(--black);
-    }
-    .hero-h1 .accent-line {
-      display: block;
-      position: relative;
-    }
-    .hero-h1 .underline-heavy {
-      text-decoration: underline;
-      text-decoration-thickness: 5px;
-      text-underline-offset: 6px;
+    .status-dot {
+      width: 8px; /* SCALED DOWN */
+      height: 8px;
+      background: #10B981;
+      border: 1.5px solid var(--white);
+      animation: blink 1.5s infinite;
     }
 
-    .hero-sub {
-      font-size: 0.9rem;
-      line-height: 1.7;
-      color: #333;
-      margin-bottom: 40px;
-      max-width: 460px;
-    }
-
-    .hero-ctas {
-      display: flex;
-      gap: 16px;
-      flex-wrap: wrap;
-      margin-bottom: 56px;
-    }
-
-    /* counters */
-    .hero-counters {
+    /* ============================================================
+       HERO MODULE (MINIMAL)
+    ============================================================ */
+    header {
       display: grid;
-      grid-template-columns: repeat(3, 1fr);
-      border-top: var(--border);
-      border-left: var(--border);
-    }
-    .counter-cell {
-      border-right: var(--border);
-      border-bottom: var(--border);
-      padding: 20px 24px;
-    }
-    .counter-num {
-      font-family: 'Cabinet Grotesk', sans-serif;
-      font-weight: 900;
-      font-size: 2rem;
-      letter-spacing: -0.03em;
-      display: block;
-      margin-bottom: 4px;
-    }
-    .counter-label {
-      font-size: 0.65rem;
-      font-weight: 700;
-      letter-spacing: 0.1em;
-      text-transform: uppercase;
-      color: #555;
+      grid-template-columns: 1fr 1fr;
+      border-bottom: var(--border-heavy);
+      background: var(--white);
+      min-height: 70vh; /* Reduced from 80vh */
+      position: relative;
     }
 
-    /* terminal */
-    .hero-right {
-      position: relative;
-      padding-bottom: 0;
+    header::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background-image: linear-gradient(var(--grey) 1px, transparent 1px), linear-gradient(90deg, var(--grey) 1px, transparent 1px);
+      background-size: 64px 64px;
+      pointer-events: none;
+      z-index: 0;
+    }
+
+    .hero-content {
+      padding: 4rem; /* SCALED DOWN from 5vw */
+      border-right: var(--border-heavy);
       display: flex;
       flex-direction: column;
-      gap: 0;
+      justify-content: center;
+      position: relative;
+      z-index: 2;
+      background: var(--white);
+    }
+
+    .hero-eyebrow {
+      font-weight: 800;
+      font-size: 0.75rem; /* SCALED DOWN */
+      margin-bottom: 1.5rem;
+      display: inline-block;
+      padding: 0.4rem 0.8rem;
+      background: var(--black);
+      color: var(--white);
+      align-self: flex-start;
+      box-shadow: 4px 4px 0px 0px var(--grey);
+    }
+
+    h1 {
+      font-family: var(--font-display);
+      font-size: clamp(2.5rem, 4vw, 4rem); /* SCALED DOWN */
+      font-weight: 900;
+      line-height: 0.95;
+      letter-spacing: -0.04em;
+      margin-bottom: 1.5rem;
+    }
+
+    h1 em {
+      font-style: italic;
+      color: var(--black);
+      text-decoration: underline;
+      text-decoration-thickness: 3px;
+      text-underline-offset: 3px;
+    }
+
+    .hero-desc {
+      font-size: 0.95rem; /* SCALED DOWN */
+      font-weight: 700;
+      max-width: 420px;
+      margin-bottom: 2.5rem;
+      line-height: 1.6;
+      color: #333;
+    }
+
+    .brutal-btn {
+      display: inline-flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 1rem 2rem; /* SCALED DOWN */
+      font-family: var(--font-display);
+      font-size: 0.9rem; /* SCALED DOWN */
+      font-weight: 900;
+      background: var(--white);
+      color: var(--black);
+      border: var(--border-heavy);
+      box-shadow: var(--shadow-brutal);
+      cursor: pointer;
+      transition: transform 0.1s ease, box-shadow 0.1s ease, background 0.1s;
+      align-self: flex-start;
+    }
+
+    .brutal-btn:active {
+      transform: translate(6px, 6px);
+      box-shadow: 0px 0px 0px 0px var(--black);
+    }
+
+    .brutal-btn:hover {
+      background: var(--black);
+      color: var(--white);
+      box-shadow: var(--shadow-hover);
+    }
+
+    .hero-terminal {
+      background: var(--grey);
+      padding: 4rem; /* SCALED DOWN */
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      position: relative;
+      z-index: 2;
     }
 
     .terminal-window {
-      border: var(--border);
-      box-shadow: var(--shadow-lg);
-      background: var(--black);
-      color: #00FF88;
-      font-family: 'JetBrains Mono', monospace;
-      font-size: 0.8rem;
-      overflow: hidden;
-    }
-
-    .terminal-titlebar {
-      display: flex;
-      align-items: center;
-      gap: 8px;
-      background: var(--grey);
-      border-bottom: var(--border);
-      padding: 10px 16px;
-    }
-    .t-btn {
-      width: 12px; height: 12px;
-      border: 2px solid var(--black);
-      display: inline-block;
-    }
-    .terminal-title {
-      font-family: 'JetBrains Mono', monospace;
-      font-weight: 700;
-      font-size: 0.65rem;
-      letter-spacing: 0.1em;
-      text-transform: uppercase;
-      color: var(--black);
-      margin-left: 6px;
-    }
-
-    .terminal-body {
-      padding: 20px 20px 24px;
-      min-height: 320px;
-    }
-
-    .terminal-line {
-      display: flex;
-      align-items: flex-start;
-      margin-bottom: 6px;
-      line-height: 1.6;
-      opacity: 0;
-    }
-    .terminal-line.visible { opacity: 1; }
-
-    .prompt { color: #888; margin-right: 8px; flex-shrink: 0; }
-    .cmd    { color: #FAFAFA; }
-    .out-ok  { color: #00FF88; }
-    .out-warn{ color: #FFD700; }
-    .out-err { color: #FF4444; }
-    .out-info{ color: #88CCFF; }
-    .out-dim { color: #666; }
-
-    .cursor {
-      display: inline-block;
-      width: 9px; height: 1.1em;
-      background: #00FF88;
-      vertical-align: text-bottom;
-      animation: blink 0.85s step-start infinite;
-      margin-left: 2px;
-    }
-
-    /* ── HOW IT WORKS ─────────────────────────────────────────── */
-    #how-it-works {
-      border-bottom: var(--border);
-      padding: 96px 0;
-      background: var(--grey);
-    }
-
-    .section-label {
-      display: inline-flex;
-      align-items: center;
-      gap: 10px;
-      margin-bottom: 48px;
-    }
-    .section-label .label { color: var(--black); }
-    .section-label::before {
-      content: '';
-      display: inline-block;
-      width: 28px; height: 3px;
-      background: var(--black);
-    }
-
-    .steps-grid {
-      display: grid;
-      grid-template-columns: repeat(4, 1fr);
-      border-left: var(--border);
-      border-top: var(--border);
-    }
-
-    .step-card {
-      border-right: var(--border);
-      border-bottom: var(--border);
-      padding: 40px 32px;
       background: var(--white);
-      transition: background 0.1s, color 0.1s, box-shadow 0.1s;
-      cursor: default;
-      position: relative;
-    }
-    .step-card:hover {
-      background: var(--black);
-      color: var(--white);
-    }
-    .step-card:hover .step-num,
-    .step-card:hover .step-title,
-    .step-card:hover .step-desc,
-    .step-card:hover .step-icon { color: var(--white); }
-    .step-card:hover .step-arrow { color: var(--white); }
-
-    .step-num {
-      font-family: 'Cabinet Grotesk', sans-serif;
-      font-weight: 900;
-      font-size: 3.5rem;
-      line-height: 1;
-      color: var(--grey-dark);
-      margin-bottom: 20px;
-      letter-spacing: -0.04em;
-      transition: color 0.1s;
-    }
-
-    .step-icon {
-      font-size: 2rem;
-      margin-bottom: 16px;
-      display: block;
-      transition: color 0.1s;
-    }
-
-    .step-title {
-      font-family: 'Cabinet Grotesk', sans-serif;
-      font-weight: 900;
-      font-size: 1.3rem;
-      letter-spacing: -0.02em;
-      margin-bottom: 12px;
-      transition: color 0.1s;
-    }
-
-    .step-desc {
-      font-size: 0.78rem;
-      line-height: 1.65;
-      color: #555;
-      transition: color 0.1s;
-    }
-    .step-card:hover .step-desc { color: #ccc; }
-
-    .step-arrow {
-      position: absolute;
-      top: 40px; right: 24px;
-      font-size: 1.2rem;
-      color: var(--grey-dark);
-      transition: color 0.1s;
-    }
-    .step-card:last-child .step-arrow { display: none; }
-
-    /* ── FEATURES GRID ────────────────────────────────────────── */
-    #features {
-      border-bottom: var(--border);
-      padding: 96px 0;
-      background: var(--white);
-    }
-
-    .features-header {
-      display: flex;
-      align-items: flex-end;
-      justify-content: space-between;
-      margin-bottom: 56px;
-      gap: 24px;
-    }
-
-    .features-h2 {
-      font-size: clamp(2.2rem, 4vw, 3.4rem);
-      max-width: 520px;
-    }
-    .features-sub {
-      font-size: 0.8rem;
-      line-height: 1.7;
-      max-width: 320px;
-      color: #555;
-      padding-bottom: 6px;
-    }
-
-    .features-grid {
-      display: grid;
-      grid-template-columns: repeat(3, 1fr);
-      border-top: var(--border);
-      border-left: var(--border);
-    }
-
-    .feat-card {
-      border-right: var(--border);
-      border-bottom: var(--border);
-      padding: 40px 36px;
-      transition: background 0.08s, color 0.08s, box-shadow 0.08s;
-      cursor: default;
-    }
-    .feat-card:hover {
-      background: var(--black);
-      color: var(--white);
-      box-shadow: inset var(--shadow);
-    }
-    .feat-card:hover .feat-title,
-    .feat-card:hover .feat-desc,
-    .feat-card:hover .feat-icon { color: var(--white); }
-
-    .feat-icon {
-      font-size: 2.2rem;
-      margin-bottom: 20px;
-      display: block;
-      line-height: 1;
-      transition: color 0.08s;
-    }
-
-    .feat-tag {
-      display: inline-block;
-      font-size: 0.6rem;
-      font-weight: 700;
-      letter-spacing: 0.12em;
-      text-transform: uppercase;
-      padding: 4px 10px;
-      border: 2px solid var(--grey-dark);
-      color: #777;
-      margin-bottom: 16px;
-      transition: border-color 0.08s, color 0.08s;
-    }
-    .feat-card:hover .feat-tag { border-color: #555; color: #aaa; }
-
-    .feat-title {
-      font-family: 'Cabinet Grotesk', sans-serif;
-      font-weight: 900;
-      font-size: 1.25rem;
-      letter-spacing: -0.02em;
-      margin-bottom: 12px;
-      transition: color 0.08s;
-    }
-
-    .feat-desc {
-      font-size: 0.78rem;
-      line-height: 1.7;
-      color: #555;
-      transition: color 0.08s;
-    }
-    .feat-card:hover .feat-desc { color: #bbb; }
-
-    /* ── STATS ────────────────────────────────────────────────── */
-    #stats {
-      border-bottom: var(--border);
-      background: var(--black);
-      color: var(--white);
-    }
-
-    .stats-inner {
-      max-width: 1280px;
-      margin: 0 auto;
-      display: grid;
-      grid-template-columns: repeat(4, 1fr);
-      border-left: 3px solid #FAFAFA;
-      border-top: 3px solid #FAFAFA;
-    }
-
-    .stat-cell {
-      border-right: 3px solid #FAFAFA;
-      border-bottom: 3px solid #FAFAFA;
-      padding: 64px 48px;
-      transition: background 0.1s, color 0.1s;
-      cursor: default;
-    }
-    .stat-cell:hover {
-      background: var(--white);
-      color: var(--black);
-    }
-    .stat-cell:hover .stat-num,
-    .stat-cell:hover .stat-label,
-    .stat-cell:hover .stat-desc { color: var(--black); }
-
-    .stat-num {
-      font-family: 'Cabinet Grotesk', sans-serif;
-      font-weight: 900;
-      font-size: clamp(2.4rem, 3.5vw, 3.6rem);
-      letter-spacing: -0.04em;
-      line-height: 1;
-      display: block;
-      margin-bottom: 12px;
-      color: var(--white);
-      transition: color 0.1s;
-    }
-
-    .stat-label {
-      font-size: 0.7rem;
-      font-weight: 700;
-      letter-spacing: 0.12em;
-      text-transform: uppercase;
-      color: #888;
-      display: block;
-      margin-bottom: 8px;
-      transition: color 0.1s;
-    }
-    .stat-cell:hover .stat-label { color: #555; }
-
-    .stat-desc {
-      font-size: 0.72rem;
-      color: #666;
-      line-height: 1.6;
-      transition: color 0.1s;
-    }
-
-    /* ── CTA BAND ─────────────────────────────────────────────── */
-    #cta-band {
-      border-bottom: var(--border);
-      background: var(--white);
-      padding: 96px 0;
-    }
-
-    .cta-inner {
-      max-width: 1280px;
-      margin: 0 auto;
-      padding: 0 48px;
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      gap: 48px;
-    }
-
-    .cta-text h2 {
-      font-size: clamp(2.4rem, 4vw, 3.8rem);
-      margin-bottom: 16px;
-    }
-    .cta-text p {
-      font-size: 0.85rem;
-      color: #555;
-      max-width: 460px;
-      line-height: 1.7;
-    }
-
-    .cta-actions {
+      border: var(--border-heavy);
+      box-shadow: var(--shadow-brutal);
+      height: 100%;
+      max-height: 400px; /* SCALED DOWN */
       display: flex;
       flex-direction: column;
-      gap: 16px;
-      align-items: flex-start;
+    }
+
+    .term-header {
+      border-bottom: var(--border-heavy);
+      padding: 0.8rem 1.2rem; /* SCALED DOWN */
+      font-weight: 800;
+      display: flex;
+      justify-content: space-between;
+      background: var(--black);
+      color: var(--white);
+      font-size: 0.75rem; /* SCALED DOWN */
+    }
+
+    .term-body {
+      padding: 1.5rem; /* SCALED DOWN */
+      font-weight: 700;
+      font-size: 0.75rem; /* SCALED DOWN */
+      line-height: 1.8;
+      overflow-y: auto;
+      flex-grow: 1;
+    }
+
+    .log { margin-bottom: 0.5rem; }
+    .log-sys { color: #555; }
+    .log-err { background: var(--black); color: var(--white); display: inline-block; padding: 0 0.5rem; }
+    .log-ok { border-bottom: 3px solid var(--black); display: inline-block; font-weight: 800; }
+    
+    @keyframes blink {
+      0%, 49% { opacity: 1; }
+      50%, 100% { opacity: 0; }
+    }
+    .cursor {
+      display: inline-block;
+      width: 6px;
+      height: 1.2em;
+      background: var(--black);
+      vertical-align: middle;
+      animation: blink 1s step-end infinite;
+    }
+
+    /* ============================================================
+       PIPELINE GRID (MINIMAL)
+    ============================================================ */
+    .section-title-bar {
+      border-bottom: var(--border-heavy);
+      background: var(--black);
+      color: var(--white);
+      padding: 1.2rem 3rem; /* SCALED DOWN */
+      font-family: var(--font-display);
+      font-size: 1.5rem; /* SCALED DOWN */
+      font-weight: 900;
+      letter-spacing: -0.02em;
+    }
+
+    .pipeline-grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      background: var(--black);
+      gap: 3px;
+      border-bottom: var(--border-heavy);
+    }
+
+    .pipe-step {
+      background: var(--white);
+      padding: 2.5rem 1.5rem; /* SCALED DOWN */
+      position: relative;
+      transition: background 0.2s;
+    }
+
+    .pipe-step:hover {
+      background: var(--grey);
+    }
+
+    .pipe-num {
+      font-family: var(--font-display);
+      font-size: 2.2rem; /* SCALED DOWN */
+      font-weight: 900;
+      margin-bottom: 1rem;
+      display: block;
+      -webkit-text-stroke: 1px var(--black);
+      color: transparent;
+      transition: color 0.2s, -webkit-text-stroke 0.2s;
+    }
+    
+    .pipe-step:hover .pipe-num {
+      color: var(--black);
+      -webkit-text-stroke: 0;
+    }
+
+    .pipe-name {
+      font-size: 1rem; /* SCALED DOWN */
+      font-weight: 800;
+      margin-bottom: 0.5rem;
+    }
+
+    .pipe-desc {
+      font-size: 0.75rem; /* SCALED DOWN */
+      font-weight: 700;
+      color: #333;
+    }
+
+    /* ============================================================
+       CONCISE FEATURES BENTO GRID (MINIMAL)
+    ============================================================ */
+    #features {
+      padding: 5rem 3rem; /* SCALED DOWN */
+      background: var(--grey);
+      border-bottom: var(--border-heavy);
+    }
+
+    .bento {
+      display: grid;
+      grid-template-columns: repeat(12, 1fr);
+      gap: 1.2rem;
+      max-width: 1400px;
+      margin: 0 auto;
+    }
+
+    .bento-card {
+      background: var(--white);
+      padding: 1.5rem; /* SCALED DOWN */
+      border: var(--border-heavy);
+      box-shadow: var(--shadow-brutal);
+      position: relative;
+      transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+    
+    .bento-card:hover {
+      box-shadow: var(--shadow-hover);
+      transform: translate(-2px, -2px);
+    }
+
+    .bento-card.span-4 { grid-column: span 4; }
+    .bento-card.span-8 { grid-column: span 8; }
+    .bento-card.span-6 { grid-column: span 6; }
+    .bento-card.span-12 { grid-column: span 12; }
+
+    .bento-card-label {
+      font-size: 0.7rem; /* SCALED DOWN */
+      font-weight: 800;
+      background: var(--black);
+      color: var(--white);
+      display: inline-block;
+      padding: 0.2rem 0.4rem;
+      margin-bottom: 1rem;
+    }
+
+    .bento-card-title {
+      font-family: var(--font-display);
+      font-size: 1.4rem; /* SCALED DOWN */
+      font-weight: 900;
+      line-height: 1.1;
+      margin-bottom: 0.4rem;
+    }
+
+    .bento-card-body {
+      font-size: 0.8rem; /* SCALED DOWN */
+      font-weight: 700;
+      color: #555;
+    }
+
+    /* AI Reasoning Minimal */
+    .ai-reasoning {
+      margin-top: 1rem;
+      background: var(--black);
+      color: var(--white);
+      padding: 1.2rem; /* SCALED DOWN */
+      border: var(--border-heavy);
+    }
+
+    .ai-step {
+      display: flex;
+      gap: 0.8rem;
+      margin-bottom: 0.8rem;
+    }
+    .ai-step:last-child { margin-bottom: 0; }
+
+    .ai-step-num {
+      font-family: var(--font-display);
+      font-weight: 900;
+      font-size: 1rem; /* SCALED DOWN */
+      border: 2px solid var(--white);
+      width: 24px; height: 24px;
+      display: grid; place-items: center;
       flex-shrink: 0;
     }
 
-    /* ── FOOTER ───────────────────────────────────────────────── */
-    footer {
-      background: var(--black);
-      color: var(--white);
-      border-top: 3px solid #FAFAFA;
-      padding: 0;
-    }
-
-    .footer-main {
-      max-width: 1280px;
-      margin: 0 auto;
-      padding: 56px 48px;
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      gap: 32px;
-      border-bottom: 3px solid #333;
-    }
-
-    .footer-logo {
-      font-family: 'Cabinet Grotesk', sans-serif;
-      font-weight: 900;
-      font-size: 1.2rem;
-      letter-spacing: -0.02em;
-      color: var(--white);
-    }
-    .footer-tagline {
-      font-size: 0.65rem;
-      font-weight: 400;
-      color: #666;
-      letter-spacing: 0.08em;
-      text-transform: uppercase;
-      margin-top: 6px;
-    }
-
-    .footer-links {
-      display: flex;
-      list-style: none;
-      gap: 0;
-    }
-    .footer-links li a {
-      display: block;
-      padding: 10px 20px;
-      font-family: 'JetBrains Mono', monospace;
+    .ai-step-text {
+      font-size: 0.75rem; /* SCALED DOWN */
       font-weight: 700;
-      font-size: 0.65rem;
-      letter-spacing: 0.1em;
-      text-transform: uppercase;
-      text-decoration: none;
-      color: var(--white);
-      border: 3px solid #333;
-      border-right: none;
-      transition: background 0.08s, color 0.08s, border-color 0.08s;
+      line-height: 1.4;
     }
-    .footer-links li:last-child a { border-right: 3px solid #333; }
-    .footer-links li a:hover { background: var(--white); color: var(--black); border-color: var(--white); }
 
-    .footer-bottom {
-      max-width: 1280px;
-      margin: 0 auto;
-      padding: 24px 48px;
-      display: flex;
+    /* Diff Viewer Minimal */
+    .diff-view {
+      margin-top: 1rem;
+      background: var(--white);
+      border: var(--border-heavy);
+      font-size: 0.75rem; /* SCALED DOWN */
+      font-weight: 700;
+    }
+    .diff-row { display: flex; padding: 0.4rem 0.8rem; border-bottom: 1px solid #DDD; }
+    .diff-row:last-child { border: none; }
+    .diff-del { background: #FDECEC; color: var(--black); text-decoration: line-through; }
+    .diff-add { background: var(--black); color: var(--white); font-weight: 800; border-left: 4px solid var(--black); }
+
+    /* ============================================================
+       UPLOAD SECTION (MINIMAL)
+    ============================================================ */
+    #upload {
+      padding: 5rem 3rem; /* SCALED DOWN */
+      background: var(--white);
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 3rem;
       align-items: center;
-      justify-content: space-between;
-      gap: 16px;
+      position: relative;
     }
-    .footer-copy {
-      font-size: 0.65rem;
-      color: #555;
-      letter-spacing: 0.06em;
-      text-transform: uppercase;
+
+    #upload::before {
+      content: ''; position: absolute; inset: 0; pointer-events: none;
+      background: repeating-linear-gradient(45deg, transparent, transparent 10px, rgba(0,0,0,0.02) 10px, rgba(0,0,0,0.02) 20px);
+      z-index: 0;
     }
-    .footer-status {
-      display: flex;
-      align-items: center;
-      gap: 8px;
-      font-size: 0.65rem;
-      color: #555;
-      letter-spacing: 0.06em;
-      text-transform: uppercase;
+    
+    #upload > * { position: relative; z-index: 1; }
+
+    .upload-main-text {
+      font-family: var(--font-display);
+      font-size: clamp(2rem, 3vw, 2.8rem); /* SCALED DOWN */
+      font-weight: 900;
+      margin-bottom: 1rem;
+      line-height: 0.95;
     }
-    .status-dot {
-      width: 7px; height: 7px;
-      background: #00FF88;
+
+    .upload-zone {
+      border: 4px dashed var(--black); /* Thinner border */
+      padding: 3rem 1.5rem; /* SCALED DOWN */
+      text-align: center;
+      background: var(--white);
+      transition: background 0.2s, box-shadow 0.2s;
+    }
+
+    .upload-zone:hover {
+      background: var(--grey);
+      box-shadow: 8px 8px 0px 0px var(--black);
+      border-style: solid;
+      transform: translate(-3px, -3px);
+    }
+
+    .upload-icon {
+      font-size: 1.5rem; /* SCALED DOWN */
+      font-family: var(--font-display);
+      font-weight: 900;
+      margin-bottom: 1rem;
       display: inline-block;
-      animation: blink 2s step-start infinite;
-    }
-
-    /* ── MARQUEE STRIP ────────────────────────────────────────── */
-    .marquee-strip {
-      border-bottom: var(--border);
-      border-top: var(--border);
       background: var(--black);
       color: var(--white);
+      padding: 0.5rem 1rem;
+      transform: rotate(-3deg);
+    }
+
+    /* ============================================================
+       MARQUEE FOOTER (MINIMAL)
+    ============================================================ */
+    .marquee {
+      background: var(--black);
+      color: var(--white);
+      padding: 0.8rem 0;
       overflow: hidden;
-      padding: 14px 0;
+      display: flex;
       white-space: nowrap;
+      border-top: var(--border-heavy);
+      border-bottom: var(--border-heavy);
+    }
+
+    .marquee-content {
+      display: inline-flex;
+      animation: marquee 20s linear infinite;
+      font-family: var(--font-display);
+      font-weight: 900;
+      font-size: 1rem; /* SCALED DOWN */
+      letter-spacing: 0.05em;
+    }
+    
+    .marquee-content span {
+      margin: 0 1.5rem;
     }
 
     @keyframes marquee {
-      from { transform: translateX(0); }
-      to   { transform: translateX(-50%); }
+      0% { transform: translateX(0); }
+      100% { transform: translateX(-50%); }
     }
 
-    .marquee-track {
-      display: inline-flex;
-      gap: 0;
-      animation: marquee 22s linear infinite;
+    footer {
+      background: var(--grey);
+      color: var(--black);
+      padding: 2rem 3rem; /* SCALED DOWN */
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
     }
 
-    .marquee-item {
-      font-family: 'JetBrains Mono', monospace;
-      font-weight: 700;
-      font-size: 0.7rem;
-      letter-spacing: 0.12em;
-      text-transform: uppercase;
-      padding: 0 40px;
-      color: #888;
+    .footer-logo {
+      font-family: var(--font-display);
+      font-size: 1.4rem; /* SCALED DOWN */
+      font-weight: 900;
+      margin-bottom: 0.2rem;
+      line-height: 1;
     }
-    .marquee-item span { color: #FAFAFA; }
 
-    /* ── RESPONSIVE PATCH (minimal) ───────────────────────────── */
+    .footer-right {
+      font-size: 0.75rem; /* SCALED DOWN */
+      font-weight: 800;
+      text-align: right;
+    }
+
+    /* Responsive */
     @media (max-width: 1024px) {
-      .hero-inner { grid-template-columns: 1fr; }
-      .hero-right { margin-top: 40px; }
-      .steps-grid { grid-template-columns: repeat(2, 1fr); }
-      .features-grid { grid-template-columns: repeat(2, 1fr); }
-      .stats-inner { grid-template-columns: repeat(2, 1fr); }
-      .cta-inner { flex-direction: column; }
-    }
-    @media (max-width: 640px) {
-      nav { padding: 0 20px; }
-      .container, .hero-inner, .cta-inner, .footer-main, .footer-bottom { padding-left: 20px; padding-right: 20px; }
+      header { grid-template-columns: 1fr; }
+      .hero-content { border-right: none; border-bottom: var(--border-heavy); }
+      #upload { grid-template-columns: 1fr; gap: 3rem; }
+      .bento-card.span-4, .bento-card.span-8, .bento-card.span-6 { grid-column: span 12; }
       .nav-links { display: none; }
-      .steps-grid { grid-template-columns: 1fr; }
-      .features-grid { grid-template-columns: 1fr; }
-      .stats-inner { grid-template-columns: 1fr; }
-      .hero-counters { grid-template-columns: 1fr; }
+      .pipeline-grid { grid-template-columns: repeat(2, 1fr); }
+    }
+    
+    @media (max-width: 600px) {
+      .pipeline-grid { grid-template-columns: 1fr; }
     }
   </style>
 </head>
 <body>
 
-<!-- ══════════════════════════════════════════════════════════════
-     NAV
-══════════════════════════════════════════════════════════════════ -->
-<nav>
-  <a href="#" class="nav-logo">
-    <span class="logo-dot"></span>
-    DATAPILOT
-  </a>
-  <ul class="nav-links">
-    <li><a href="#features">Features</a></li>
-    <li><a href="#how-it-works">How It Works</a></li>
-    <li><a href="#">Docs</a></li>
-  </ul>
-  <a href="#" class="btn nav-cta" style="font-size:0.7rem; padding:10px 22px;">LAUNCH APP →</a>
-</nav>
+  <!-- NAV -->
+  <nav>
+    <div class="nav-brand">DATAPILOT</div>
+    <div class="nav-links">
+      <a href="#pipeline" class="nav-link">PIPELINE_ARCHITECTURE</a>
+      <a href="#features" class="nav-link">PLATFORM_FEATURES</a>
+      <a href="#upload" class="nav-link">UPLOAD_DATA</a>
+    </div>
+    <div class="nav-status">
+      <div class="status-dot"></div>
+      SYS_ONLINE
+    </div>
+  </nav>
 
-
-<!-- ══════════════════════════════════════════════════════════════
-     HERO
-══════════════════════════════════════════════════════════════════ -->
-<section id="hero">
-  <div class="hero-inner">
-
-    <!-- LEFT -->
-    <div class="hero-left">
-      <div class="hero-badge anim-fade-in d1">
-        <span class="blink-dot"></span>
-        <span class="label">LIVE SYSTEM ACTIVE</span>
-      </div>
-
-      <h1 class="hero-h1 anim-fade-up d2">
-        <span class="accent-line">YOUR DATA</span>
-        <span class="accent-line">IS <span class="underline-heavy">BROKEN.</span></span>
-        <span class="accent-line">WE FIX IT.</span>
+  <!-- HERO -->
+  <header id="hero">
+    <div class="hero-content">
+      <div class="hero-eyebrow fade-in">PROTOCOL_01: INGEST_AND_CLEAN</div>
+      <h1 class="fade-in" style="transition-delay: 0.1s;">
+        YOUR DATA.<br><em>SURGICALLY</em><br>CLEANED.
       </h1>
-
-      <p class="hero-sub anim-fade-up d3">
-        DataPilot uses large language models to analyze, plan, and execute
-        intelligent data cleaning operations — detecting nulls, duplicates,
-        type mismatches, outliers, and 50+ issue types in seconds.
+      <p class="hero-desc fade-in" style="transition-delay: 0.2s;">
+        UPLOAD MESSY DATASETS. DATAPILOT AI ANALYZES EVERY COLUMN, PLANS A PRECISION CLEANING STRATEGY, EXECUTES IT SAFELY, THEN HANDS YOU A QUALITY-SCORED REPORT.
       </p>
-
-      <div class="hero-ctas anim-fade-up d4">
-        <a href="#" class="btn">UPLOAD DATASET →</a>
-        <a href="#" class="btn btn-outline">VIEW DEMO</a>
-      </div>
-
-      <div class="hero-counters anim-fade-up d5">
-        <div class="counter-cell">
-          <span class="counter-num" data-target="2.4" data-suffix="M">0</span>
-          <span class="counter-label">Rows Cleaned</span>
-        </div>
-        <div class="counter-cell">
-          <span class="counter-num" data-target="98" data-suffix="%">0</span>
-          <span class="counter-label">Accuracy Rate</span>
-        </div>
-        <div class="counter-cell">
-          <span class="counter-num" data-target="3" data-suffix="s">0</span>
-          <span class="counter-label">Avg Analysis Time</span>
-        </div>
-      </div>
+      <button class="brutal-btn fade-in" style="transition-delay: 0.3s;" onclick="window.location.href='app.html'">
+        INITIALIZE <span style="margin-left: 0.8rem;">→</span>
+      </button>
     </div>
-
-    <!-- RIGHT — TERMINAL -->
-    <div class="hero-right anim-slide-left d3">
+    
+    <div class="hero-terminal fade-in" style="transition-delay: 0.4s;">
       <div class="terminal-window">
-        <div class="terminal-titlebar">
-          <span class="t-btn"></span>
-          <span class="t-btn"></span>
-          <span class="t-btn"></span>
-          <span class="terminal-title">datapilot — analysis.py — bash</span>
+        <div class="term-header">
+          <span>TERMINAL_VIEW</span>
+          <span>ROOT@DATAPILOT</span>
         </div>
-        <div class="terminal-body" id="terminal-body">
-          <!-- injected by JS -->
+        <div class="term-body" id="term-logs">
+          <div class="log log-sys">> EXECUTING STARTUP SEQUENCE</div>
+          <div class="log">> MOUNTING DATA VOLUMES... <span class="log-ok">OK</span></div>
+          <div class="log">> SYSTEM READY. WAITING FOR INPUT...</div>
         </div>
       </div>
     </div>
+  </header>
 
-  </div>
-
-  <!-- MARQUEE -->
-  <div class="marquee-strip" style="margin-top:80px;">
-    <div class="marquee-track" id="marquee-track">
-      <!-- duplicated in JS -->
+  <!-- PIPELINE -->
+  <section id="pipeline">
+    <div class="section-title-bar fade-in">ARCHITECTURE_PIPELINE</div>
+    <div class="pipeline-grid">
+      <div class="pipe-step fade-in">
+        <span class="pipe-num">01</span>
+        <div class="pipe-name">INGEST</div>
+        <div class="pipe-desc">FastAPI endpoints. Direct file upload. No middleware.</div>
+      </div>
+      <div class="pipe-step fade-in" style="transition-delay: 0.1s;">
+        <span class="pipe-num">02</span>
+        <div class="pipe-name">ANALYZE</div>
+        <div class="pipe-desc">Dataprep engine. Detect nulls, duplicates, outliers.</div>
+      </div>
+      <div class="pipe-step fade-in" style="transition-delay: 0.2s;">
+        <span class="pipe-num">03</span>
+        <div class="pipe-name">PLAN</div>
+        <div class="pipe-desc">LangChain orchestration. Deterministic AI planning.</div>
+      </div>
+      <div class="pipe-step fade-in" style="transition-delay: 0.3s;">
+        <span class="pipe-num">04</span>
+        <div class="pipe-name">EXECUTE</div>
+        <div class="pipe-desc">PyJanitor + Pandas. Safe execution layer.</div>
+      </div>
+      <div class="pipe-step fade-in" style="transition-delay: 0.4s;">
+        <span class="pipe-num">05</span>
+        <div class="pipe-name">VALIDATE</div>
+        <div class="pipe-desc">Post-clean checks: integrity, type consistency, null reduction.</div>
+      </div>
+      <div class="pipe-step fade-in" style="transition-delay: 0.5s;">
+        <span class="pipe-num">06</span>
+        <div class="pipe-name">REPORT</div>
+        <div class="pipe-desc">ydata-profiling generates before/after reports with quality scores.</div>
+      </div>
+      <div class="pipe-step fade-in" style="transition-delay: 0.6s;">
+        <span class="pipe-num">07</span>
+        <div class="pipe-name">VISUALIZE</div>
+        <div class="pipe-desc">Interactive dashboard shows AI reasoning, diffs, and improvements.</div>
+      </div>
     </div>
-  </div>
-</section>
+  </section>
 
-
-<!-- ══════════════════════════════════════════════════════════════
-     HOW IT WORKS
-══════════════════════════════════════════════════════════════════ -->
-<section id="how-it-works">
-  <div class="container">
-    <div class="section-label">
-      <span class="label">// HOW IT WORKS</span>
-    </div>
-
-    <div style="margin-bottom:48px;">
-      <h2 style="font-size:clamp(2rem,3.5vw,3rem); max-width:640px;">
-        FROM RAW MESS TO CLEAN DATA IN FOUR STEPS.
+  <!-- FEATURES -->
+  <section id="features">
+    <div style="max-width: 1400px; margin: 0 auto; padding-bottom: 1.5rem;">
+      <div class="section-label" style="font-size: 0.7rem; font-weight: 800; display: inline-block; padding: 0.3rem 0.6rem; background: var(--black); color: var(--white); margin-bottom: 1.2rem; box-shadow: 2px 2px 0px 0px var(--white);">PLATFORM FEATURES</div>
+      <h2 class="fade-in" style="font-family: var(--font-display); font-size: clamp(1.8rem, 2.5vw, 2.5rem); font-weight: 900; letter-spacing: -0.02em; max-width: 750px; margin-bottom: 2rem; line-height: 1.1;">
+        Intelligence you can <em>see</em>.
       </h2>
     </div>
 
-    <div class="steps-grid">
-      <div class="step-card">
-        <span class="step-arrow">→</span>
-        <div class="step-num">01</div>
-        <span class="step-icon">⬆</span>
-        <div class="step-title">UPLOAD</div>
-        <p class="step-desc">
-          Drop in any CSV, Excel, JSON, or Parquet file. DataPilot
-          accepts files up to 500 MB and handles multi-sheet workbooks
-          with no additional configuration.
-        </p>
+    <div class="bento">
+      <!-- Quality Score Card -->
+      <div class="bento-card span-4 fade-in">
+        <div class="bento-card-label">QUALITY_ENGINE</div>
+        <div class="bento-card-title">DATASET SCORE</div>
+        <div class="bento-card-body">Real-time scoring across missing values, duplicates, and outliers.</div>
+        <div style="margin-top: 1.5rem; display: flex; align-items: baseline; gap: 0.5rem;">
+          <div style="font-family: var(--font-display); font-size: 4rem; font-weight: 900; line-height: 0.8;">94</div>
+          <div style="font-weight: 800; font-size: 1rem; color: #666;">/ 100</div>
+        </div>
       </div>
-      <div class="step-card">
-        <span class="step-arrow">→</span>
-        <div class="step-num">02</div>
-        <span class="step-icon">⚡</span>
-        <div class="step-title">ANALYZE</div>
-        <p class="step-desc">
-          Our engine profiles every column — detecting data types,
-          null distributions, outliers, duplicates, encoding issues,
-          and statistical anomalies in under 3 seconds.
-        </p>
+
+      <!-- AI Reasoning Card -->
+      <div class="bento-card span-8 fade-in" style="transition-delay: 0.1s;">
+        <div class="bento-card-label">AI_PLANNER</div>
+        <div class="bento-card-title">LLM REASONING</div>
+        <div class="bento-card-body">Every cleaning decision is explained and validated. No hallucinations.</div>
+        <div class="ai-reasoning">
+          <div class="ai-step">
+            <div class="ai-step-num">1</div>
+            <div class="ai-step-text">Drop 847 exact duplicate rows. [Conf: 0.99]</div>
+          </div>
+          <div class="ai-step">
+            <div class="ai-step-num">2</div>
+            <div class="ai-step-text">Impute `age` nulls using median strategy. Skew detected.</div>
+          </div>
+        </div>
       </div>
-      <div class="step-card">
-        <span class="step-arrow">→</span>
-        <div class="step-num">03</div>
-        <span class="step-icon">🤖</span>
-        <div class="step-title">AI PLANS</div>
-        <p class="step-desc">
-          The LLM reasoning engine generates a structured cleaning
-          plan — choosing optimal strategies for each issue with
-          full justification you can inspect and override.
-        </p>
+
+      <!-- Diff Viewer Card -->
+      <div class="bento-card span-8 fade-in" style="transition-delay: 0.2s;">
+        <div class="bento-card-label">BEFORE_AFTER</div>
+        <div class="bento-card-title">CELL-LEVEL DIFFS</div>
+        <div class="bento-card-body">Inspect exactly what changed row by row.</div>
+        <div class="diff-view">
+          <div class="diff-row diff-del">- user_001 | 28.0 | NaN</div>
+          <div class="diff-row diff-add">+ user_001 | 28.0 | Sales</div>
+          <div class="diff-row">  [↑ DUPLICATE REMOVED]</div>
+        </div>
       </div>
-      <div class="step-card">
-        <div class="step-num">04</div>
-        <span class="step-icon">✓</span>
-        <div class="step-title">CLEAN &amp; REPORT</div>
-        <p class="step-desc">
-          Transformations execute safely in a sandboxed environment.
-          Download your clean dataset alongside a detailed audit
-          report with before/after comparisons.
-        </p>
+
+      <!-- Outputs Card -->
+      <div class="bento-card span-4 fade-in" style="transition-delay: 0.3s;">
+        <div class="bento-card-label">OUTPUTS</div>
+        <div class="bento-card-title">AUDITABLE EXPORTS</div>
+        <div class="bento-card-body">Download everything you need.</div>
+        <div style="margin-top: 1rem; font-weight: 800; font-size: 0.75rem; line-height: 2;">
+          [⬇] CLEANED_DATASET.CSV<br>
+          [⬇] PROFILING_REPORT.HTML
+        </div>
       </div>
+
+      <!-- CTA Mini Card -->
+      <div class="bento-card span-12 fade-in" style="transition-delay: 0.4s; background: var(--black); color: var(--white); display: flex; align-items: center; justify-content: space-between; padding: 2rem;">
+        <div>
+          <div class="bento-card-title" style="margin: 0; font-size: 1.8rem;">READY TO CLEAN?</div>
+        </div>
+        <button class="brutal-btn" style="background: var(--white); color: var(--black); font-size: 0.85rem; padding: 0.8rem 1.6rem;" onclick="window.location.href='app.html'">
+          UPLOAD DATASET →
+        </button>
+      </div>
+
     </div>
-  </div>
-</section>
+  </section>
 
-
-<!-- ══════════════════════════════════════════════════════════════
-     FEATURES GRID
-══════════════════════════════════════════════════════════════════ -->
-<section id="features">
-  <div class="container">
-    <div class="features-header">
-      <h2 class="features-h2">THE ENGINE UNDER THE HOOD.</h2>
-      <p class="features-sub">
-        Every component is purpose-built for data quality at scale —
-        no black boxes, no guesswork.
+  <!-- UPLOAD -->
+  <section id="upload" style="max-width: 1400px; margin: 0 auto;">
+    <div class="fade-in">
+      <div class="section-label" style="font-size: 0.7rem; font-weight: 800; display: inline-block; padding: 0.3rem 0.6rem; background: var(--black); color: var(--white); margin-bottom: 1.2rem; box-shadow: 2px 2px 0px 0px var(--grey);">UPLOAD INTERFACE</div>
+      <h2 class="upload-main-text">
+        DRAG, DROP,<br/><em>TRANSFORM</em>.
+      </h2>
+      <p style="font-size: 0.95rem; font-weight: 700; color: #333; line-height: 1.7; max-width: 400px;">
+        The moment your file lands, the pipeline begins. Analysis in seconds. AI plan in under a minute. Clean dataset ready to download.
       </p>
+      <div style="margin-top: 2rem; display: flex; flex-direction: column; gap: 10px; font-weight: 800; font-size: 0.85rem;">
+        <div style="display: flex; gap: 10px;"><span style="color: var(--black);">[+]</span> Automatic issue detection</div>
+        <div style="display: flex; gap: 10px;"><span style="color: var(--black);">[+]</span> LLM plans cleaning strategy</div>
+        <div style="display: flex; gap: 10px;"><span style="color: var(--black);">[+]</span> Review, approve, then execute</div>
+        <div style="display: flex; gap: 10px;"><span style="color: var(--black);">[+]</span> Download cleaned file + report</div>
+      </div>
     </div>
 
-    <div class="features-grid">
-
-      <div class="feat-card">
-        <span class="feat-icon">◈</span>
-        <span class="feat-tag">Core</span>
-        <div class="feat-title">AI PLANNING ENGINE</div>
-        <p class="feat-desc">
-          GPT-4-class reasoning generates step-by-step cleaning strategies.
-          Each action is justified, auditable, and optionally human-approved
-          before execution.
-        </p>
+    <div class="upload-zone fade-in" style="transition-delay: 0.2s; cursor: pointer;" onclick="window.location.href='app.html'">
+      <span class="upload-icon">DRAG & DROP</span>
+      <div style="font-family: var(--font-display); font-size: 1.5rem; font-weight: 900; margin-bottom: 0.8rem;">DROP YOUR DATASET HERE</div>
+      <div style="font-weight: 700; font-size: 0.85rem; color: #555; margin-bottom: 1.5rem;">
+        Drag & drop your file, or click to browse.<br/>
+        DataPilot handles the rest automatically.
       </div>
-
-      <div class="feat-card">
-        <span class="feat-icon">⊕</span>
-        <span class="feat-tag">Analysis</span>
-        <div class="feat-title">SMART ANALYSIS</div>
-        <p class="feat-desc">
-          Deep statistical profiling across 50+ issue types — from
-          null patterns and type drift to cross-column constraint
-          violations and format inconsistencies.
-        </p>
+      <div style="font-weight: 800; font-size: 0.75rem; margin-bottom: 2rem; letter-spacing: 0.05em;">
+        [.CSV] [.XLSX] [.JSON] [.PARQUET]
       </div>
+      <button class="brutal-btn" style="width: 100%; justify-content: center; font-size: 0.9rem;" onclick="event.stopPropagation(); window.location.href='app.html'">
+        CHOOSE FILE →
+      </button>
+    </div>
+  </section>
 
-      <div class="feat-card">
-        <span class="feat-icon">⛨</span>
-        <span class="feat-tag">Safety</span>
-        <div class="feat-title">SAFE EXECUTION</div>
-        <p class="feat-desc">
-          All operations run inside an isolated sandbox. Original data
-          is never mutated. Every transformation is reversible with
-          a full transaction log.
-        </p>
-      </div>
-
-      <div class="feat-card">
-        <span class="feat-icon">≡</span>
-        <span class="feat-tag">Reporting</span>
-        <div class="feat-title">QUALITY REPORTS</div>
-        <p class="feat-desc">
-          Auto-generated PDF and JSON audit reports with column-level
-          statistics, issue severity scores, applied fixes, and
-          data quality index scores.
-        </p>
-      </div>
-
-      <div class="feat-card">
-        <span class="feat-icon">⇄</span>
-        <span class="feat-tag">Comparison</span>
-        <div class="feat-title">BEFORE / AFTER</div>
-        <p class="feat-desc">
-          Side-by-side diff view of every changed cell. Inspect
-          individual transformations, filter by column, and annotate
-          decisions for team review.
-        </p>
-      </div>
-
-      <div class="feat-card">
-        <span class="feat-icon">⬇</span>
-        <span class="feat-tag">Export</span>
-        <div class="feat-title">DOWNLOAD &amp; EXPORT</div>
-        <p class="feat-desc">
-          Export clean data as CSV, Excel, JSON, or Parquet. Push
-          directly to S3, GCS, BigQuery, or Snowflake via native
-          connectors.
-        </p>
-      </div>
-
+  <!-- MARQUEE DIVIDER -->
+  <div class="marquee">
+    <div class="marquee-content">
+      <span>NO HALLUCINATIONS</span> <span>·</span>
+      <span>DETERMINISTIC EXECUTION</span> <span>·</span>
+      <span>ORCHESTRATION-FIRST</span> <span>·</span>
+      <span>PRODUCTION-GRADE AI</span> <span>·</span>
+      <span>NO HALLUCINATIONS</span> <span>·</span>
+      <span>DETERMINISTIC EXECUTION</span> <span>·</span>
+      <span>ORCHESTRATION-FIRST</span> <span>·</span>
+      <span>PRODUCTION-GRADE AI</span> <span>·</span>
     </div>
   </div>
-</section>
 
-
-<!-- ══════════════════════════════════════════════════════════════
-     STATS
-══════════════════════════════════════════════════════════════════ -->
-<section id="stats">
-  <div class="stats-inner">
-
-    <div class="stat-cell">
-      <span class="stat-num" data-counter="10M+">10M+</span>
-      <span class="stat-label">ROWS PROCESSED</span>
-      <p class="stat-desc">Across 120,000+ datasets cleaned since launch.</p>
-    </div>
-
-    <div class="stat-cell">
-      <span class="stat-num" data-counter="99.2%">99.2%</span>
-      <span class="stat-label">ACCURACY RATE</span>
-      <p class="stat-desc">Verified against ground-truth test datasets.</p>
-    </div>
-
-    <div class="stat-cell">
-      <span class="stat-num" data-counter="&lt;3s">&lt;3s</span>
-      <span class="stat-label">ANALYSIS TIME</span>
-      <p class="stat-desc">Average full-profile time for datasets up to 100k rows.</p>
-    </div>
-
-    <div class="stat-cell">
-      <span class="stat-num" data-counter="50+">50+</span>
-      <span class="stat-label">ISSUE TYPES DETECTED</span>
-      <p class="stat-desc">From simple nulls to complex cross-column anomalies.</p>
-    </div>
-
-  </div>
-</section>
-
-
-<!-- ══════════════════════════════════════════════════════════════
-     CTA BAND
-══════════════════════════════════════════════════════════════════ -->
-<section id="cta-band">
-  <div class="cta-inner">
-    <div class="cta-text">
-      <h2>READY TO CLEAN?<br/>UPLOAD IN 10 SECONDS.</h2>
-      <p>
-        No credit card. No signup required for the first run.
-        Drop a file and watch DataPilot go to work.
-      </p>
-    </div>
-    <div class="cta-actions">
-      <a href="#" class="btn" style="font-size:0.85rem; padding:18px 40px;">UPLOAD DATASET →</a>
-      <a href="#" class="btn btn-outline" style="font-size:0.85rem; padding:18px 40px;">READ THE DOCS</a>
-    </div>
-  </div>
-</section>
-
-
-<!-- ══════════════════════════════════════════════════════════════
-     FOOTER
-══════════════════════════════════════════════════════════════════ -->
-<footer>
-  <div class="footer-main">
+  <!-- FOOTER -->
+  <footer>
     <div>
       <div class="footer-logo">DATAPILOT</div>
-      <div class="footer-tagline">// AI-POWERED DATA CLEANING</div>
+      <div style="font-weight: 800; font-size: 0.75rem; color: #555;">AI-Powered Intelligent Data Cleaning Platform</div>
     </div>
-    <ul class="footer-links">
-      <li><a href="#">Features</a></li>
-      <li><a href="#">How It Works</a></li>
-      <li><a href="#">Docs</a></li>
-      <li><a href="#">GitHub</a></li>
-    </ul>
-  </div>
-  <div class="footer-bottom">
-    <span class="footer-copy">© 2026 DATAPILOT. ALL RIGHTS RESERVED.</span>
-    <div class="footer-status">
-      <span class="status-dot"></span>
-      ALL SYSTEMS OPERATIONAL
+    <div class="footer-right">
+      Built with LangChain · FastAPI · PyJanitor<br/>
+      Orchestration-first · Production-grade
     </div>
-  </div>
-</footer>
+  </footer>
 
+  <script>
+    // Scroll Reveal
+    const reveals = document.querySelectorAll('.fade-in, .pipe-step');
+    const observer = new IntersectionObserver((entries) => {
+      entries.forEach(entry => {
+        if (entry.isIntersecting) {
+          entry.target.classList.add('visible');
+          observer.unobserve(entry.target);
+        }
+      });
+    }, { threshold: 0.1 });
+    reveals.forEach(el => observer.observe(el));
 
-<!-- ══════════════════════════════════════════════════════════════
-     SCRIPTS
-══════════════════════════════════════════════════════════════════ -->
-<script>
-/* ─── TERMINAL TYPEWRITER ──────────────────────────────────────── */
-const terminalLines = [
-  { cls: 'out-dim',  text: '# DataPilot v2.1.0 — Analysis Engine' },
-  { cls: 'cmd',      text: '$ datapilot analyze sales_data_2024.csv', prompt: '>' },
-  { cls: 'out-info', text: '  ● Loading dataset...   [500ms]' },
-  { cls: 'out-info', text: '  ● Profiling 47,382 rows × 18 columns' },
-  { cls: 'out-warn', text: '  ⚠ Missing values detected:' },
-  { cls: 'out-warn', text: '      revenue     → 12.4%  null' },
-  { cls: 'out-warn', text: '      customer_id  →  3.1%  null' },
-  { cls: 'out-err',  text: '  ✗ Duplicate rows: 1,847 found' },
-  { cls: 'out-warn', text: '  ⚠ Type mismatch: `date` col is STRING' },
-  { cls: 'out-warn', text: '  ⚠ Outliers (3σ): 243 values in `amount`' },
-  { cls: 'out-ok',   text: '  ✓ No encoding issues found' },
-  { cls: 'out-ok',   text: '  ✓ Foreign key integrity: 99.7%' },
-  { cls: 'out-dim',  text: '' },
-  { cls: 'out-info', text: '  ▸ Generating AI cleaning plan...' },
-  { cls: 'out-ok',   text: '  ✓ Plan ready — 9 operations queued' },
-  { cls: 'out-dim',  text: '' },
-  { cls: 'cmd',      text: '$ datapilot execute --plan plan_001.json', prompt: '>' },
-  { cls: 'out-ok',   text: '  ✓ Cleaning complete in 1.84s' },
-  { cls: 'out-ok',   text: '  ✓ Dataset quality score: 97.3 / 100' },
-  { cls: 'out-ok',   text: '  ✓ Output → clean_sales_data_2024.csv' },
-];
+    // Terminal Typing Animation
+    const logs = [
+      { t: "datapilot analyze customer_data.csv", c: "" },
+      { t: "Reading 12 columns × 1,200 rows...", c: "log-sys" },
+      { t: "Missing values → age: 142, dept: 89", c: "log-err" },
+      { t: "Duplicates found → 847 rows", c: "log-err" },
+      { t: "datapilot plan --model gemini", c: "" },
+      { t: "LLM generating cleaning strategy...", c: "log-sys" },
+      { t: "[1] drop_duplicates ✓ conf 0.99", c: "log-ok" },
+      { t: "datapilot execute --plan plan.json", c: "" },
+      { t: "Quality score: 34 → 94 (+177%)", c: "log-ok" },
+      { t: "cleaned_dataset.csv ready", c: "log-ok" },
+      { t: "", c: "cursor-line" }
+    ];
 
-const termBody = document.getElementById('terminal-body');
+    const termBox = document.getElementById('term-logs');
+    let idx = 0;
 
-function renderTerminal() {
-  termBody.innerHTML = '';
-  let delay = 350;
+    setInterval(() => {
+      const cursor = document.querySelector('.cursor');
+      if(cursor) cursor.remove();
 
-  terminalLines.forEach((line, i) => {
-    const el = document.createElement('div');
-    el.classList.add('terminal-line');
-
-    if (line.prompt) {
-      el.innerHTML = `<span class="prompt">${line.prompt}</span><span class="${line.cls}">${line.text.replace(/^\$\s/, '')}</span>`;
-    } else {
-      el.innerHTML = `<span class="${line.cls}">${line.text || '&nbsp;'}</span>`;
-    }
-
-    termBody.appendChild(el);
-
-    setTimeout(() => {
-      el.classList.add('visible');
-    }, delay);
-
-    delay += line.text.length > 0 ? Math.min(line.text.length * 12, 280) : 80;
-  });
-
-  // add blinking cursor at end
-  setTimeout(() => {
-    const cursorLine = document.createElement('div');
-    cursorLine.classList.add('terminal-line', 'visible');
-    cursorLine.innerHTML = `<span class="prompt">></span><span class="cursor"></span>`;
-    termBody.appendChild(cursorLine);
-  }, delay + 100);
-}
-
-renderTerminal();
-// replay terminal every 18 seconds
-setInterval(() => { renderTerminal(); }, 18000);
-
-
-/* ─── MARQUEE CONTENT ──────────────────────────────────────────── */
-const marqueeItems = [
-  ['MISSING VALUES', 'detected & filled'],
-  ['DUPLICATE ROWS', 'removed automatically'],
-  ['TYPE MISMATCHES', 'inferred & corrected'],
-  ['OUTLIER DETECTION', '3-sigma analysis'],
-  ['ENCODING ISSUES', 'fixed at source'],
-  ['FORMAT NORMALIZATION', 'dates, phones, emails'],
-  ['NULL IMPUTATION', 'AI-chosen strategy'],
-  ['CONSTRAINT CHECKS', 'cross-column validation'],
-];
-
-const track = document.getElementById('marquee-track');
-const items = [...marqueeItems, ...marqueeItems]; // duplicate for seamless loop
-items.forEach(([label, sub]) => {
-  const span = document.createElement('span');
-  span.classList.add('marquee-item');
-  span.innerHTML = `<span>${label}</span> — ${sub} &nbsp;•&nbsp;`;
-  track.appendChild(span);
-});
-
-
-/* ─── COUNTER ANIMATION ────────────────────────────────────────── */
-function animateCounter(el) {
-  const target = parseFloat(el.dataset.target);
-  const suffix = el.dataset.suffix || '';
-  const duration = 1400;
-  const step = 16;
-  const steps = duration / step;
-  let current = 0;
-  const increment = target / steps;
-
-  const timer = setInterval(() => {
-    current += increment;
-    if (current >= target) {
-      current = target;
-      clearInterval(timer);
-    }
-    const display = Number.isInteger(target) ? Math.round(current) : current.toFixed(1);
-    el.textContent = display + suffix;
-  }, step);
-}
-
-// trigger counters when hero is visible
-const counterEls = document.querySelectorAll('.counter-num[data-target]');
-const counterObs = new IntersectionObserver((entries) => {
-  entries.forEach(e => {
-    if (e.isIntersecting) {
-      animateCounter(e.target);
-      counterObs.unobserve(e.target);
-    }
-  });
-}, { threshold: 0.5 });
-
-counterEls.forEach(el => counterObs.observe(el));
-
-
-/* ─── SCROLL REVEAL ────────────────────────────────────────────── */
-const revealEls = document.querySelectorAll('.step-card, .feat-card, .stat-cell');
-const revealObs = new IntersectionObserver((entries) => {
-  entries.forEach(e => {
-    if (e.isIntersecting) {
-      e.target.style.animation = 'fadeUp 0.45s cubic-bezier(.22,1,.36,1) both';
-      revealObs.unobserve(e.target);
-    }
-  });
-}, { threshold: 0.15, rootMargin: '0px 0px -40px 0px' });
-
-revealEls.forEach(el => revealObs.observe(el));
-</script>
-
+      if(idx < logs.length) {
+        const div = document.createElement('div');
+        div.className = `log ${logs[idx].c !== 'cursor-line' ? logs[idx].c : ''}`;
+        
+        if (logs[idx].c === 'cursor-line') {
+          div.innerHTML = `${logs[idx].t}<span class="cursor"></span>`;
+        } else {
+          div.innerText = "> " + logs[idx].t;
+        }
+        
+        termBox.appendChild(div);
+        termBox.scrollTop = termBox.scrollHeight;
+        idx++;
+      } else {
+        idx = 0;
+        termBox.innerHTML = '<div class="log log-sys">> RESETTING TERMINAL...</div>';
+      }
+    }, 1000);
+  </script>
 </body>
 </html>

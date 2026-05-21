@@ -1,0 +1,683 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>DATAFORGE // SYSTEM</title>
+  
+  <!-- Fonts -->
+  <link href="https://api.fontshare.com/v2/css?f[]=cabinet-grotesk@800,900&display=swap" rel="stylesheet">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;700;800&display=swap" rel="stylesheet">
+
+  <style>
+    /* ============================================================
+       BRUTALISM // BASE TOKENS
+    ============================================================ */
+    :root {
+      --black: #000000;
+      --white: #FFFFFF;
+      --grey:  #EFEFEF;
+      --grey-dark: #D4D4D4;
+      --accent: #FF3300; /* Added a harsh red accent for alerts/cta */
+      
+      --font-display: 'Cabinet Grotesk', sans-serif;
+      --font-mono: 'JetBrains Mono', monospace;
+      
+      --border-heavy: 3px solid var(--black);
+      --border-light: 1.5px solid var(--black);
+      
+      --shadow-brutal: 6px 6px 0px 0px var(--black);
+      --shadow-accent: 6px 6px 0px 0px var(--accent);
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      border-radius: 0 !important;
+    }
+
+    body {
+      background-color: var(--grey);
+      color: var(--black);
+      font-family: var(--font-mono);
+      line-height: 1.5;
+      text-transform: uppercase;
+      -webkit-font-smoothing: antialiased;
+      overflow-x: hidden;
+    }
+
+    a {
+      color: inherit;
+      text-decoration: none;
+    }
+    
+    .text-accent {
+      color: var(--accent);
+    }
+
+    /* ============================================================
+       ANIMATIONS (BRUTALIST STARK REVEALS)
+    ============================================================ */
+    @keyframes starkReveal {
+      0% { transform: translateY(40px); opacity: 0; clip-path: inset(100% 0 0 0); }
+      100% { transform: translateY(0); opacity: 1; clip-path: inset(0 0 0 0); }
+    }
+    
+    @keyframes marqueeMove {
+      0% { transform: translateX(0); }
+      100% { transform: translateX(-50%); }
+    }
+    
+    @keyframes blink {
+      0%, 49% { opacity: 1; }
+      50%, 100% { opacity: 0; }
+    }
+
+    .reveal {
+      opacity: 0;
+    }
+    .reveal.active {
+      animation: starkReveal 0.4s cubic-bezier(0,0,0,1) forwards;
+    }
+
+    /* ============================================================
+       NAVIGATION
+    ============================================================ */
+    nav {
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      background: var(--white);
+      border-bottom: var(--border-heavy);
+      display: flex;
+      justify-content: space-between;
+      align-items: stretch;
+      height: 64px;
+    }
+
+    .nav-brand {
+      font-family: var(--font-display);
+      font-size: 1.8rem;
+      font-weight: 900;
+      padding: 0 2rem;
+      display: flex;
+      align-items: center;
+      border-right: var(--border-heavy);
+      letter-spacing: -0.02em;
+      background: var(--white);
+    }
+
+    .nav-links {
+      display: flex;
+      flex-grow: 1;
+    }
+
+    .nav-link {
+      padding: 0 2rem;
+      display: flex;
+      align-items: center;
+      font-weight: 700;
+      border-right: var(--border-light);
+      transition: background-color 0.1s, color 0.1s;
+      font-size: 0.9rem;
+    }
+
+    .nav-link:hover {
+      background-color: var(--black);
+      color: var(--white);
+    }
+
+    .nav-status {
+      padding: 0 2rem;
+      display: flex;
+      align-items: center;
+      font-weight: 800;
+      background: var(--black);
+      color: var(--white);
+      gap: 12px;
+      font-size: 0.9rem;
+    }
+
+    .status-dot {
+      width: 10px;
+      height: 10px;
+      background: #00FF00;
+      border: 1.5px solid var(--white);
+      animation: blink 1s infinite;
+    }
+
+    /* ============================================================
+       MARQUEE
+    ============================================================ */
+    .marquee {
+      background: var(--accent);
+      color: var(--black);
+      border-bottom: var(--border-heavy);
+      padding: 0.5rem 0;
+      overflow: hidden;
+      white-space: nowrap;
+      font-weight: 800;
+      font-size: 0.9rem;
+      letter-spacing: 0.1em;
+      display: flex;
+    }
+    
+    .marquee-inner {
+      display: flex;
+      width: fit-content;
+      animation: marqueeMove 15s linear infinite;
+    }
+    
+    .marquee-inner span {
+      padding-right: 2rem;
+    }
+
+    /* ============================================================
+       HERO MODULE
+    ============================================================ */
+    header {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      border-bottom: var(--border-heavy);
+      background: var(--white);
+      min-height: 80vh;
+    }
+
+    .hero-content {
+      padding: 5vw;
+      border-right: var(--border-heavy);
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+    }
+
+    .hero-eyebrow {
+      font-weight: 800;
+      font-size: 1rem;
+      margin-bottom: 2rem;
+      display: inline-block;
+      padding: 0.5rem 1rem;
+      background: var(--black);
+      color: var(--white);
+      align-self: flex-start;
+      animation: starkReveal 0.4s cubic-bezier(0,0,0,1) forwards;
+    }
+
+    h1 {
+      font-family: var(--font-display);
+      font-size: clamp(3rem, 6vw, 6rem);
+      font-weight: 900;
+      line-height: 0.9;
+      letter-spacing: -0.04em;
+      margin-bottom: 2rem;
+      animation: starkReveal 0.5s 0.1s cubic-bezier(0,0,0,1) forwards;
+      opacity: 0;
+    }
+
+    .hero-desc {
+      font-size: 1rem;
+      font-weight: 700;
+      max-width: 500px;
+      margin-bottom: 3rem;
+      line-height: 1.6;
+      color: #333;
+      animation: starkReveal 0.6s 0.2s cubic-bezier(0,0,0,1) forwards;
+      opacity: 0;
+    }
+
+    .brutal-btn {
+      display: inline-flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 1.25rem 2rem;
+      font-family: var(--font-display);
+      font-size: 1.5rem;
+      font-weight: 900;
+      background: var(--white);
+      color: var(--black);
+      border: var(--border-heavy);
+      box-shadow: var(--shadow-brutal);
+      cursor: pointer;
+      transition: transform 0.1s ease, box-shadow 0.1s ease, background 0.1s;
+      align-self: flex-start;
+      opacity: 0;
+      animation: starkReveal 0.7s 0.3s cubic-bezier(0,0,0,1) forwards;
+    }
+
+    .brutal-btn:active {
+      transform: translate(6px, 6px);
+      box-shadow: 0px 0px 0px 0px var(--black);
+    }
+
+    .brutal-btn:hover {
+      background: var(--accent);
+      color: var(--black);
+      box-shadow: var(--shadow-accent);
+    }
+
+    .hero-terminal {
+      background: var(--grey-dark);
+      padding: 4vw;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+    }
+
+    .terminal-window {
+      background: var(--white);
+      border: var(--border-heavy);
+      box-shadow: var(--shadow-brutal);
+      height: 100%;
+      max-height: 600px;
+      display: flex;
+      flex-direction: column;
+      opacity: 0;
+      animation: starkReveal 0.8s 0.4s cubic-bezier(0,0,0,1) forwards;
+    }
+
+    .term-header {
+      border-bottom: var(--border-heavy);
+      padding: 1rem;
+      font-weight: 800;
+      display: flex;
+      justify-content: space-between;
+      background: var(--black);
+      color: var(--white);
+      font-size: 0.9rem;
+    }
+
+    .term-body {
+      padding: 2rem;
+      font-weight: 700;
+      font-size: 0.95rem;
+      line-height: 1.8;
+      overflow-y: auto;
+      flex-grow: 1;
+    }
+
+    .log { margin-bottom: 0.5rem; }
+    .log-sys { color: #0000FF; }
+    .log-err { background: var(--accent); color: var(--black); display: inline-block; padding: 0 0.5rem; }
+    .log-ok { border-bottom: 3px solid var(--black); display: inline-block; }
+    .cursor {
+      display: inline-block;
+      width: 10px;
+      height: 1.2em;
+      background: var(--black);
+      vertical-align: middle;
+      animation: blink 1s step-end infinite;
+    }
+
+    /* ============================================================
+       PIPELINE GRID
+    ============================================================ */
+    .section-title-bar {
+      border-bottom: var(--border-heavy);
+      background: var(--black);
+      color: var(--white);
+      padding: 1.5rem 3rem;
+      font-family: var(--font-display);
+      font-size: 2.5rem;
+      font-weight: 900;
+      letter-spacing: -0.02em;
+    }
+
+    .pipeline-grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      background: var(--black);
+      gap: 3px;
+      border-bottom: var(--border-heavy);
+    }
+
+    .pipe-step {
+      background: var(--white);
+      padding: 3rem 2.5rem;
+      position: relative;
+      transition: background 0.2s;
+    }
+
+    .pipe-step:hover {
+      background: var(--accent);
+    }
+
+    .pipe-num {
+      font-family: var(--font-display);
+      font-size: 3rem;
+      font-weight: 900;
+      margin-bottom: 1.5rem;
+      display: block;
+      -webkit-text-stroke: 1.5px var(--black);
+      color: transparent;
+    }
+    
+    .pipe-step:hover .pipe-num {
+      color: var(--black);
+      -webkit-text-stroke: 0;
+    }
+
+    .pipe-name {
+      font-size: 1.3rem;
+      font-weight: 800;
+      margin-bottom: 1rem;
+    }
+
+    .pipe-desc {
+      font-size: 0.9rem;
+      font-weight: 700;
+      color: #333;
+    }
+
+    /* ============================================================
+       DATA METRICS
+    ============================================================ */
+    .metrics-container {
+      display: grid;
+      grid-template-columns: 2fr 1.2fr;
+      border-bottom: var(--border-heavy);
+    }
+
+    .metric-main {
+      border-right: var(--border-heavy);
+      background: var(--grey);
+      padding: 5vw;
+    }
+
+    .metric-side {
+      display: grid;
+      grid-template-rows: auto auto;
+      background: var(--black);
+      gap: 3px;
+    }
+
+    .metric-box {
+      padding: 3vw;
+      background: var(--white);
+    }
+
+    .score-giant {
+      font-family: var(--font-display);
+      font-size: clamp(5rem, 10vw, 10rem);
+      font-weight: 900;
+      line-height: 0.8;
+      margin: 2rem 0;
+      letter-spacing: -0.05em;
+    }
+
+    .score-label {
+      font-size: 1.2rem;
+      font-weight: 800;
+      background: var(--black);
+      color: var(--white);
+      display: inline-block;
+      padding: 0.5rem 1rem;
+    }
+
+    .data-row {
+      display: flex;
+      justify-content: space-between;
+      border-bottom: var(--border-light);
+      padding: 1rem 0;
+      font-size: 0.95rem;
+      font-weight: 700;
+    }
+    .data-row:last-child { border: none; padding-bottom: 0; }
+
+    /* ============================================================
+       UPLOAD ZONE
+    ============================================================ */
+    .upload-section {
+      background: var(--white);
+      padding: 8vw 5vw;
+      text-align: center;
+      border-bottom: var(--border-heavy);
+    }
+
+    .upload-box {
+      border: 4px dashed var(--black);
+      padding: 5vw 2vw;
+      margin: 0 auto;
+      max-width: 800px;
+      transition: all 0.2s;
+      background: var(--grey);
+    }
+
+    .upload-box:hover {
+      background: var(--accent);
+      border-style: solid;
+      color: var(--black);
+      cursor: crosshair;
+      transform: scale(1.02);
+      box-shadow: var(--shadow-brutal);
+    }
+
+    .upload-icon {
+      font-size: 4rem;
+      margin-bottom: 1.5rem;
+      font-family: var(--font-display);
+      font-weight: 900;
+    }
+
+    /* ============================================================
+       FOOTER
+    ============================================================ */
+    footer {
+      background: var(--black);
+      color: var(--white);
+      padding: 4rem 5vw;
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      font-size: 1rem;
+      font-weight: 700;
+    }
+
+    .footer-huge {
+      font-family: var(--font-display);
+      font-size: clamp(3rem, 5vw, 5rem);
+      font-weight: 900;
+      line-height: 0.9;
+    }
+
+    /* Responsive */
+    @media (max-width: 1024px) {
+      header { grid-template-columns: 1fr; }
+      .hero-content { border-right: none; border-bottom: var(--border-heavy); min-height: 50vh; }
+      .pipeline-grid { grid-template-columns: 1fr 1fr; }
+      .metrics-container { grid-template-columns: 1fr; }
+      .metric-main { border-right: none; border-bottom: var(--border-heavy); }
+    }
+    
+    @media (max-width: 600px) {
+      .pipeline-grid { grid-template-columns: 1fr; }
+      .nav-links { display: none; }
+      footer { grid-template-columns: 1fr; gap: 2rem; }
+      .footer-right { text-align: left !important; }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- MARQUEE BAR -->
+  <div class="marquee">
+    <div class="marquee-inner">
+      <span>NO FLUFF. ZERO COMPROMISE. ORCHESTRATION FIRST.</span>
+      <span>AI-POWERED DATA CLEANING PLATFORM.</span>
+      <span>DATAFORGE SYSTEMS_V1.</span>
+      <span>NO FLUFF. ZERO COMPROMISE. ORCHESTRATION FIRST.</span>
+      <span>AI-POWERED DATA CLEANING PLATFORM.</span>
+      <span>DATAFORGE SYSTEMS_V1.</span>
+      <span>NO FLUFF. ZERO COMPROMISE. ORCHESTRATION FIRST.</span>
+      <span>AI-POWERED DATA CLEANING PLATFORM.</span>
+      <span>DATAFORGE SYSTEMS_V1.</span>
+    </div>
+  </div>
+
+  <nav>
+    <div class="nav-brand">DATAFORGE</div>
+    <div class="nav-links">
+      <a href="#" class="nav-link">PIPELINE_ARCHITECTURE</a>
+      <a href="#" class="nav-link">QUALITY_ENGINE</a>
+      <a href="#" class="nav-link">UPLOAD_DATA</a>
+    </div>
+    <div class="nav-status">
+      <div class="status-dot"></div>
+      SYS_ONLINE
+    </div>
+  </nav>
+
+  <header>
+    <div class="hero-content">
+      <div class="hero-eyebrow">PROTOCOL_01: INGEST_AND_CLEAN</div>
+      <h1>RAW POWER.<br><span class="text-accent">PURE DATA.</span></h1>
+      <p class="hero-desc">
+        AI-POWERED DATA CLEANING PLATFORM. UPLOAD MESSY DATASETS. AI ANALYZES, PLANS, AND EXECUTES CLEANING.
+      </p>
+      <button class="brutal-btn">
+        INITIALIZE <span style="margin-left: 1rem;">→</span>
+      </button>
+    </div>
+    
+    <div class="hero-terminal">
+      <div class="terminal-window">
+        <div class="term-header">
+          <span>TERMINAL_VIEW</span>
+          <span>ROOT@DATAFORGE</span>
+        </div>
+        <div class="term-body" id="term-logs">
+          <div class="log log-sys">> EXECUTING STARTUP SEQUENCE</div>
+          <div class="log">> MOUNTING DATA VOLUMES... <span class="log-ok">OK</span></div>
+          <div class="log">> SYSTEM READY. WAITING FOR INPUT...</div>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <div class="section-title-bar reveal" data-delay="0">ARCHITECTURE_PIPELINE_V1</div>
+  <div class="pipeline-grid">
+    <div class="pipe-step reveal" data-delay="0">
+      <span class="pipe-num">01</span>
+      <div class="pipe-name">INGEST</div>
+      <div class="pipe-desc">FASTAPI ENDPOINTS. DIRECT FILE UPLOAD. NO MIDDLEWARE.</div>
+    </div>
+    <div class="pipe-step reveal" data-delay="100">
+      <span class="pipe-num">02</span>
+      <div class="pipe-name">ANALYZE</div>
+      <div class="pipe-desc">DATAPREP ENGINE. DETECT NULLS, DUPLICATES, OUTLIERS.</div>
+    </div>
+    <div class="pipe-step reveal" data-delay="200">
+      <span class="pipe-num">03</span>
+      <div class="pipe-name">PLAN</div>
+      <div class="pipe-desc">LANGCHAIN ORCHESTRATION. DETERMINISTIC AI PLANNING.</div>
+    </div>
+    <div class="pipe-step reveal" data-delay="300">
+      <span class="pipe-num">04</span>
+      <div class="pipe-name">EXECUTE</div>
+      <div class="pipe-desc">PYJANITOR + PANDAS. SAFE EXECUTION LAYER.</div>
+    </div>
+  </div>
+
+  <div class="section-title-bar reveal" data-delay="0">QUALITY_METRICS_ENGINE</div>
+  <div class="metrics-container">
+    <div class="metric-main reveal" data-delay="0">
+      <div class="score-label">DATA_QUALITY_SCORE</div>
+      <div class="score-giant">94/100</div>
+      <div class="hero-desc" style="max-width: 100%; opacity: 1; animation: none;">BEFORE CLEANING: 34/100. <br>IMPROVEMENT: <span class="text-accent">+176%</span>.</div>
+      <button class="brutal-btn" style="font-size: 1.2rem; padding: 1rem 1.5rem; opacity: 1; animation: none;">DOWNLOAD REPORT [PDF]</button>
+    </div>
+    <div class="metric-side">
+      <div class="metric-box reveal" data-delay="100">
+        <h3 style="margin-bottom: 1.5rem; border-bottom: var(--border-heavy); padding-bottom: 0.5rem; font-size: 1.2rem;">AI_REASONING_LOG</h3>
+        <div class="data-row"><span>DUPLICATES</span> <span class="log-err">DROPPED (847)</span></div>
+        <div class="data-row"><span>NULL_AGE</span> <span>IMPUTED (MEDIAN)</span></div>
+        <div class="data-row"><span>COUNTRY</span> <span>STANDARDIZED (ISO)</span></div>
+      </div>
+      <div class="metric-box reveal" data-delay="200">
+        <h3 style="margin-bottom: 1.5rem; border-bottom: var(--border-heavy); padding-bottom: 0.5rem; font-size: 1.2rem;">VALIDATION_STATUS</h3>
+        <div class="data-row"><span>INTEGRITY</span> <span class="log-ok">PASS</span></div>
+        <div class="data-row"><span>TYPES</span> <span class="log-ok">PASS</span></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="upload-section">
+    <h2 style="font-family: var(--font-display); font-size: clamp(2rem, 4vw, 4rem); font-weight: 900; margin-bottom: 2rem;" class="reveal" data-delay="0">INPUT_REQUIREMENT</h2>
+    <div class="upload-box reveal" data-delay="100">
+      <div class="upload-icon">[ + ]</div>
+      <h3 style="font-size: clamp(1.5rem, 2.5vw, 2.5rem); font-weight: 800; margin-bottom: 1rem;">DRAG DATASET HERE</h3>
+      <p style="font-weight: 700; font-size: 1rem;">SUPPORTED: CSV / XLSX / JSON. MAX 500MB.</p>
+    </div>
+  </div>
+
+  <footer>
+    <div class="footer-huge">DATAFORGE<br>SYSTEMS.</div>
+    <div style="text-align: right; display: flex; flex-direction: column; justify-content: space-between;" class="footer-right">
+      <div style="margin-bottom: 2rem;">
+        <p>ORCHESTRATION-FIRST PLATFORM.</p>
+        <p>BUILT FOR PERFORMANCE.</p>
+      </div>
+      <div>© 2026 DATAFORGE LABS</div>
+    </div>
+  </footer>
+
+  <script>
+    // Terminal Typing Animation
+    const logs = [
+      { t: "> DETECTED DATA UPLOAD...", c: "" },
+      { t: "> ANALYZING 1200 ROWS...", c: "" },
+      { t: "> ERROR: 847 DUPLICATES FOUND", c: "log-err" },
+      { t: "> ERROR: 142 MISSING VALUES", c: "log-err" },
+      { t: "> INITIALIZING AI PLANNER...", c: "log-sys" },
+      { t: "> PLAN GENERATED. EXECUTING...", c: "log-sys" },
+      { t: "> CLEANING OPERATION SUCCESS", c: "log-ok" },
+      { t: "> FINAL SCORE: 94/100", c: "" },
+      { t: "> WAITING FOR NEXT INPUT", c: "cursor-line" }
+    ];
+
+    const termBox = document.getElementById('term-logs');
+    let idx = 0;
+
+    setInterval(() => {
+      // Remove previous cursor if exists
+      const cursor = document.querySelector('.cursor');
+      if(cursor) cursor.remove();
+
+      if(idx < logs.length) {
+        const div = document.createElement('div');
+        div.className = `log ${logs[idx].c !== 'cursor-line' ? logs[idx].c : ''}`;
+        
+        if (logs[idx].c === 'cursor-line') {
+          div.innerHTML = `${logs[idx].t}<span class="cursor"></span>`;
+        } else {
+          div.innerText = logs[idx].t;
+        }
+        
+        termBox.appendChild(div);
+        termBox.scrollTop = termBox.scrollHeight;
+        idx++;
+      } else {
+        idx = 0;
+        termBox.innerHTML = '<div class="log log-sys">> RESETTING TERMINAL...</div>';
+      }
+    }, 1200);
+
+    // Scroll Reveal Animation Setup
+    const reveals = document.querySelectorAll('.reveal');
+    const observer = new IntersectionObserver((entries) => {
+      entries.forEach(entry => {
+        if (entry.isIntersecting) {
+          const delay = entry.target.getAttribute('data-delay') || 0;
+          setTimeout(() => {
+            entry.target.classList.add('active');
+          }, delay);
+          observer.unobserve(entry.target);
+        }
+      });
+    }, { threshold: 0.1 });
+    
+    reveals.forEach(el => observer.observe(el));
+  </script>
+</body>
+</html>
