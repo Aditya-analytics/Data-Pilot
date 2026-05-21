@@ -1,4 +1,3 @@
-from venv import create
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 import uvicorn
@@ -25,4 +24,4 @@ async def health_check():
     return {"status": "ok"}
 
 if __name__ == "__main__":
-    uvicorn.run(app=app,factory=True)
+    uvicorn.run(app=app,reload=True)
