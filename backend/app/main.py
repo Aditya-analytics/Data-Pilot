@@ -1,4 +1,4 @@
-from os import name
+from venv import create
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 import uvicorn
@@ -20,7 +20,9 @@ app.add_middleware(
     allow_headers=["*"],              # Allow all headers
 )
 
-print("Setup Completed !")
+@app.get("/health")
+async def health_check():
+    return {"status": "ok"}
 
 if __name__ == "__main__":
-    uvicorn.run(app=app,factory=True,reload=True)
+    uvicorn.run(app=app,factory=True)
