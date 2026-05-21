@@ -1,13 +1,17 @@
 from typing import Dict
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
+from app.api.upload import csv_router
 import uvicorn
+
 app = FastAPI()
+app.include_router(router=csv_router, prefix="/api/v1")
 
 # 1. Define allowed origins
 origins = [
     "http://localhost:3000",   # React default
     "http://localhost:8000",   # React default
+    "http://localhost:5173",   # React default
     "https://yourdomain.com",
 ]
 
@@ -25,4 +29,4 @@ async def health_check() -> dict[str,str]:
     return {"status": "ok"}
 
 if __name__ == "__main__":
-    uvicorn.run("main:app",reload=True)
+    uvicorn.run("app.main:app",reload=True)

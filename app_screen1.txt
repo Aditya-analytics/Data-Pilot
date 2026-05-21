@@ -1,0 +1,45 @@
+<div id="screen-upload" class="screen active">
+  <nav>
+    <div class="nav-brand" onclick="window.location.href='landing4.html'">DATAPILOT</div>
+    <div class="nav-links">
+      <a href="#" class="nav-link">PIPELINE</a>
+      <a href="#" class="nav-link">FEATURES</a>
+    </div>
+    <div class="nav-step">
+      <span style="font-size:0.65rem;color:#999;font-weight:800;">STEP</span>
+      <span style="font-family:var(--font-display);font-size:1rem;font-weight:900;">01/05</span>
+      <span>UPLOAD_DATASET</span>
+    </div>
+    <div class="nav-status">
+      <div class="status-dot"></div>SYS_ONLINE
+    </div>
+  </nav>
+
+  <div class="step-bar">
+    <div class="step-item active"><span class="step-num">01</span>UPLOAD</div>
+    <div class="step-item"><span class="step-num">02</span>ANALYZE</div>
+    <div class="step-item"><span class="step-num">03</span>AI PLAN</div>
+    <div class="step-item"><span class="step-num">04</span>EXECUTE</div>
+    <div class="step-item"><span class="step-num">05</span>RESULTS</div>
+  </div>
+
+  <div class="upload-body">
+    <div class="upload-left">
+      <div class="label" style="margin-bottom:1.2rem;">PROTOCOL_01</div>
+      <h2>DROP YOUR<br><em>MESSY</em><br>DATASET.</h2>
+      <p>DataPilot reads every column, detects every issue, and hands it to the AI planner. You stay in control at every step.</p>
+      <div style="margin-bottom:1.5rem;">
+        <div style="font-size:0.75rem;font-weight:800;margin-bottom:0.8rem;">SUPPORTED FORMATS</div>
+        <div class="format-tags">
+          <span class="tag">.CSV</span>
+          <span class="tag">.XLSX</span>
+          <span class="tag">.JSON</span>
+          <span class="tag">.PARQUET</span>
+        </div>
+      </div>
+      <div style="display:flex;flex-direction:column;gap:8px;font-size:0.8rem;font-weight:800;">
+        <div>[+] MAX FILE SIZE: 500MB</div>
+        <div>[+] NO DATA STORED SERVER-SIDE</div>
+        <div>[+] PROCESSING IN MEMORY ONLY</div>
+      </div>
+    </div>

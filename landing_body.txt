@@ -1,0 +1,276 @@
+
+
+  <!-- NAV -->
+  <nav>
+    <div class="nav-brand">DATAPILOT</div>
+    <div class="nav-links">
+      <a href="#pipeline" class="nav-link">PIPELINE_ARCHITECTURE</a>
+      <a href="#features" class="nav-link">PLATFORM_FEATURES</a>
+      <a href="#upload" class="nav-link">UPLOAD_DATA</a>
+    </div>
+    <div class="nav-status">
+      <div class="status-dot"></div>
+      SYS_ONLINE
+    </div>
+  </nav>
+
+  <!-- HERO -->
+  <header id="hero">
+    <div class="hero-content">
+      <div class="hero-eyebrow fade-in">PROTOCOL_01: INGEST_AND_CLEAN</div>
+      <h1 class="fade-in" style="transition-delay: 0.1s;">
+        YOUR DATA.<br><em>SURGICALLY</em><br>CLEANED.
+      </h1>
+      <p class="hero-desc fade-in" style="transition-delay: 0.2s;">
+        UPLOAD MESSY DATASETS. DATAPILOT AI ANALYZES EVERY COLUMN, PLANS A PRECISION CLEANING STRATEGY, EXECUTES IT SAFELY, THEN HANDS YOU A QUALITY-SCORED REPORT.
+      </p>
+      <button class="brutal-btn fade-in" style="transition-delay: 0.3s;" onclick="window.location.href='app.html'">
+        INITIALIZE <span style="margin-left: 0.8rem;">→</span>
+      </button>
+    </div>
+    
+    <div class="hero-terminal fade-in" style="transition-delay: 0.4s;">
+      <div class="terminal-window">
+        <div class="term-header">
+          <span>TERMINAL_VIEW</span>
+          <span>ROOT@DATAPILOT</span>
+        </div>
+        <div class="term-body" id="term-logs">
+          <div class="log log-sys">> EXECUTING STARTUP SEQUENCE</div>
+          <div class="log">> MOUNTING DATA VOLUMES... <span class="log-ok">OK</span></div>
+          <div class="log">> SYSTEM READY. WAITING FOR INPUT...</div>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <!-- PIPELINE -->
+  <section id="pipeline">
+    <div class="section-title-bar fade-in">ARCHITECTURE_PIPELINE</div>
+    <div class="pipeline-grid">
+      <div class="pipe-step fade-in">
+        <span class="pipe-num">01</span>
+        <div class="pipe-name">INGEST</div>
+        <div class="pipe-desc">FastAPI endpoints. Direct file upload. No middleware.</div>
+      </div>
+      <div class="pipe-step fade-in" style="transition-delay: 0.1s;">
+        <span class="pipe-num">02</span>
+        <div class="pipe-name">ANALYZE</div>
+        <div class="pipe-desc">Dataprep engine. Detect nulls, duplicates, outliers.</div>
+      </div>
+      <div class="pipe-step fade-in" style="transition-delay: 0.2s;">
+        <span class="pipe-num">03</span>
+        <div class="pipe-name">PLAN</div>
+        <div class="pipe-desc">LangChain orchestration. Deterministic AI planning.</div>
+      </div>
+      <div class="pipe-step fade-in" style="transition-delay: 0.3s;">
+        <span class="pipe-num">04</span>
+        <div class="pipe-name">EXECUTE</div>
+        <div class="pipe-desc">PyJanitor + Pandas. Safe execution layer.</div>
+      </div>
+      <div class="pipe-step fade-in" style="transition-delay: 0.4s;">
+        <span class="pipe-num">05</span>
+        <div class="pipe-name">VALIDATE</div>
+        <div class="pipe-desc">Post-clean checks: integrity, type consistency, null reduction.</div>
+      </div>
+      <div class="pipe-step fade-in" style="transition-delay: 0.5s;">
+        <span class="pipe-num">06</span>
+        <div class="pipe-name">REPORT</div>
+        <div class="pipe-desc">ydata-profiling generates before/after reports with quality scores.</div>
+      </div>
+      <div class="pipe-step fade-in" style="transition-delay: 0.6s;">
+        <span class="pipe-num">07</span>
+        <div class="pipe-name">VISUALIZE</div>
+        <div class="pipe-desc">Interactive dashboard shows AI reasoning, diffs, and improvements.</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- FEATURES -->
+  <section id="features">
+    <div style="max-width: 1400px; margin: 0 auto; padding-bottom: 1.5rem;">
+      <div class="section-label" style="font-size: 0.7rem; font-weight: 800; display: inline-block; padding: 0.3rem 0.6rem; background: var(--black); color: var(--white); margin-bottom: 1.2rem; box-shadow: 2px 2px 0px 0px var(--white);">PLATFORM FEATURES</div>
+      <h2 class="fade-in" style="font-family: var(--font-display); font-size: clamp(1.8rem, 2.5vw, 2.5rem); font-weight: 900; letter-spacing: -0.02em; max-width: 750px; margin-bottom: 2rem; line-height: 1.1;">
+        Intelligence you can <em>see</em>.
+      </h2>
+    </div>
+
+    <div class="bento">
+      <!-- Quality Score Card -->
+      <div class="bento-card span-4 fade-in">
+        <div class="bento-card-label">QUALITY_ENGINE</div>
+        <div class="bento-card-title">DATASET SCORE</div>
+        <div class="bento-card-body">Real-time scoring across missing values, duplicates, and outliers.</div>
+        <div style="margin-top: 1.5rem; display: flex; align-items: baseline; gap: 0.5rem;">
+          <div style="font-family: var(--font-display); font-size: 4rem; font-weight: 900; line-height: 0.8;">94</div>
+          <div style="font-weight: 800; font-size: 1rem; color: #666;">/ 100</div>
+        </div>
+      </div>
+
+      <!-- AI Reasoning Card -->
+      <div class="bento-card span-8 fade-in" style="transition-delay: 0.1s;">
+        <div class="bento-card-label">AI_PLANNER</div>
+        <div class="bento-card-title">LLM REASONING</div>
+        <div class="bento-card-body">Every cleaning decision is explained and validated. No hallucinations.</div>
+        <div class="ai-reasoning">
+          <div class="ai-step">
+            <div class="ai-step-num">1</div>
+            <div class="ai-step-text">Drop 847 exact duplicate rows. [Conf: 0.99]</div>
+          </div>
+          <div class="ai-step">
+            <div class="ai-step-num">2</div>
+            <div class="ai-step-text">Impute `age` nulls using median strategy. Skew detected.</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Diff Viewer Card -->
+      <div class="bento-card span-8 fade-in" style="transition-delay: 0.2s;">
+        <div class="bento-card-label">BEFORE_AFTER</div>
+        <div class="bento-card-title">CELL-LEVEL DIFFS</div>
+        <div class="bento-card-body">Inspect exactly what changed row by row.</div>
+        <div class="diff-view">
+          <div class="diff-row diff-del">- user_001 | 28.0 | NaN</div>
+          <div class="diff-row diff-add">+ user_001 | 28.0 | Sales</div>
+          <div class="diff-row">  [↑ DUPLICATE REMOVED]</div>
+        </div>
+      </div>
+
+      <!-- Outputs Card -->
+      <div class="bento-card span-4 fade-in" style="transition-delay: 0.3s;">
+        <div class="bento-card-label">OUTPUTS</div>
+        <div class="bento-card-title">AUDITABLE EXPORTS</div>
+        <div class="bento-card-body">Download everything you need.</div>
+        <div style="margin-top: 1rem; font-weight: 800; font-size: 0.75rem; line-height: 2;">
+          [⬇] CLEANED_DATASET.CSV<br>
+          [⬇] PROFILING_REPORT.HTML
+        </div>
+      </div>
+
+      <!-- CTA Mini Card -->
+      <div class="bento-card span-12 fade-in" style="transition-delay: 0.4s; background: var(--black); color: var(--white); display: flex; align-items: center; justify-content: space-between; padding: 2rem;">
+        <div>
+          <div class="bento-card-title" style="margin: 0; font-size: 1.8rem;">READY TO CLEAN?</div>
+        </div>
+        <button class="brutal-btn" style="background: var(--white); color: var(--black); font-size: 0.85rem; padding: 0.8rem 1.6rem;" onclick="window.location.href='app.html'">
+          UPLOAD DATASET →
+        </button>
+      </div>
+
+    </div>
+  </section>
+
+  <!-- UPLOAD -->
+  <section id="upload" style="max-width: 1400px; margin: 0 auto;">
+    <div class="fade-in">
+      <div class="section-label" style="font-size: 0.7rem; font-weight: 800; display: inline-block; padding: 0.3rem 0.6rem; background: var(--black); color: var(--white); margin-bottom: 1.2rem; box-shadow: 2px 2px 0px 0px var(--grey);">UPLOAD INTERFACE</div>
+      <h2 class="upload-main-text">
+        DRAG, DROP,<br/><em>TRANSFORM</em>.
+      </h2>
+      <p style="font-size: 0.95rem; font-weight: 700; color: #333; line-height: 1.7; max-width: 400px;">
+        The moment your file lands, the pipeline begins. Analysis in seconds. AI plan in under a minute. Clean dataset ready to download.
+      </p>
+      <div style="margin-top: 2rem; display: flex; flex-direction: column; gap: 10px; font-weight: 800; font-size: 0.85rem;">
+        <div style="display: flex; gap: 10px;"><span style="color: var(--black);">[+]</span> Automatic issue detection</div>
+        <div style="display: flex; gap: 10px;"><span style="color: var(--black);">[+]</span> LLM plans cleaning strategy</div>
+        <div style="display: flex; gap: 10px;"><span style="color: var(--black);">[+]</span> Review, approve, then execute</div>
+        <div style="display: flex; gap: 10px;"><span style="color: var(--black);">[+]</span> Download cleaned file + report</div>
+      </div>
+    </div>
+
+    <div class="upload-zone fade-in" style="transition-delay: 0.2s; cursor: pointer;" onclick="window.location.href='app.html'">
+      <span class="upload-icon">DRAG & DROP</span>
+      <div style="font-family: var(--font-display); font-size: 1.5rem; font-weight: 900; margin-bottom: 0.8rem;">DROP YOUR DATASET HERE</div>
+      <div style="font-weight: 700; font-size: 0.85rem; color: #555; margin-bottom: 1.5rem;">
+        Drag & drop your file, or click to browse.<br/>
+        DataPilot handles the rest automatically.
+      </div>
+      <div style="font-weight: 800; font-size: 0.75rem; margin-bottom: 2rem; letter-spacing: 0.05em;">
+        [.CSV] [.XLSX] [.JSON] [.PARQUET]
+      </div>
+      <button class="brutal-btn" style="width: 100%; justify-content: center; font-size: 0.9rem;" onclick="event.stopPropagation(); window.location.href='app.html'">
+        CHOOSE FILE →
+      </button>
+    </div>
+  </section>
+
+  <!-- MARQUEE DIVIDER -->
+  <div class="marquee">
+    <div class="marquee-content">
+      <span>NO HALLUCINATIONS</span> <span>·</span>
+      <span>DETERMINISTIC EXECUTION</span> <span>·</span>
+      <span>ORCHESTRATION-FIRST</span> <span>·</span>
+      <span>PRODUCTION-GRADE AI</span> <span>·</span>
+      <span>NO HALLUCINATIONS</span> <span>·</span>
+      <span>DETERMINISTIC EXECUTION</span> <span>·</span>
+      <span>ORCHESTRATION-FIRST</span> <span>·</span>
+      <span>PRODUCTION-GRADE AI</span> <span>·</span>
+    </div>
+  </div>
+
+  <!-- FOOTER -->
+  <footer>
+    <div>
+      <div class="footer-logo">DATAPILOT</div>
+      <div style="font-weight: 800; font-size: 0.75rem; color: #555;">AI-Powered Intelligent Data Cleaning Platform</div>
+    </div>
+    <div class="footer-right">
+      Built with LangChain · FastAPI · PyJanitor<br/>
+      Orchestration-first · Production-grade
+    </div>
+  </footer>
+
+  <script>
+    // Scroll Reveal
+    const reveals = document.querySelectorAll('.fade-in, .pipe-step');
+    const observer = new IntersectionObserver((entries) => {
+      entries.forEach(entry => {
+        if (entry.isIntersecting) {
+          entry.target.classList.add('visible');
+          observer.unobserve(entry.target);
+        }
+      });
+    }, { threshold: 0.1 });
+    reveals.forEach(el => observer.observe(el));
+
+    // Terminal Typing Animation
+    const logs = [
+      { t: "datapilot analyze customer_data.csv", c: "" },
+      { t: "Reading 12 columns × 1,200 rows...", c: "log-sys" },
+      { t: "Missing values → age: 142, dept: 89", c: "log-err" },
+      { t: "Duplicates found → 847 rows", c: "log-err" },
+      { t: "datapilot plan --model gemini", c: "" },
+      { t: "LLM generating cleaning strategy...", c: "log-sys" },
+      { t: "[1] drop_duplicates ✓ conf 0.99", c: "log-ok" },
+      { t: "datapilot execute --plan plan.json", c: "" },
+      { t: "Quality score: 34 → 94 (+177%)", c: "log-ok" },
+      { t: "cleaned_dataset.csv ready", c: "log-ok" },
+      { t: "", c: "cursor-line" }
+    ];
+
+    const termBox = document.getElementById('term-logs');
+    let idx = 0;
+
+    setInterval(() => {
+      const cursor = document.querySelector('.cursor');
+      if(cursor) cursor.remove();
+
+      if(idx < logs.length) {
+        const div = document.createElement('div');
+        div.className = `log ${logs[idx].c !== 'cursor-line' ? logs[idx].c : ''}`;
+        
+        if (logs[idx].c === 'cursor-line') {
+          div.innerHTML = `${logs[idx].t}<span class="cursor"></span>`;
+        } else {
+          div.innerText = "> " + logs[idx].t;
+        }
+        
+        termBox.appendChild(div);
+        termBox.scrollTop = termBox.scrollHeight;
+        idx++;
+      } else {
+        idx = 0;
+        termBox.innerHTML = '<div class="log log-sys">> RESETTING TERMINAL...</div>';
+      }
+    }, 1000);
+  </script>
