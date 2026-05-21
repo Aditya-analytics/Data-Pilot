@@ -1,6 +1,7 @@
 from os import name
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
+import uvicorn
 app = FastAPI()
 
 # 1. Define allowed origins
@@ -21,5 +22,5 @@ app.add_middleware(
 
 print("Setup Completed !")
 
-if __name__ == "main":
-    
+if __name__ == "__main__":
+    uvicorn.run(app=app,factory=True,reload=True)
