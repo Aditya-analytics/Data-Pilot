@@ -1,3 +1,4 @@
+from typing import Dict
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 import uvicorn
@@ -20,8 +21,8 @@ app.add_middleware(
 )
 
 @app.get("/health")
-async def health_check():
+async def health_check() -> dict[str,str]:
     return {"status": "ok"}
 
 if __name__ == "__main__":
-    uvicorn.run(app=app,reload=True)
+    uvicorn.run("main:app",reload=True)
