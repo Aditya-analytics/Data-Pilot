@@ -1,0 +1,1235 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>DATAPILOT — AI-POWERED DATA CLEANING</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Cabinet+Grotesk:wght@800;900&family=JetBrains+Mono:wght@400;700;800&display=swap" rel="stylesheet" />
+
+  <style>
+    /* ── RESET & BASE ─────────────────────────────────────────── */
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --black:     #050505;
+      --white:     #FAFAFA;
+      --grey:      #E8E8E8;
+      --grey-dark: #D0D0D0;
+      --border:    3px solid #050505;
+      --shadow:    6px 6px 0px #050505;
+      --shadow-lg: 10px 10px 0px #050505;
+    }
+
+    html { scroll-behavior: smooth; }
+
+    body {
+      background: var(--white);
+      color: var(--black);
+      font-family: 'JetBrains Mono', monospace;
+      font-weight: 400;
+      line-height: 1.5;
+      overflow-x: hidden;
+    }
+
+    /* ── TYPOGRAPHY HELPERS ───────────────────────────────────── */
+    h1, h2, h3, h4 {
+      font-family: 'Cabinet Grotesk', sans-serif;
+      font-weight: 900;
+      letter-spacing: -0.02em;
+      line-height: 1;
+    }
+
+    .label {
+      font-family: 'JetBrains Mono', monospace;
+      font-weight: 700;
+      font-size: 0.7rem;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+    }
+
+    /* ── BUTTONS ──────────────────────────────────────────────── */
+    .btn {
+      display: inline-block;
+      font-family: 'JetBrains Mono', monospace;
+      font-weight: 800;
+      font-size: 0.78rem;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      padding: 14px 28px;
+      border: var(--border);
+      background: var(--black);
+      color: var(--white);
+      cursor: pointer;
+      text-decoration: none;
+      box-shadow: var(--shadow);
+      transition: box-shadow 0.08s ease, transform 0.08s ease, background 0.08s ease, color 0.08s ease;
+      user-select: none;
+    }
+    .btn:hover {
+      box-shadow: var(--shadow-lg);
+      transform: translate(-2px, -2px);
+      background: var(--white);
+      color: var(--black);
+    }
+    .btn:active { transform: translate(0,0); box-shadow: 2px 2px 0px var(--black); }
+
+    .btn-outline {
+      background: var(--white);
+      color: var(--black);
+    }
+    .btn-outline:hover {
+      background: var(--black);
+      color: var(--white);
+    }
+
+    /* ── ANIMATIONS ───────────────────────────────────────────── */
+    @keyframes blink {
+      0%, 100% { opacity: 1; }
+      50%       { opacity: 0; }
+    }
+    @keyframes fadeUp {
+      from { opacity: 0; transform: translateY(32px); }
+      to   { opacity: 1; transform: translateY(0);    }
+    }
+    @keyframes fadeIn {
+      from { opacity: 0; }
+      to   { opacity: 1; }
+    }
+    @keyframes typeIn {
+      from { max-height: 0; opacity: 0; }
+      to   { max-height: 400px; opacity: 1; }
+    }
+    @keyframes slideLeft {
+      from { transform: translateX(-24px); opacity: 0; }
+      to   { transform: translateX(0);     opacity: 1; }
+    }
+    @keyframes countUp { from { opacity: 0; } to { opacity: 1; } }
+
+    .anim-fade-up  { animation: fadeUp  0.55s cubic-bezier(.22,1,.36,1) both; }
+    .anim-fade-in  { animation: fadeIn  0.5s ease both; }
+    .anim-slide-left { animation: slideLeft 0.5s cubic-bezier(.22,1,.36,1) both; }
+
+    .d1 { animation-delay: 0.05s; }
+    .d2 { animation-delay: 0.15s; }
+    .d3 { animation-delay: 0.25s; }
+    .d4 { animation-delay: 0.40s; }
+    .d5 { animation-delay: 0.55s; }
+    .d6 { animation-delay: 0.70s; }
+
+    /* ── NAV ──────────────────────────────────────────────────── */
+    nav {
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      background: var(--white);
+      border-bottom: var(--border);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 48px;
+      height: 68px;
+    }
+
+    .nav-logo {
+      font-family: 'Cabinet Grotesk', sans-serif;
+      font-weight: 900;
+      font-size: 1.35rem;
+      letter-spacing: -0.02em;
+      text-decoration: none;
+      color: var(--black);
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+    .nav-logo span.logo-dot {
+      display: inline-block;
+      width: 10px; height: 10px;
+      background: var(--black);
+      border: var(--border);
+    }
+
+    .nav-links {
+      display: flex;
+      align-items: center;
+      gap: 0;
+      list-style: none;
+    }
+    .nav-links li a {
+      display: block;
+      padding: 8px 20px;
+      font-family: 'JetBrains Mono', monospace;
+      font-weight: 700;
+      font-size: 0.7rem;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      text-decoration: none;
+      color: var(--black);
+      border: var(--border);
+      border-right: none;
+      transition: background 0.08s, color 0.08s;
+    }
+    .nav-links li:last-of-type a { border-right: var(--border); }
+    .nav-links li a:hover { background: var(--black); color: var(--white); }
+
+    .nav-cta { margin-left: 20px; }
+
+    /* ── SECTION WRAPPER ──────────────────────────────────────── */
+    section { width: 100%; }
+
+    .container {
+      max-width: 1280px;
+      margin: 0 auto;
+      padding: 0 48px;
+    }
+
+    /* ── HERO ─────────────────────────────────────────────────── */
+    #hero {
+      border-bottom: var(--border);
+      background: var(--white);
+      padding: 80px 0 0;
+      overflow: hidden;
+    }
+
+    .hero-inner {
+      max-width: 1280px;
+      margin: 0 auto;
+      padding: 0 48px;
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 64px;
+      align-items: start;
+    }
+
+    .hero-left {}
+
+    .hero-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      border: var(--border);
+      padding: 6px 14px;
+      background: var(--black);
+      color: var(--white);
+      margin-bottom: 32px;
+    }
+    .hero-badge .blink-dot {
+      width: 8px; height: 8px;
+      background: #00FF88;
+      display: inline-block;
+      animation: blink 1.2s step-start infinite;
+    }
+
+    .hero-h1 {
+      font-size: clamp(2.8rem, 5vw, 4.4rem);
+      line-height: 0.95;
+      margin-bottom: 28px;
+      color: var(--black);
+    }
+    .hero-h1 .accent-line {
+      display: block;
+      position: relative;
+    }
+    .hero-h1 .underline-heavy {
+      text-decoration: underline;
+      text-decoration-thickness: 5px;
+      text-underline-offset: 6px;
+    }
+
+    .hero-sub {
+      font-size: 0.9rem;
+      line-height: 1.7;
+      color: #333;
+      margin-bottom: 40px;
+      max-width: 460px;
+    }
+
+    .hero-ctas {
+      display: flex;
+      gap: 16px;
+      flex-wrap: wrap;
+      margin-bottom: 56px;
+    }
+
+    /* counters */
+    .hero-counters {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      border-top: var(--border);
+      border-left: var(--border);
+    }
+    .counter-cell {
+      border-right: var(--border);
+      border-bottom: var(--border);
+      padding: 20px 24px;
+    }
+    .counter-num {
+      font-family: 'Cabinet Grotesk', sans-serif;
+      font-weight: 900;
+      font-size: 2rem;
+      letter-spacing: -0.03em;
+      display: block;
+      margin-bottom: 4px;
+    }
+    .counter-label {
+      font-size: 0.65rem;
+      font-weight: 700;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: #555;
+    }
+
+    /* terminal */
+    .hero-right {
+      position: relative;
+      padding-bottom: 0;
+      display: flex;
+      flex-direction: column;
+      gap: 0;
+    }
+
+    .terminal-window {
+      border: var(--border);
+      box-shadow: var(--shadow-lg);
+      background: var(--black);
+      color: #00FF88;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.8rem;
+      overflow: hidden;
+    }
+
+    .terminal-titlebar {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      background: var(--grey);
+      border-bottom: var(--border);
+      padding: 10px 16px;
+    }
+    .t-btn {
+      width: 12px; height: 12px;
+      border: 2px solid var(--black);
+      display: inline-block;
+    }
+    .terminal-title {
+      font-family: 'JetBrains Mono', monospace;
+      font-weight: 700;
+      font-size: 0.65rem;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: var(--black);
+      margin-left: 6px;
+    }
+
+    .terminal-body {
+      padding: 20px 20px 24px;
+      min-height: 320px;
+    }
+
+    .terminal-line {
+      display: flex;
+      align-items: flex-start;
+      margin-bottom: 6px;
+      line-height: 1.6;
+      opacity: 0;
+    }
+    .terminal-line.visible { opacity: 1; }
+
+    .prompt { color: #888; margin-right: 8px; flex-shrink: 0; }
+    .cmd    { color: #FAFAFA; }
+    .out-ok  { color: #00FF88; }
+    .out-warn{ color: #FFD700; }
+    .out-err { color: #FF4444; }
+    .out-info{ color: #88CCFF; }
+    .out-dim { color: #666; }
+
+    .cursor {
+      display: inline-block;
+      width: 9px; height: 1.1em;
+      background: #00FF88;
+      vertical-align: text-bottom;
+      animation: blink 0.85s step-start infinite;
+      margin-left: 2px;
+    }
+
+    /* ── HOW IT WORKS ─────────────────────────────────────────── */
+    #how-it-works {
+      border-bottom: var(--border);
+      padding: 96px 0;
+      background: var(--grey);
+    }
+
+    .section-label {
+      display: inline-flex;
+      align-items: center;
+      gap: 10px;
+      margin-bottom: 48px;
+    }
+    .section-label .label { color: var(--black); }
+    .section-label::before {
+      content: '';
+      display: inline-block;
+      width: 28px; height: 3px;
+      background: var(--black);
+    }
+
+    .steps-grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      border-left: var(--border);
+      border-top: var(--border);
+    }
+
+    .step-card {
+      border-right: var(--border);
+      border-bottom: var(--border);
+      padding: 40px 32px;
+      background: var(--white);
+      transition: background 0.1s, color 0.1s, box-shadow 0.1s;
+      cursor: default;
+      position: relative;
+    }
+    .step-card:hover {
+      background: var(--black);
+      color: var(--white);
+    }
+    .step-card:hover .step-num,
+    .step-card:hover .step-title,
+    .step-card:hover .step-desc,
+    .step-card:hover .step-icon { color: var(--white); }
+    .step-card:hover .step-arrow { color: var(--white); }
+
+    .step-num {
+      font-family: 'Cabinet Grotesk', sans-serif;
+      font-weight: 900;
+      font-size: 3.5rem;
+      line-height: 1;
+      color: var(--grey-dark);
+      margin-bottom: 20px;
+      letter-spacing: -0.04em;
+      transition: color 0.1s;
+    }
+
+    .step-icon {
+      font-size: 2rem;
+      margin-bottom: 16px;
+      display: block;
+      transition: color 0.1s;
+    }
+
+    .step-title {
+      font-family: 'Cabinet Grotesk', sans-serif;
+      font-weight: 900;
+      font-size: 1.3rem;
+      letter-spacing: -0.02em;
+      margin-bottom: 12px;
+      transition: color 0.1s;
+    }
+
+    .step-desc {
+      font-size: 0.78rem;
+      line-height: 1.65;
+      color: #555;
+      transition: color 0.1s;
+    }
+    .step-card:hover .step-desc { color: #ccc; }
+
+    .step-arrow {
+      position: absolute;
+      top: 40px; right: 24px;
+      font-size: 1.2rem;
+      color: var(--grey-dark);
+      transition: color 0.1s;
+    }
+    .step-card:last-child .step-arrow { display: none; }
+
+    /* ── FEATURES GRID ────────────────────────────────────────── */
+    #features {
+      border-bottom: var(--border);
+      padding: 96px 0;
+      background: var(--white);
+    }
+
+    .features-header {
+      display: flex;
+      align-items: flex-end;
+      justify-content: space-between;
+      margin-bottom: 56px;
+      gap: 24px;
+    }
+
+    .features-h2 {
+      font-size: clamp(2.2rem, 4vw, 3.4rem);
+      max-width: 520px;
+    }
+    .features-sub {
+      font-size: 0.8rem;
+      line-height: 1.7;
+      max-width: 320px;
+      color: #555;
+      padding-bottom: 6px;
+    }
+
+    .features-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      border-top: var(--border);
+      border-left: var(--border);
+    }
+
+    .feat-card {
+      border-right: var(--border);
+      border-bottom: var(--border);
+      padding: 40px 36px;
+      transition: background 0.08s, color 0.08s, box-shadow 0.08s;
+      cursor: default;
+    }
+    .feat-card:hover {
+      background: var(--black);
+      color: var(--white);
+      box-shadow: inset var(--shadow);
+    }
+    .feat-card:hover .feat-title,
+    .feat-card:hover .feat-desc,
+    .feat-card:hover .feat-icon { color: var(--white); }
+
+    .feat-icon {
+      font-size: 2.2rem;
+      margin-bottom: 20px;
+      display: block;
+      line-height: 1;
+      transition: color 0.08s;
+    }
+
+    .feat-tag {
+      display: inline-block;
+      font-size: 0.6rem;
+      font-weight: 700;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      padding: 4px 10px;
+      border: 2px solid var(--grey-dark);
+      color: #777;
+      margin-bottom: 16px;
+      transition: border-color 0.08s, color 0.08s;
+    }
+    .feat-card:hover .feat-tag { border-color: #555; color: #aaa; }
+
+    .feat-title {
+      font-family: 'Cabinet Grotesk', sans-serif;
+      font-weight: 900;
+      font-size: 1.25rem;
+      letter-spacing: -0.02em;
+      margin-bottom: 12px;
+      transition: color 0.08s;
+    }
+
+    .feat-desc {
+      font-size: 0.78rem;
+      line-height: 1.7;
+      color: #555;
+      transition: color 0.08s;
+    }
+    .feat-card:hover .feat-desc { color: #bbb; }
+
+    /* ── STATS ────────────────────────────────────────────────── */
+    #stats {
+      border-bottom: var(--border);
+      background: var(--black);
+      color: var(--white);
+    }
+
+    .stats-inner {
+      max-width: 1280px;
+      margin: 0 auto;
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      border-left: 3px solid #FAFAFA;
+      border-top: 3px solid #FAFAFA;
+    }
+
+    .stat-cell {
+      border-right: 3px solid #FAFAFA;
+      border-bottom: 3px solid #FAFAFA;
+      padding: 64px 48px;
+      transition: background 0.1s, color 0.1s;
+      cursor: default;
+    }
+    .stat-cell:hover {
+      background: var(--white);
+      color: var(--black);
+    }
+    .stat-cell:hover .stat-num,
+    .stat-cell:hover .stat-label,
+    .stat-cell:hover .stat-desc { color: var(--black); }
+
+    .stat-num {
+      font-family: 'Cabinet Grotesk', sans-serif;
+      font-weight: 900;
+      font-size: clamp(2.4rem, 3.5vw, 3.6rem);
+      letter-spacing: -0.04em;
+      line-height: 1;
+      display: block;
+      margin-bottom: 12px;
+      color: var(--white);
+      transition: color 0.1s;
+    }
+
+    .stat-label {
+      font-size: 0.7rem;
+      font-weight: 700;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: #888;
+      display: block;
+      margin-bottom: 8px;
+      transition: color 0.1s;
+    }
+    .stat-cell:hover .stat-label { color: #555; }
+
+    .stat-desc {
+      font-size: 0.72rem;
+      color: #666;
+      line-height: 1.6;
+      transition: color 0.1s;
+    }
+
+    /* ── CTA BAND ─────────────────────────────────────────────── */
+    #cta-band {
+      border-bottom: var(--border);
+      background: var(--white);
+      padding: 96px 0;
+    }
+
+    .cta-inner {
+      max-width: 1280px;
+      margin: 0 auto;
+      padding: 0 48px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 48px;
+    }
+
+    .cta-text h2 {
+      font-size: clamp(2.4rem, 4vw, 3.8rem);
+      margin-bottom: 16px;
+    }
+    .cta-text p {
+      font-size: 0.85rem;
+      color: #555;
+      max-width: 460px;
+      line-height: 1.7;
+    }
+
+    .cta-actions {
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+      align-items: flex-start;
+      flex-shrink: 0;
+    }
+
+    /* ── FOOTER ───────────────────────────────────────────────── */
+    footer {
+      background: var(--black);
+      color: var(--white);
+      border-top: 3px solid #FAFAFA;
+      padding: 0;
+    }
+
+    .footer-main {
+      max-width: 1280px;
+      margin: 0 auto;
+      padding: 56px 48px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 32px;
+      border-bottom: 3px solid #333;
+    }
+
+    .footer-logo {
+      font-family: 'Cabinet Grotesk', sans-serif;
+      font-weight: 900;
+      font-size: 1.2rem;
+      letter-spacing: -0.02em;
+      color: var(--white);
+    }
+    .footer-tagline {
+      font-size: 0.65rem;
+      font-weight: 400;
+      color: #666;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      margin-top: 6px;
+    }
+
+    .footer-links {
+      display: flex;
+      list-style: none;
+      gap: 0;
+    }
+    .footer-links li a {
+      display: block;
+      padding: 10px 20px;
+      font-family: 'JetBrains Mono', monospace;
+      font-weight: 700;
+      font-size: 0.65rem;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      text-decoration: none;
+      color: var(--white);
+      border: 3px solid #333;
+      border-right: none;
+      transition: background 0.08s, color 0.08s, border-color 0.08s;
+    }
+    .footer-links li:last-child a { border-right: 3px solid #333; }
+    .footer-links li a:hover { background: var(--white); color: var(--black); border-color: var(--white); }
+
+    .footer-bottom {
+      max-width: 1280px;
+      margin: 0 auto;
+      padding: 24px 48px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 16px;
+    }
+    .footer-copy {
+      font-size: 0.65rem;
+      color: #555;
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+    }
+    .footer-status {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-size: 0.65rem;
+      color: #555;
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+    }
+    .status-dot {
+      width: 7px; height: 7px;
+      background: #00FF88;
+      display: inline-block;
+      animation: blink 2s step-start infinite;
+    }
+
+    /* ── MARQUEE STRIP ────────────────────────────────────────── */
+    .marquee-strip {
+      border-bottom: var(--border);
+      border-top: var(--border);
+      background: var(--black);
+      color: var(--white);
+      overflow: hidden;
+      padding: 14px 0;
+      white-space: nowrap;
+    }
+
+    @keyframes marquee {
+      from { transform: translateX(0); }
+      to   { transform: translateX(-50%); }
+    }
+
+    .marquee-track {
+      display: inline-flex;
+      gap: 0;
+      animation: marquee 22s linear infinite;
+    }
+
+    .marquee-item {
+      font-family: 'JetBrains Mono', monospace;
+      font-weight: 700;
+      font-size: 0.7rem;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      padding: 0 40px;
+      color: #888;
+    }
+    .marquee-item span { color: #FAFAFA; }
+
+    /* ── RESPONSIVE PATCH (minimal) ───────────────────────────── */
+    @media (max-width: 1024px) {
+      .hero-inner { grid-template-columns: 1fr; }
+      .hero-right { margin-top: 40px; }
+      .steps-grid { grid-template-columns: repeat(2, 1fr); }
+      .features-grid { grid-template-columns: repeat(2, 1fr); }
+      .stats-inner { grid-template-columns: repeat(2, 1fr); }
+      .cta-inner { flex-direction: column; }
+    }
+    @media (max-width: 640px) {
+      nav { padding: 0 20px; }
+      .container, .hero-inner, .cta-inner, .footer-main, .footer-bottom { padding-left: 20px; padding-right: 20px; }
+      .nav-links { display: none; }
+      .steps-grid { grid-template-columns: 1fr; }
+      .features-grid { grid-template-columns: 1fr; }
+      .stats-inner { grid-template-columns: 1fr; }
+      .hero-counters { grid-template-columns: 1fr; }
+    }
+  </style>
+</head>
+<body>
+
+<!-- ══════════════════════════════════════════════════════════════
+     NAV
+══════════════════════════════════════════════════════════════════ -->
+<nav>
+  <a href="#" class="nav-logo">
+    <span class="logo-dot"></span>
+    DATAPILOT
+  </a>
+  <ul class="nav-links">
+    <li><a href="#features">Features</a></li>
+    <li><a href="#how-it-works">How It Works</a></li>
+    <li><a href="#">Docs</a></li>
+  </ul>
+  <a href="#" class="btn nav-cta" style="font-size:0.7rem; padding:10px 22px;">LAUNCH APP →</a>
+</nav>
+
+
+<!-- ══════════════════════════════════════════════════════════════
+     HERO
+══════════════════════════════════════════════════════════════════ -->
+<section id="hero">
+  <div class="hero-inner">
+
+    <!-- LEFT -->
+    <div class="hero-left">
+      <div class="hero-badge anim-fade-in d1">
+        <span class="blink-dot"></span>
+        <span class="label">LIVE SYSTEM ACTIVE</span>
+      </div>
+
+      <h1 class="hero-h1 anim-fade-up d2">
+        <span class="accent-line">YOUR DATA</span>
+        <span class="accent-line">IS <span class="underline-heavy">BROKEN.</span></span>
+        <span class="accent-line">WE FIX IT.</span>
+      </h1>
+
+      <p class="hero-sub anim-fade-up d3">
+        DataPilot uses large language models to analyze, plan, and execute
+        intelligent data cleaning operations — detecting nulls, duplicates,
+        type mismatches, outliers, and 50+ issue types in seconds.
+      </p>
+
+      <div class="hero-ctas anim-fade-up d4">
+        <a href="#" class="btn">UPLOAD DATASET →</a>
+        <a href="#" class="btn btn-outline">VIEW DEMO</a>
+      </div>
+
+      <div class="hero-counters anim-fade-up d5">
+        <div class="counter-cell">
+          <span class="counter-num" data-target="2.4" data-suffix="M">0</span>
+          <span class="counter-label">Rows Cleaned</span>
+        </div>
+        <div class="counter-cell">
+          <span class="counter-num" data-target="98" data-suffix="%">0</span>
+          <span class="counter-label">Accuracy Rate</span>
+        </div>
+        <div class="counter-cell">
+          <span class="counter-num" data-target="3" data-suffix="s">0</span>
+          <span class="counter-label">Avg Analysis Time</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- RIGHT — TERMINAL -->
+    <div class="hero-right anim-slide-left d3">
+      <div class="terminal-window">
+        <div class="terminal-titlebar">
+          <span class="t-btn"></span>
+          <span class="t-btn"></span>
+          <span class="t-btn"></span>
+          <span class="terminal-title">datapilot — analysis.py — bash</span>
+        </div>
+        <div class="terminal-body" id="terminal-body">
+          <!-- injected by JS -->
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- MARQUEE -->
+  <div class="marquee-strip" style="margin-top:80px;">
+    <div class="marquee-track" id="marquee-track">
+      <!-- duplicated in JS -->
+    </div>
+  </div>
+</section>
+
+
+<!-- ══════════════════════════════════════════════════════════════
+     HOW IT WORKS
+══════════════════════════════════════════════════════════════════ -->
+<section id="how-it-works">
+  <div class="container">
+    <div class="section-label">
+      <span class="label">// HOW IT WORKS</span>
+    </div>
+
+    <div style="margin-bottom:48px;">
+      <h2 style="font-size:clamp(2rem,3.5vw,3rem); max-width:640px;">
+        FROM RAW MESS TO CLEAN DATA IN FOUR STEPS.
+      </h2>
+    </div>
+
+    <div class="steps-grid">
+      <div class="step-card">
+        <span class="step-arrow">→</span>
+        <div class="step-num">01</div>
+        <span class="step-icon">⬆</span>
+        <div class="step-title">UPLOAD</div>
+        <p class="step-desc">
+          Drop in any CSV, Excel, JSON, or Parquet file. DataPilot
+          accepts files up to 500 MB and handles multi-sheet workbooks
+          with no additional configuration.
+        </p>
+      </div>
+      <div class="step-card">
+        <span class="step-arrow">→</span>
+        <div class="step-num">02</div>
+        <span class="step-icon">⚡</span>
+        <div class="step-title">ANALYZE</div>
+        <p class="step-desc">
+          Our engine profiles every column — detecting data types,
+          null distributions, outliers, duplicates, encoding issues,
+          and statistical anomalies in under 3 seconds.
+        </p>
+      </div>
+      <div class="step-card">
+        <span class="step-arrow">→</span>
+        <div class="step-num">03</div>
+        <span class="step-icon">🤖</span>
+        <div class="step-title">AI PLANS</div>
+        <p class="step-desc">
+          The LLM reasoning engine generates a structured cleaning
+          plan — choosing optimal strategies for each issue with
+          full justification you can inspect and override.
+        </p>
+      </div>
+      <div class="step-card">
+        <div class="step-num">04</div>
+        <span class="step-icon">✓</span>
+        <div class="step-title">CLEAN &amp; REPORT</div>
+        <p class="step-desc">
+          Transformations execute safely in a sandboxed environment.
+          Download your clean dataset alongside a detailed audit
+          report with before/after comparisons.
+        </p>
+      </div>
+    </div>
+  </div>
+</section>
+
+
+<!-- ══════════════════════════════════════════════════════════════
+     FEATURES GRID
+══════════════════════════════════════════════════════════════════ -->
+<section id="features">
+  <div class="container">
+    <div class="features-header">
+      <h2 class="features-h2">THE ENGINE UNDER THE HOOD.</h2>
+      <p class="features-sub">
+        Every component is purpose-built for data quality at scale —
+        no black boxes, no guesswork.
+      </p>
+    </div>
+
+    <div class="features-grid">
+
+      <div class="feat-card">
+        <span class="feat-icon">◈</span>
+        <span class="feat-tag">Core</span>
+        <div class="feat-title">AI PLANNING ENGINE</div>
+        <p class="feat-desc">
+          GPT-4-class reasoning generates step-by-step cleaning strategies.
+          Each action is justified, auditable, and optionally human-approved
+          before execution.
+        </p>
+      </div>
+
+      <div class="feat-card">
+        <span class="feat-icon">⊕</span>
+        <span class="feat-tag">Analysis</span>
+        <div class="feat-title">SMART ANALYSIS</div>
+        <p class="feat-desc">
+          Deep statistical profiling across 50+ issue types — from
+          null patterns and type drift to cross-column constraint
+          violations and format inconsistencies.
+        </p>
+      </div>
+
+      <div class="feat-card">
+        <span class="feat-icon">⛨</span>
+        <span class="feat-tag">Safety</span>
+        <div class="feat-title">SAFE EXECUTION</div>
+        <p class="feat-desc">
+          All operations run inside an isolated sandbox. Original data
+          is never mutated. Every transformation is reversible with
+          a full transaction log.
+        </p>
+      </div>
+
+      <div class="feat-card">
+        <span class="feat-icon">≡</span>
+        <span class="feat-tag">Reporting</span>
+        <div class="feat-title">QUALITY REPORTS</div>
+        <p class="feat-desc">
+          Auto-generated PDF and JSON audit reports with column-level
+          statistics, issue severity scores, applied fixes, and
+          data quality index scores.
+        </p>
+      </div>
+
+      <div class="feat-card">
+        <span class="feat-icon">⇄</span>
+        <span class="feat-tag">Comparison</span>
+        <div class="feat-title">BEFORE / AFTER</div>
+        <p class="feat-desc">
+          Side-by-side diff view of every changed cell. Inspect
+          individual transformations, filter by column, and annotate
+          decisions for team review.
+        </p>
+      </div>
+
+      <div class="feat-card">
+        <span class="feat-icon">⬇</span>
+        <span class="feat-tag">Export</span>
+        <div class="feat-title">DOWNLOAD &amp; EXPORT</div>
+        <p class="feat-desc">
+          Export clean data as CSV, Excel, JSON, or Parquet. Push
+          directly to S3, GCS, BigQuery, or Snowflake via native
+          connectors.
+        </p>
+      </div>
+
+    </div>
+  </div>
+</section>
+
+
+<!-- ══════════════════════════════════════════════════════════════
+     STATS
+══════════════════════════════════════════════════════════════════ -->
+<section id="stats">
+  <div class="stats-inner">
+
+    <div class="stat-cell">
+      <span class="stat-num" data-counter="10M+">10M+</span>
+      <span class="stat-label">ROWS PROCESSED</span>
+      <p class="stat-desc">Across 120,000+ datasets cleaned since launch.</p>
+    </div>
+
+    <div class="stat-cell">
+      <span class="stat-num" data-counter="99.2%">99.2%</span>
+      <span class="stat-label">ACCURACY RATE</span>
+      <p class="stat-desc">Verified against ground-truth test datasets.</p>
+    </div>
+
+    <div class="stat-cell">
+      <span class="stat-num" data-counter="&lt;3s">&lt;3s</span>
+      <span class="stat-label">ANALYSIS TIME</span>
+      <p class="stat-desc">Average full-profile time for datasets up to 100k rows.</p>
+    </div>
+
+    <div class="stat-cell">
+      <span class="stat-num" data-counter="50+">50+</span>
+      <span class="stat-label">ISSUE TYPES DETECTED</span>
+      <p class="stat-desc">From simple nulls to complex cross-column anomalies.</p>
+    </div>
+
+  </div>
+</section>
+
+
+<!-- ══════════════════════════════════════════════════════════════
+     CTA BAND
+══════════════════════════════════════════════════════════════════ -->
+<section id="cta-band">
+  <div class="cta-inner">
+    <div class="cta-text">
+      <h2>READY TO CLEAN?<br/>UPLOAD IN 10 SECONDS.</h2>
+      <p>
+        No credit card. No signup required for the first run.
+        Drop a file and watch DataPilot go to work.
+      </p>
+    </div>
+    <div class="cta-actions">
+      <a href="#" class="btn" style="font-size:0.85rem; padding:18px 40px;">UPLOAD DATASET →</a>
+      <a href="#" class="btn btn-outline" style="font-size:0.85rem; padding:18px 40px;">READ THE DOCS</a>
+    </div>
+  </div>
+</section>
+
+
+<!-- ══════════════════════════════════════════════════════════════
+     FOOTER
+══════════════════════════════════════════════════════════════════ -->
+<footer>
+  <div class="footer-main">
+    <div>
+      <div class="footer-logo">DATAPILOT</div>
+      <div class="footer-tagline">// AI-POWERED DATA CLEANING</div>
+    </div>
+    <ul class="footer-links">
+      <li><a href="#">Features</a></li>
+      <li><a href="#">How It Works</a></li>
+      <li><a href="#">Docs</a></li>
+      <li><a href="#">GitHub</a></li>
+    </ul>
+  </div>
+  <div class="footer-bottom">
+    <span class="footer-copy">© 2026 DATAPILOT. ALL RIGHTS RESERVED.</span>
+    <div class="footer-status">
+      <span class="status-dot"></span>
+      ALL SYSTEMS OPERATIONAL
+    </div>
+  </div>
+</footer>
+
+
+<!-- ══════════════════════════════════════════════════════════════
+     SCRIPTS
+══════════════════════════════════════════════════════════════════ -->
+<script>
+/* ─── TERMINAL TYPEWRITER ──────────────────────────────────────── */
+const terminalLines = [
+  { cls: 'out-dim',  text: '# DataPilot v2.1.0 — Analysis Engine' },
+  { cls: 'cmd',      text: '$ datapilot analyze sales_data_2024.csv', prompt: '>' },
+  { cls: 'out-info', text: '  ● Loading dataset...   [500ms]' },
+  { cls: 'out-info', text: '  ● Profiling 47,382 rows × 18 columns' },
+  { cls: 'out-warn', text: '  ⚠ Missing values detected:' },
+  { cls: 'out-warn', text: '      revenue     → 12.4%  null' },
+  { cls: 'out-warn', text: '      customer_id  →  3.1%  null' },
+  { cls: 'out-err',  text: '  ✗ Duplicate rows: 1,847 found' },
+  { cls: 'out-warn', text: '  ⚠ Type mismatch: `date` col is STRING' },
+  { cls: 'out-warn', text: '  ⚠ Outliers (3σ): 243 values in `amount`' },
+  { cls: 'out-ok',   text: '  ✓ No encoding issues found' },
+  { cls: 'out-ok',   text: '  ✓ Foreign key integrity: 99.7%' },
+  { cls: 'out-dim',  text: '' },
+  { cls: 'out-info', text: '  ▸ Generating AI cleaning plan...' },
+  { cls: 'out-ok',   text: '  ✓ Plan ready — 9 operations queued' },
+  { cls: 'out-dim',  text: '' },
+  { cls: 'cmd',      text: '$ datapilot execute --plan plan_001.json', prompt: '>' },
+  { cls: 'out-ok',   text: '  ✓ Cleaning complete in 1.84s' },
+  { cls: 'out-ok',   text: '  ✓ Dataset quality score: 97.3 / 100' },
+  { cls: 'out-ok',   text: '  ✓ Output → clean_sales_data_2024.csv' },
+];
+
+const termBody = document.getElementById('terminal-body');
+
+function renderTerminal() {
+  termBody.innerHTML = '';
+  let delay = 350;
+
+  terminalLines.forEach((line, i) => {
+    const el = document.createElement('div');
+    el.classList.add('terminal-line');
+
+    if (line.prompt) {
+      el.innerHTML = `<span class="prompt">${line.prompt}</span><span class="${line.cls}">${line.text.replace(/^\$\s/, '')}</span>`;
+    } else {
+      el.innerHTML = `<span class="${line.cls}">${line.text || '&nbsp;'}</span>`;
+    }
+
+    termBody.appendChild(el);
+
+    setTimeout(() => {
+      el.classList.add('visible');
+    }, delay);
+
+    delay += line.text.length > 0 ? Math.min(line.text.length * 12, 280) : 80;
+  });
+
+  // add blinking cursor at end
+  setTimeout(() => {
+    const cursorLine = document.createElement('div');
+    cursorLine.classList.add('terminal-line', 'visible');
+    cursorLine.innerHTML = `<span class="prompt">></span><span class="cursor"></span>`;
+    termBody.appendChild(cursorLine);
+  }, delay + 100);
+}
+
+renderTerminal();
+// replay terminal every 18 seconds
+setInterval(() => { renderTerminal(); }, 18000);
+
+
+/* ─── MARQUEE CONTENT ──────────────────────────────────────────── */
+const marqueeItems = [
+  ['MISSING VALUES', 'detected & filled'],
+  ['DUPLICATE ROWS', 'removed automatically'],
+  ['TYPE MISMATCHES', 'inferred & corrected'],
+  ['OUTLIER DETECTION', '3-sigma analysis'],
+  ['ENCODING ISSUES', 'fixed at source'],
+  ['FORMAT NORMALIZATION', 'dates, phones, emails'],
+  ['NULL IMPUTATION', 'AI-chosen strategy'],
+  ['CONSTRAINT CHECKS', 'cross-column validation'],
+];
+
+const track = document.getElementById('marquee-track');
+const items = [...marqueeItems, ...marqueeItems]; // duplicate for seamless loop
+items.forEach(([label, sub]) => {
+  const span = document.createElement('span');
+  span.classList.add('marquee-item');
+  span.innerHTML = `<span>${label}</span> — ${sub} &nbsp;•&nbsp;`;
+  track.appendChild(span);
+});
+
+
+/* ─── COUNTER ANIMATION ────────────────────────────────────────── */
+function animateCounter(el) {
+  const target = parseFloat(el.dataset.target);
+  const suffix = el.dataset.suffix || '';
+  const duration = 1400;
+  const step = 16;
+  const steps = duration / step;
+  let current = 0;
+  const increment = target / steps;
+
+  const timer = setInterval(() => {
+    current += increment;
+    if (current >= target) {
+      current = target;
+      clearInterval(timer);
+    }
+    const display = Number.isInteger(target) ? Math.round(current) : current.toFixed(1);
+    el.textContent = display + suffix;
+  }, step);
+}
+
+// trigger counters when hero is visible
+const counterEls = document.querySelectorAll('.counter-num[data-target]');
+const counterObs = new IntersectionObserver((entries) => {
+  entries.forEach(e => {
+    if (e.isIntersecting) {
+      animateCounter(e.target);
+      counterObs.unobserve(e.target);
+    }
+  });
+}, { threshold: 0.5 });
+
+counterEls.forEach(el => counterObs.observe(el));
+
+
+/* ─── SCROLL REVEAL ────────────────────────────────────────────── */
+const revealEls = document.querySelectorAll('.step-card, .feat-card, .stat-cell');
+const revealObs = new IntersectionObserver((entries) => {
+  entries.forEach(e => {
+    if (e.isIntersecting) {
+      e.target.style.animation = 'fadeUp 0.45s cubic-bezier(.22,1,.36,1) both';
+      revealObs.unobserve(e.target);
+    }
+  });
+}, { threshold: 0.15, rootMargin: '0px 0px -40px 0px' });
+
+revealEls.forEach(el => revealObs.observe(el));
+</script>
+
+</body>
+</html>
