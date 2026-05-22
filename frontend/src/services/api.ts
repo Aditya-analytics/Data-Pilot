@@ -16,3 +16,14 @@ export const uploadDataset = async (file: File) => {
 
   return response.json();
 };
+
+export const analyzeDataset = async (datasetId: string) => {
+  const response = await fetch(`${BASE_URL}/analysis/${datasetId}`);
+  
+  if (!response.ok) {
+    const errorData = await response.json().catch(() => ({}));
+    throw new Error(errorData.detail || 'Failed to analyze dataset');
+  }
+
+  return response.json();
+};

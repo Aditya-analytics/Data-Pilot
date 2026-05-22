@@ -1,11 +1,12 @@
-from typing import Dict
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from app.api.upload import csv_router
+from app.api.analysis import analyze_router
 import uvicorn
 
 app = FastAPI()
 app.include_router(router=csv_router, prefix="/api/v1")
+app.include_router(router=analyze_router, prefix="/api/v1")
 
 # 1. Define allowed origins
 origins = [
