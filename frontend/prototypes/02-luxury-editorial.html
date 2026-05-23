@@ -1,0 +1,296 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>DataPilot — Refined Analytics</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@200;300;400;500&family=Playfair+Display:ital,wght@0,400;0,700;1,400&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg: #F8F8F6;
+            --text-dark: #121212;
+            --text-light: #8A8A88;
+            --accent: #B09B7A; /* Soft gold/beige */
+            --border: #E0E0DB;
+            
+            --font-display: 'Playfair Display', serif;
+            --font-sans: 'Outfit', sans-serif;
+        }
+
+        body {
+            background-color: var(--bg);
+            color: var(--text-dark);
+            font-family: var(--font-sans);
+            margin: 0;
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            font-weight: 300;
+        }
+
+        .wrapper {
+            width: 100%;
+            max-width: 1600px;
+            display: grid;
+            grid-template-columns: 250px 1fr 350px;
+            min-height: 100vh;
+        }
+
+        /* Border lines overlay for editorial grid feel */
+        .wrapper > div {
+            border-right: 1px solid var(--border);
+        }
+        .wrapper > div:last-child {
+            border-right: none;
+        }
+
+        /* NAVIGATION COLUMN */
+        nav {
+            padding: 3rem 2rem;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .brand {
+            font-family: var(--font-display);
+            font-size: 1.8rem;
+            font-weight: 700;
+            letter-spacing: -0.02em;
+            margin-bottom: 4rem;
+        }
+
+        .nav-links {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+        }
+
+        .nav-links li {
+            margin-bottom: 1.5rem;
+            font-size: 0.85rem;
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
+            color: var(--text-light);
+            cursor: pointer;
+            transition: color 0.3s;
+        }
+
+        .nav-links li.active, .nav-links li:hover {
+            color: var(--text-dark);
+        }
+
+        /* MAIN CONTENT COLUMN */
+        main {
+            padding: 4rem;
+        }
+
+        .header-meta {
+            font-size: 0.75rem;
+            text-transform: uppercase;
+            letter-spacing: 0.15em;
+            color: var(--accent);
+            margin-bottom: 1rem;
+        }
+
+        h1 {
+            font-family: var(--font-display);
+            font-size: 5rem;
+            font-weight: 400;
+            line-height: 1;
+            margin: 0 0 3rem 0;
+            letter-spacing: -0.02em;
+        }
+
+        .metrics-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 2rem;
+            margin-bottom: 4rem;
+            border-top: 1px solid var(--text-dark);
+            padding-top: 2rem;
+        }
+
+        .metric-item .label {
+            font-size: 0.7rem;
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
+            color: var(--text-light);
+            margin-bottom: 0.5rem;
+        }
+
+        .metric-item .value {
+            font-size: 2.5rem;
+            font-family: var(--font-display);
+            color: var(--text-dark);
+            line-height: 1;
+        }
+
+        .insight-box {
+            background: #fff;
+            padding: 3rem;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.02);
+        }
+
+        .insight-box h3 {
+            font-family: var(--font-display);
+            font-size: 2rem;
+            margin: 0 0 1.5rem 0;
+            font-weight: 400;
+            font-style: italic;
+        }
+
+        .insight-box p {
+            font-size: 1.1rem;
+            line-height: 1.8;
+            color: #555;
+            margin-bottom: 2rem;
+        }
+
+        /* ACTIONS COLUMN */
+        aside {
+            padding: 4rem 2rem;
+            background: #fff;
+        }
+
+        .aside-title {
+            font-size: 0.75rem;
+            text-transform: uppercase;
+            letter-spacing: 0.15em;
+            color: var(--text-dark);
+            margin-bottom: 3rem;
+            border-bottom: 1px solid var(--border);
+            padding-bottom: 1rem;
+        }
+
+        .action-step {
+            margin-bottom: 2rem;
+            position: relative;
+            padding-left: 1.5rem;
+        }
+
+        .action-step::before {
+            content: "";
+            position: absolute;
+            left: 0;
+            top: 0.5rem;
+            width: 6px;
+            height: 6px;
+            background: var(--accent);
+            border-radius: 50%;
+        }
+
+        .action-title {
+            font-size: 1rem;
+            font-weight: 500;
+            margin-bottom: 0.3rem;
+        }
+
+        .action-desc {
+            font-size: 0.85rem;
+            color: var(--text-light);
+            line-height: 1.5;
+        }
+
+        .btn-elegant {
+            display: inline-block;
+            background: var(--text-dark);
+            color: #fff;
+            padding: 1.2rem 2.5rem;
+            font-size: 0.8rem;
+            text-transform: uppercase;
+            letter-spacing: 0.15em;
+            border: none;
+            cursor: pointer;
+            transition: background 0.3s;
+            margin-top: 2rem;
+            width: 100%;
+            text-align: center;
+        }
+
+        .btn-elegant:hover {
+            background: var(--accent);
+        }
+
+        .image-placeholder {
+            width: 100%;
+            height: 300px;
+            background: var(--bg);
+            margin-top: 3rem;
+            border: 1px solid var(--border);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-family: var(--font-display);
+            font-style: italic;
+            color: var(--text-light);
+        }
+
+    </style>
+</head>
+<body>
+    <div class="wrapper">
+        <nav>
+            <div class="brand">DataPilot.</div>
+            <ul class="nav-links">
+                <li>01. Overview</li>
+                <li class="active">02. Analysis</li>
+                <li>03. AI Strategy</li>
+                <li>04. Results</li>
+            </ul>
+        </nav>
+        
+        <main>
+            <div class="header-meta">Dataset Analysis / Report No. 042</div>
+            <h1>The Customer<br><em>Topology</em></h1>
+            
+            <div class="metrics-grid">
+                <div class="metric-item">
+                    <div class="label">Total Records</div>
+                    <div class="value">24,592</div>
+                </div>
+                <div class="metric-item">
+                    <div class="label">Anomalies Detected</div>
+                    <div class="value">84</div>
+                </div>
+                <div class="metric-item">
+                    <div class="label">Quality Score</div>
+                    <div class="value">34<span style="font-size:1rem; color: var(--text-light)">/100</span></div>
+                </div>
+            </div>
+
+            <div class="insight-box">
+                <h3>A portrait of inconsistency.</h3>
+                <p>The analysis engine has surfaced critical fragmentation within the `salary` and `phone_number` distributions. We observe a structural drift indicating merged datasets of varying quality. Without intervention, downstream machine learning models will internalize this noise.</p>
+                <div style="font-size: 0.8rem; text-transform: uppercase; letter-spacing: 0.1em; color: var(--accent);">Our AI has proposed a refined cleaning strategy.</div>
+            </div>
+
+            <div class="image-placeholder">
+                [ Abstract Data Visualization ]
+            </div>
+        </main>
+        
+        <aside>
+            <div class="aside-title">Proposed Strategy</div>
+            
+            <div class="action-step">
+                <div class="action-title">Deduplication</div>
+                <div class="action-desc">Remove 84 exact matches spanning all columns to restore baseline integrity.</div>
+            </div>
+            
+            <div class="action-step">
+                <div class="action-title">Imputation</div>
+                <div class="action-desc">Apply median-based gap filling for the `age` vector, respecting the observed right-skew.</div>
+            </div>
+
+            <div class="action-step">
+                <div class="action-title">Standardization</div>
+                <div class="action-desc">Regex-align `phone_number` strings into a unified E.164 international format.</div>
+            </div>
+
+            <button class="btn-elegant">Authorize Execution</button>
+        </aside>
+    </div>
+</body>
+</html>

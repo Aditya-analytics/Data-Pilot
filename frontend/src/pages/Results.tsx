@@ -1,18 +1,52 @@
-import { useEffect } from 'react';
-
+import { useEffect, useState } from 'react';
+import { useNavigate } from 'react-router-dom';
+import { useDataset } from '../DatasetContext';
+import { deleteDataset } from '../services/api';
 
 export default function Results() {
+  const navigate = useNavigate();
+  const { datasetId, setDatasetId } = useDataset();
+  const [isResetting, setIsResetting] = useState(false);
 
   useEffect(() => {
     document.body.id = 'screen-results';
     return () => { document.body.id = ''; };
   }, []);
 
+  const handleStartOver = async () => {
+    if (!datasetId) {
+      navigate('/upload');
+      return;
+    }
+    
+    setIsResetting(true);
+    try {
+      await deleteDataset(datasetId);
+      setDatasetId(null);
+      navigate('/upload');
+    } catch (err) {
+      alert("Failed to clean up dataset on server, but restarting anyway.");
+      setDatasetId(null);
+      navigate('/upload');
+    } finally {
+      setIsResetting(false);
+    }
+  };
+
   return (
     <div className="screen active" style={{ flex: 1, display: 'flex', flexDirection: 'column' }}>
-      <div className="fade-in" style={{ padding: '3rem', background: 'var(--white)', borderBottom: 'var(--border)' }}>
-        <h2 style={{ fontFamily: 'var(--font-display)', fontSize: '2.5rem', fontWeight: 900 }}>PIPELINE COMPLETE.</h2>
-        <p style={{ fontWeight: 700, color: '#555' }}>Your dataset has been successfully processed and validated.</p>
+      <div className="fade-in" style={{ padding: '3rem', background: 'var(--white)', borderBottom: 'var(--border)', display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
+        <div>
+          <h2 style={{ fontFamily: 'var(--font-display)', fontSize: '2.5rem', fontWeight: 900 }}>PIPELINE COMPLETE.</h2>
+          <p style={{ fontWeight: 700, color: '#555' }}>Your dataset has been successfully processed and validated.</p>
+        </div>
+        <button 
+          className={`brutal-btn-danger ${isResetting ? 'loading' : ''}`} 
+          onClick={handleStartOver}
+          disabled={isResetting}
+        >
+          {isResetting ? 'RESTARTING...' : 'START OVER ↺'}
+        </button>
       </div>
 
       <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '1px', background: 'var(--black)', borderBottom: 'var(--border)' }}>

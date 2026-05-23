@@ -1,0 +1,783 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>DataPilot — Intelligent Orchestration (App)</title>
+  
+  <!-- Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+
+  <style>
+    /* ============================================================
+       REFINED MINIMALISM // APP WIZARD
+    ============================================================ */
+    :root {
+      --bg: #F5F5F7;
+      --surface: #FFFFFF;
+      --surface-hover: #F9F9FB;
+      --text-main: #1D1D1F;
+      --text-muted: #86868B;
+      --border-subtle: #E5E5EA;
+      --border-focus: #D1D1D6;
+      --accent-blue: #0071E3;
+      --accent-green: #34C759;
+      --accent-red: #FF3B30;
+      
+      --font-sans: 'Inter', -apple-system, sans-serif;
+      --font-mono: 'JetBrains Mono', monospace;
+      
+      --shadow-app: 0 30px 60px rgba(0, 0, 0, 0.08);
+      --shadow-card: 0 4px 14px rgba(0, 0, 0, 0.04);
+      --radius-app: 24px;
+      --radius-card: 16px;
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      background-color: var(--bg);
+      color: var(--text-main);
+      font-family: var(--font-sans);
+      line-height: 1.5;
+      -webkit-font-smoothing: antialiased;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: 2rem;
+    }
+
+    /* NAV BAR */
+    nav {
+      position: fixed;
+      top: 0; left: 0; right: 0;
+      height: 60px;
+      background: rgba(245, 245, 247, 0.8);
+      backdrop-filter: blur(20px);
+      -webkit-backdrop-filter: blur(20px);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 2rem;
+      z-index: 1000;
+      border-bottom: 1px solid rgba(0,0,0,0.05);
+    }
+    .nav-brand { font-weight: 600; font-size: 1.1rem; letter-spacing: -0.02em; cursor: pointer; }
+    .nav-status { display: flex; align-items: center; gap: 8px; font-size: 0.85rem; color: var(--text-muted); }
+    .status-dot { width: 8px; height: 8px; background: var(--accent-green); border-radius: 50%; box-shadow: 0 0 10px var(--accent-green); animation: pulse 2s infinite; }
+    @keyframes pulse { 0%, 100% { opacity: 1; } 50% { opacity: 0.5; } }
+
+    /* APP CONTAINER (WIZARD) */
+    .app-window {
+      background: var(--surface);
+      border-radius: var(--radius-app);
+      box-shadow: var(--shadow-app);
+      width: 100%;
+      max-width: 1100px;
+      height: 85vh;
+      min-height: 600px;
+      margin-top: 40px;
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+      position: relative;
+    }
+
+    /* STEP PROGRESS BAR */
+    .step-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 1rem;
+      border-bottom: 1px solid var(--border-subtle);
+      background: #FAFAFC;
+      height: 60px;
+      flex-shrink: 0;
+    }
+    .step-tabs {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      height: 100%;
+    }
+    .step-tab {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-size: 0.8rem;
+      font-weight: 500;
+      color: var(--text-muted);
+      padding: 0 1rem;
+      height: 100%;
+      position: relative;
+      transition: color 0.3s;
+    }
+    .step-tab.active {
+      color: var(--text-main);
+      font-weight: 600;
+    }
+    .step-tab.done {
+      color: var(--text-main);
+    }
+    .step-tab.active::after {
+      content: '';
+      position: absolute;
+      bottom: -1px; left: 0; right: 0;
+      height: 2px;
+      background: var(--accent-blue);
+      border-radius: 2px 2px 0 0;
+    }
+    .step-num {
+      font-family: var(--font-mono);
+      font-size: 0.75rem;
+      background: #E5E5EA;
+      border-radius: 50%;
+      width: 20px; height: 20px;
+      display: flex; align-items: center; justify-content: center;
+      transition: background 0.3s, color 0.3s;
+    }
+    .step-tab.active .step-num { background: var(--accent-blue); color: white; }
+    .step-tab.done .step-num { background: var(--text-main); color: white; }
+
+    /* SCREENS CONTAINER */
+    .screens-viewport {
+      flex: 1;
+      position: relative;
+      overflow: hidden;
+    }
+    .screen {
+      position: absolute;
+      inset: 0;
+      display: flex;
+      flex-direction: column;
+      opacity: 0;
+      pointer-events: none;
+      transform: translateX(30px);
+      transition: opacity 0.5s cubic-bezier(0.16, 1, 0.3, 1), transform 0.5s cubic-bezier(0.16, 1, 0.3, 1);
+      overflow-y: auto;
+    }
+    .screen.active {
+      opacity: 1;
+      pointer-events: auto;
+      transform: translateX(0);
+    }
+    .screen.exiting-left {
+      transform: translateX(-30px);
+      opacity: 0;
+    }
+
+    /* BUTTONS */
+    .btn {
+      background: var(--surface);
+      border: 1px solid var(--border-focus);
+      color: var(--text-main);
+      padding: 0.8rem 1.5rem;
+      border-radius: 20px;
+      font-size: 0.9rem;
+      font-weight: 500;
+      cursor: pointer;
+      transition: all 0.2s;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+    }
+    .btn:hover { background: #F0F0F5; border-color: #C7C7CC; }
+    .btn-primary { background: var(--text-main); color: var(--surface); border: none; }
+    .btn-primary:hover { background: #333; transform: scale(1.02); box-shadow: 0 4px 12px rgba(0,0,0,0.1); }
+    .btn-blue { background: var(--accent-blue); color: var(--surface); border: none; }
+    .btn-blue:hover { background: #005BB5; transform: scale(1.02); box-shadow: 0 4px 12px rgba(0,113,227,0.2); }
+
+    /* ============================================================
+       SCREEN 1: UPLOAD
+    ============================================================ */
+    .upload-container {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: 3rem;
+      text-align: center;
+    }
+    .upload-title {
+      font-size: 2.5rem;
+      font-weight: 600;
+      letter-spacing: -0.03em;
+      margin-bottom: 0.5rem;
+    }
+    .upload-desc { color: var(--text-muted); font-size: 1rem; max-width: 400px; margin-bottom: 3rem; }
+    
+    .drop-zone {
+      border: 2px dashed var(--border-focus);
+      border-radius: var(--radius-app);
+      width: 100%;
+      max-width: 600px;
+      padding: 4rem 2rem;
+      background: #FAFAFC;
+      transition: all 0.3s;
+      cursor: pointer;
+    }
+    .drop-zone:hover {
+      border-color: var(--accent-blue);
+      background: #F0F4FA;
+    }
+    .drop-zone.dropped {
+      border-style: solid;
+      background: var(--surface);
+      border-color: var(--border-subtle);
+      box-shadow: var(--shadow-card);
+    }
+    .drop-icon {
+      width: 60px; height: 60px;
+      background: var(--surface);
+      border-radius: 50%;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 1.5rem;
+      margin: 0 auto 1.5rem;
+      box-shadow: var(--shadow-card);
+      color: var(--accent-blue);
+    }
+    
+    /* ============================================================
+       SCREEN 2: ANALYSIS
+    ============================================================ */
+    .analysis-layout { display: grid; grid-template-columns: 300px 1fr; flex: 1; min-height: 0; }
+    .analysis-sidebar {
+      border-right: 1px solid var(--border-subtle);
+      padding: 2rem;
+      display: flex; flex-direction: column;
+      background: #FAFAFC;
+    }
+    .stat-row { display: flex; justify-content: space-between; margin-bottom: 1rem; font-size: 0.9rem; border-bottom: 1px solid var(--border-subtle); padding-bottom: 0.5rem;}
+    .stat-val { font-weight: 600; font-family: var(--font-mono); }
+    
+    .issue-card {
+      background: var(--surface);
+      border: 1px solid var(--border-subtle);
+      border-radius: 12px;
+      padding: 1rem;
+      margin-bottom: 1rem;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.02);
+    }
+    .issue-num { font-size: 2rem; font-weight: 300; line-height: 1; color: var(--accent-red); margin-bottom: 0.2rem; }
+    .issue-label { font-size: 0.75rem; font-weight: 600; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.05em;}
+    
+    .analysis-main { padding: 2rem; display: flex; flex-direction: column; overflow-y: auto;}
+    .data-table-wrapper {
+      border: 1px solid var(--border-subtle);
+      border-radius: 12px;
+      overflow: hidden;
+      box-shadow: var(--shadow-card);
+    }
+    .data-table { width: 100%; border-collapse: collapse; font-size: 0.85rem; }
+    .data-table th { background: #FAFAFC; padding: 1rem; text-align: left; font-weight: 600; color: var(--text-muted); border-bottom: 1px solid var(--border-subtle); }
+    .data-table td { padding: 1rem; border-bottom: 1px solid var(--border-subtle); }
+    .data-table tr:last-child td { border-bottom: none; }
+    .err-cell { background: #FFF0F0; color: var(--accent-red); font-weight: 600; border-radius: 4px; padding: 2px 6px; }
+
+    /* Loading Bar */
+    .loader-bar { height: 4px; background: var(--border-subtle); border-radius: 2px; overflow: hidden; margin: 2rem 0 1rem; }
+    .loader-fill { height: 100%; background: var(--accent-blue); width: 0%; transition: width 0.3s; }
+
+    /* ============================================================
+       SCREEN 3: PLAN REVIEW
+    ============================================================ */
+    .plan-layout { display: grid; grid-template-columns: 1fr 350px; flex: 1; min-height: 0; }
+    .plan-main { padding: 2rem; overflow-y: auto; background: #FAFAFC; }
+    .plan-sidebar { border-left: 1px solid var(--border-subtle); padding: 2rem; background: var(--surface); display: flex; flex-direction: column;}
+    
+    .step-accordion {
+      background: var(--surface);
+      border: 1px solid var(--border-subtle);
+      border-radius: var(--radius-card);
+      padding: 1.5rem;
+      margin-bottom: 1rem;
+      box-shadow: var(--shadow-card);
+      transition: all 0.5s cubic-bezier(0.16, 1, 0.3, 1);
+      position: relative;
+      overflow: hidden;
+      opacity: 0;
+      transform: translateY(15px) scale(0.98);
+      pointer-events: none;
+    }
+    .step-accordion.revealed {
+      opacity: 1;
+      transform: translateY(0) scale(1);
+      pointer-events: auto;
+    }
+    .step-accordion.approved {
+      border-color: var(--accent-green);
+      background: #F4FBF5;
+    }
+    .step-header-area { display: flex; justify-content: space-between; align-items: flex-start; }
+    .step-badge {
+      font-size: 0.75rem; font-weight: 600; background: #E5E5EA; padding: 4px 10px; border-radius: 12px; margin-bottom: 0.5rem; display: inline-block; color: var(--text-muted);
+    }
+    .step-title { font-size: 1.1rem; font-weight: 600; margin-bottom: 0.5rem; }
+    .step-desc { font-size: 0.9rem; color: var(--text-muted); }
+    
+    .approval-actions { display: flex; gap: 8px; }
+    .btn-icon { width: 36px; height: 36px; border-radius: 50%; border: 1px solid var(--border-subtle); background: var(--surface); display: flex; align-items: center; justify-content: center; cursor: pointer; transition: all 0.2s;}
+    .btn-icon.check:hover { background: var(--accent-green); color: white; border-color: var(--accent-green); }
+    .btn-icon.cross:hover { background: var(--accent-red); color: white; border-color: var(--accent-red); }
+    .step-accordion.approved .btn-icon.check { background: var(--accent-green); color: white; border-color: var(--accent-green); }
+
+    .ai-terminal {
+      flex: 1;
+      background: #1D1D1F;
+      color: #F5F5F7;
+      border-radius: 12px;
+      padding: 1.5rem;
+      font-family: var(--font-mono);
+      font-size: 0.8rem;
+      overflow-y: auto;
+      line-height: 1.7;
+    }
+    .ai-sys { color: #86868B; }
+    .ai-ok { color: #34C759; }
+
+    /* ============================================================
+       SCREEN 4: EXECUTION
+    ============================================================ */
+    .exec-layout { display: grid; grid-template-columns: 350px 1fr; flex: 1; min-height: 0; }
+    .exec-sidebar { border-right: 1px solid var(--border-subtle); padding: 2rem; background: #FAFAFC; overflow-y: auto;}
+    
+    .timeline { position: relative; padding-left: 20px; }
+    .timeline::before { content: ''; position: absolute; left: 6px; top: 10px; bottom: 10px; width: 2px; background: var(--border-subtle); }
+    .tl-node { position: relative; margin-bottom: 2rem; }
+    .tl-dot { position: absolute; left: -20px; top: 4px; width: 14px; height: 14px; background: var(--surface); border: 2px solid var(--border-focus); border-radius: 50%; transition: all 0.3s;}
+    .tl-node.active .tl-dot { border-color: var(--accent-blue); background: var(--accent-blue); box-shadow: 0 0 0 4px rgba(0,113,227,0.2); }
+    .tl-node.done .tl-dot { border-color: var(--accent-green); background: var(--accent-green); }
+    .tl-title { font-size: 0.95rem; font-weight: 500; color: var(--text-muted); transition: color 0.3s;}
+    .tl-node.active .tl-title, .tl-node.done .tl-title { color: var(--text-main); font-weight: 600;}
+
+    .exec-main { padding: 2rem; display: flex; flex-direction: column; }
+    .log-window {
+      flex: 1;
+      background: var(--surface);
+      border: 1px solid var(--border-subtle);
+      border-radius: var(--radius-card);
+      padding: 2rem;
+      font-family: var(--font-mono);
+      font-size: 0.85rem;
+      color: var(--text-muted);
+      overflow-y: auto;
+      box-shadow: inset 0 2px 10px rgba(0,0,0,0.02);
+    }
+    .log-line { margin-bottom: 0.5rem; opacity: 0; animation: fadeUp 0.3s forwards; }
+    .log-line.highlight { color: var(--text-main); font-weight: 600; }
+
+    /* ============================================================
+       SCREEN 5: RESULTS
+    ============================================================ */
+    .res-layout { display: flex; flex-direction: column; flex: 1; padding: 3rem; overflow-y: auto;}
+    .res-header { display: flex; justify-content: space-between; align-items: flex-end; margin-bottom: 3rem; }
+    .score-display { display: flex; align-items: baseline; gap: 1rem; }
+    .score-number { font-size: 6rem; font-weight: 300; line-height: 0.8; letter-spacing: -0.05em; color: var(--accent-green); }
+    .score-text { font-size: 1.2rem; font-weight: 500; color: var(--text-muted); }
+    
+    .metrics-row { display: grid; grid-template-columns: repeat(4, 1fr); gap: 1.5rem; margin-bottom: 3rem; }
+    .m-card { background: var(--surface); border: 1px solid var(--border-subtle); border-radius: 16px; padding: 1.5rem; text-align: center; box-shadow: var(--shadow-card);}
+    .m-val { font-size: 2rem; font-weight: 400; color: var(--text-main); margin-bottom: 0.2rem; }
+    .m-label { font-size: 0.8rem; font-weight: 500; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.05em;}
+
+    .diff-section { background: var(--surface); border: 1px solid var(--border-subtle); border-radius: 16px; padding: 2rem; box-shadow: var(--shadow-card); margin-bottom: 2rem;}
+    .diff-pill { display: inline-block; padding: 6px 12px; border-radius: 12px; font-family: var(--font-mono); font-size: 0.85rem; margin-bottom: 8px;}
+    .d-del { background: #FFEEEE; color: var(--accent-red); text-decoration: line-through; }
+    .d-add { background: #E8F8F5; color: var(--accent-green); }
+
+    .action-bar { display: flex; gap: 1rem; margin-top: auto; justify-content: flex-end;}
+  </style>
+</head>
+<body>
+
+  <!-- NAV -->
+  <nav>
+    <div class="nav-brand" onclick="window.location.reload()">DataPilot</div>
+    <div class="nav-status">
+      <div class="status-dot"></div>
+      System Online
+    </div>
+  </nav>
+
+  <!-- APP WIZARD -->
+  <div class="app-window">
+    
+    <!-- HEADER TABS -->
+    <div class="step-header">
+      <div class="step-tabs">
+        <div class="step-tab active" id="tab-1"><div class="step-num">1</div> Upload</div>
+        <div class="step-tab" id="tab-2"><div class="step-num">2</div> Analyze</div>
+        <div class="step-tab" id="tab-3"><div class="step-num">3</div> AI Plan</div>
+        <div class="step-tab" id="tab-4"><div class="step-num">4</div> Execute</div>
+        <div class="step-tab" id="tab-5"><div class="step-num">5</div> Results</div>
+      </div>
+      <div>
+        <!-- Contextual action button will be injected here -->
+        <button class="btn btn-blue" id="global-btn" style="display:none;" onclick="nextStep()">Continue</button>
+      </div>
+    </div>
+
+    <div class="screens-viewport">
+      
+      <!-- SCREEN 1: UPLOAD -->
+      <div class="screen active" id="screen-1">
+        <div class="upload-container">
+          <h1 class="upload-title">Drop your messy dataset.</h1>
+          <p class="upload-desc">DataPilot reads every column, detects every issue, and hands it to the AI planner. You stay in control at every step.</p>
+          
+          <div class="drop-zone" id="drop-zone" onclick="simulateUpload()">
+            <div class="drop-icon" id="drop-icon">
+              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="17 8 12 3 7 8"></polyline><line x1="12" y1="3" x2="12" y2="15"></line></svg>
+            </div>
+            <h3 style="font-size: 1.2rem; font-weight: 600; margin-bottom: 0.5rem;" id="drop-title">Select a file or drag and drop</h3>
+            <p style="color: var(--text-muted); font-size: 0.9rem;" id="drop-sub">CSV, XLSX, JSON up to 500MB</p>
+            <div style="margin-top: 2rem;">
+              <button class="btn" onclick="simulateUpload(); event.stopPropagation();">Browse Files</button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- SCREEN 2: ANALYSIS -->
+      <div class="screen" id="screen-2">
+        <div class="analysis-layout">
+          <div class="analysis-sidebar">
+            <h3 style="font-size: 1.1rem; font-weight: 600; margin-bottom: 1.5rem;">Dataset Profile</h3>
+            <div class="stat-row"><span>Filename</span><span class="stat-val">customer.csv</span></div>
+            <div class="stat-row"><span>Rows</span><span class="stat-val">1,200</span></div>
+            <div class="stat-row"><span>Columns</span><span class="stat-val">12</span></div>
+            
+            <div class="loader-bar"><div class="loader-fill" id="analysis-fill"></div></div>
+            <div style="font-size: 0.8rem; font-weight: 500; color: var(--accent-blue); text-align: center; margin-bottom: 2rem;" id="analysis-status">Scanning for anomalies...</div>
+
+            <div class="issue-card">
+              <div class="issue-num" id="ic-nulls">--</div>
+              <div class="issue-label">Missing Values</div>
+            </div>
+            <div class="issue-card">
+              <div class="issue-num" id="ic-dupes">--</div>
+              <div class="issue-label">Exact Duplicates</div>
+            </div>
+          </div>
+          
+          <div class="analysis-main">
+            <div style="display: flex; justify-content: space-between; align-items: flex-end; margin-bottom: 1rem;">
+              <h3 style="font-size: 1.1rem; font-weight: 600;">Data Preview</h3>
+              <span style="font-size: 0.8rem; color: var(--text-muted);">First 8 rows</span>
+            </div>
+            <div class="data-table-wrapper">
+              <table class="data-table">
+                <thead>
+                  <tr><th>ID</th><th>NAME</th><th>AGE</th><th>DEPARTMENT</th><th>SALARY</th></tr>
+                </thead>
+                <tbody>
+                  <tr><td>001</td><td>Alice Johnson</td><td>28</td><td><span class="err-cell">NaN</span></td><td>54,000</td></tr>
+                  <tr><td>002</td><td>Bob Smith</td><td><span class="err-cell">NaN</span></td><td>Sales</td><td>61,000</td></tr>
+                  <tr><td>003</td><td>Carol White</td><td>34</td><td>Engineering</td><td>78,000</td></tr>
+                  <tr><td>004</td><td>Bob Smith</td><td><span class="err-cell">NaN</span></td><td>Sales</td><td>61,000</td></tr>
+                  <tr><td>005</td><td>David Lee</td><td>41</td><td>Marketing</td><td><span class="err-cell">999999</span></td></tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- SCREEN 3: PLAN REVIEW -->
+      <div class="screen" id="screen-3">
+        <div class="plan-layout">
+          <div class="plan-main">
+            <h2 style="font-size: 1.8rem; font-weight: 600; margin-bottom: 0.5rem;">Cleaning Strategy</h2>
+            <p style="color: var(--text-muted); margin-bottom: 2rem;">Review the AI's deterministic plan before execution.</p>
+
+            <div class="step-accordion" id="pstep-1">
+              <div class="step-header-area">
+                <div>
+                  <div class="step-badge">Step 1</div>
+                  <div class="step-title">Drop Exact Duplicates</div>
+                  <div class="step-desc">Remove 847 duplicate rows to restore integrity.</div>
+                </div>
+                <div class="approval-actions">
+                  <button class="btn-icon check" onclick="approveStep(1, true)">✓</button>
+                  <button class="btn-icon cross" onclick="approveStep(1, false)">✕</button>
+                </div>
+              </div>
+            </div>
+
+            <div class="step-accordion" id="pstep-2">
+              <div class="step-header-area">
+                <div>
+                  <div class="step-badge">Step 2</div>
+                  <div class="step-title">Impute Missing Age</div>
+                  <div class="step-desc">Fill 142 nulls in `age` using the median strategy.</div>
+                </div>
+                <div class="approval-actions">
+                  <button class="btn-icon check" onclick="approveStep(2, true)">✓</button>
+                  <button class="btn-icon cross" onclick="approveStep(2, false)">✕</button>
+                </div>
+              </div>
+            </div>
+
+            <div class="step-accordion" id="pstep-3">
+              <div class="step-header-area">
+                <div>
+                  <div class="step-badge">Step 3</div>
+                  <div class="step-title">Cap Salary Outliers</div>
+                  <div class="step-desc">Winsorize `salary` at the 99th percentile.</div>
+                </div>
+                <div class="approval-actions">
+                  <button class="btn-icon check" onclick="approveStep(3, true)">✓</button>
+                  <button class="btn-icon cross" onclick="approveStep(3, false)">✕</button>
+                </div>
+              </div>
+            </div>
+
+          </div>
+          
+          <div class="plan-sidebar">
+            <h3 style="font-size: 0.9rem; font-weight: 600; text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 1rem; color: var(--text-muted);">AI Reasoning Log</h3>
+            <div class="ai-terminal" id="ai-log">
+              <div class="ai-sys">Connecting to Planner...</div>
+            </div>
+            <div style="margin-top: 1.5rem; text-align: center;">
+              <button class="btn btn-blue" style="width: 100%; opacity: 0; pointer-events: none; transition: opacity 0.5s;" onclick="nextStep()" id="approve-all-btn">Approve & Execute</button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- SCREEN 4: EXECUTION -->
+      <div class="screen" id="screen-4">
+        <div class="exec-layout">
+          <div class="exec-sidebar">
+            <h3 style="font-size: 1.2rem; font-weight: 600; margin-bottom: 2rem;">Execution Flow</h3>
+            <div class="timeline">
+              <div class="tl-node" id="tl-1">
+                <div class="tl-dot"></div>
+                <div class="tl-title">Drop Duplicates</div>
+              </div>
+              <div class="tl-node" id="tl-2">
+                <div class="tl-dot"></div>
+                <div class="tl-title">Impute Age</div>
+              </div>
+              <div class="tl-node" id="tl-3">
+                <div class="tl-dot"></div>
+                <div class="tl-title">Cap Outliers</div>
+              </div>
+              <div class="tl-node" id="tl-4">
+                <div class="tl-dot"></div>
+                <div class="tl-title">Validate Integrity</div>
+              </div>
+            </div>
+          </div>
+          <div class="exec-main">
+            <div class="log-window" id="exec-log">
+              <div class="log-line">> EXECUTION ENGINE INITIALIZED</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- SCREEN 5: RESULTS -->
+      <div class="screen" id="screen-5">
+        <div class="res-layout">
+          <div class="res-header">
+            <div>
+              <h2 style="font-size: 2rem; font-weight: 600; letter-spacing: -0.03em;">Cleaning Complete</h2>
+              <p style="color: var(--text-muted);">Your data is now ready for production.</p>
+            </div>
+            <div class="score-display">
+              <div class="score-text">Final Quality Score</div>
+              <div class="score-number">94</div>
+            </div>
+          </div>
+
+          <div class="metrics-row">
+            <div class="m-card">
+              <div class="m-val">353</div>
+              <div class="m-label">Total Rows</div>
+            </div>
+            <div class="m-card">
+              <div class="m-val" style="color: var(--accent-green);">0</div>
+              <div class="m-label">Missing Values</div>
+            </div>
+            <div class="m-card">
+              <div class="m-val" style="color: var(--accent-green);">0</div>
+              <div class="m-label">Duplicates</div>
+            </div>
+            <div class="m-card">
+              <div class="m-val">4</div>
+              <div class="m-label">Outliers Capped</div>
+            </div>
+          </div>
+
+          <div class="diff-section">
+            <h3 style="font-size: 1.1rem; font-weight: 600; margin-bottom: 1rem;">Cell-Level Changes Preview</h3>
+            <div class="diff-pill d-del">- user_001 | 28 | NaN | Sales</div><br>
+            <div class="diff-pill d-add">+ user_001 | 28 | Imputed | Sales</div>
+          </div>
+
+          <div class="action-bar">
+            <button class="btn" onclick="location.reload()">Start Over</button>
+            <button class="btn btn-primary">Download Cleaned CSV</button>
+            <button class="btn btn-blue">Download Report</button>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <script>
+    let currentStep = 1;
+    const globalBtn = document.getElementById('global-btn');
+
+    function updateTabs() {
+      for(let i=1; i<=5; i++) {
+        const tab = document.getElementById(`tab-${i}`);
+        const screen = document.getElementById(`screen-${i}`);
+        
+        tab.className = 'step-tab';
+        if (i < currentStep) tab.classList.add('done');
+        if (i === currentStep) tab.classList.add('active');
+
+        if (i === currentStep) {
+          screen.classList.add('active');
+          screen.classList.remove('exiting-left');
+        } else if (i < currentStep) {
+          screen.classList.remove('active');
+          screen.classList.add('exiting-left');
+        } else {
+          screen.classList.remove('active', 'exiting-left');
+        }
+      }
+      
+      globalBtn.style.display = 'none';
+    }
+
+    function nextStep() {
+      if(currentStep < 5) {
+        currentStep++;
+        updateTabs();
+        
+        if(currentStep === 2) runAnalysis();
+        if(currentStep === 3) runPlanLog();
+        if(currentStep === 4) runExecution();
+      }
+    }
+
+    function simulateUpload() {
+      const zone = document.getElementById('drop-zone');
+      zone.classList.add('dropped');
+      document.getElementById('drop-title').textContent = 'customer_data.csv';
+      document.getElementById('drop-sub').textContent = '1,200 Rows • 12 Columns • 48KB';
+      document.getElementById('drop-icon').innerHTML = '<svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path><polyline points="22 4 12 14.01 9 11.01"></polyline></svg>';
+      
+      setTimeout(() => { nextStep(); }, 800);
+    }
+
+    function runAnalysis() {
+      const fill = document.getElementById('analysis-fill');
+      const stat = document.getElementById('analysis-status');
+      
+      setTimeout(() => { fill.style.width = '30%'; stat.textContent = 'Reading CSV structure...'; }, 500);
+      setTimeout(() => { fill.style.width = '60%'; stat.textContent = 'Detecting null values...'; document.getElementById('ic-nulls').textContent = '231'; }, 1200);
+      setTimeout(() => { fill.style.width = '90%'; stat.textContent = 'Scanning for duplicates...'; document.getElementById('ic-dupes').textContent = '847'; }, 1800);
+      setTimeout(() => { fill.style.width = '100%'; stat.textContent = 'Analysis Complete'; globalBtn.style.display = 'block'; globalBtn.textContent = 'View AI Plan'; }, 2400);
+    }
+
+    function runPlanLog() {
+      const log = document.getElementById('ai-log');
+      log.innerHTML = '<div class="ai-sys">Connecting to Planner...</div>';
+      
+      // Reset states
+      for (let i = 1; i <= 3; i++) {
+        const step = document.getElementById(`pstep-${i}`);
+        if(step) {
+          step.classList.remove('revealed', 'approved');
+        }
+      }
+      const btn = document.getElementById('approve-all-btn');
+      btn.style.opacity = '0';
+      btn.style.pointerEvents = 'none';
+
+      const lines = [
+        {t: 'Loading analysis report...', c: 'ai-sys', delay: 600},
+        {t: 'Rows: 1200, Cols: 12. Issues: Nulls(231), Dupes(847)', c: 'ai-sys', delay: 1200},
+        {t: '[PLAN_01] DROP_DUPLICATES -> conf: 0.99', c: 'ai-ok', delay: 2000, step: 1},
+        {t: '[PLAN_02] IMPUTE_NULL_AGE -> MEDIAN', c: 'ai-ok', delay: 2800, step: 2},
+        {t: '[PLAN_03] CAP_SALARY -> P99', c: 'ai-ok', delay: 3600, step: 3},
+        {t: 'Plan Finalized. Awaiting approval.', c: 'ai-sys', delay: 4400, showBtn: true}
+      ];
+      
+      lines.forEach((line) => {
+        setTimeout(() => {
+          log.innerHTML += `<div class="${line.c}">${line.t}</div>`;
+          log.scrollTop = log.scrollHeight;
+          
+          if (line.step) {
+            document.getElementById(`pstep-${line.step}`).classList.add('revealed');
+          }
+          if (line.showBtn) {
+            btn.style.opacity = '1';
+            btn.style.pointerEvents = 'auto';
+          }
+        }, line.delay);
+      });
+    }
+
+    function approveStep(n, approved) {
+      const card = document.getElementById(`pstep-${n}`);
+      if(approved) {
+        card.classList.add('approved');
+      } else {
+        card.classList.remove('approved');
+      }
+    }
+
+    function runExecution() {
+      const log = document.getElementById('exec-log');
+      log.innerHTML = '<div class="log-line">> EXECUTION ENGINE INITIALIZED</div>';
+      
+      const tl = [
+        {id: 1, logs: ['> Scanning for duplicates...', '> Exact matches removed: 847']},
+        {id: 2, logs: ['> Imputing age using median...', '> 142 values filled.']},
+        {id: 3, logs: ['> Capping outliers at P99...', '> 23 values capped.']},
+        {id: 4, logs: ['> Running validation...', '> Integrity: PASS.']}
+      ];
+
+      let delay = 500;
+      tl.forEach((step, i) => {
+        setTimeout(() => {
+          document.getElementById(`tl-${step.id}`).classList.add('active');
+          step.logs.forEach((l, j) => {
+            setTimeout(() => {
+              log.innerHTML += `<div class="log-line highlight">${l}</div>`;
+              log.scrollTop = log.scrollHeight;
+            }, j * 400);
+          });
+        }, delay);
+        
+        delay += 1200;
+        
+        setTimeout(() => {
+          document.getElementById(`tl-${step.id}`).classList.remove('active');
+          document.getElementById(`tl-${step.id}`).classList.add('done');
+          
+          if(i === tl.length - 1) {
+            log.innerHTML += `<div class="log-line">> ALL STEPS COMPLETE.</div>`;
+            setTimeout(() => nextStep(), 1000);
+          }
+        }, delay);
+      });
+    }
+
+  </script>
+</body>
+</html>

@@ -9,11 +9,21 @@ export default function Plan() {
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
   const [approvedSteps, setApprovedSteps] = useState<Set<number>>(new Set());
+  const [revealedSteps, setRevealedSteps] = useState(0);
 
   useEffect(() => {
     document.body.id = 'screen-plan';
     return () => { document.body.id = ''; };
   }, []);
+
+  useEffect(() => {
+    if (!loading && plan?.steps && revealedSteps < plan.steps.length) {
+      const timer = setTimeout(() => {
+        setRevealedSteps(prev => prev + 1);
+      }, 800);
+      return () => clearTimeout(timer);
+    }
+  }, [loading, plan, revealedSteps]);
 
   useEffect(() => {
     if (id) {
@@ -67,9 +77,10 @@ export default function Plan() {
               </div>
             ) : (
               plan?.steps?.map((step: any, index: number) => {
+                if (index >= revealedSteps) return null;
                 const isApproved = approvedSteps.has(index);
                 return (
-                  <div key={index} className={`plan-step-card ${isApproved ? 'approved' : 'rejected'}`}>
+                  <div key={index} className={`plan-step-card ${isApproved ? 'approved' : 'rejected'}`} style={{ animation: 'revealStep 0.5s cubic-bezier(0.16, 1, 0.3, 1) forwards' }}>
                     <div className="plan-step-top">
                       <div className="plan-step-num">{(index + 1).toString().padStart(2, '0')}</div>
                       <div className="plan-step-info">
@@ -111,9 +122,10 @@ export default function Plan() {
             <button 
               className="btn btn-primary" 
               onClick={handleExecute}
-              disabled={loading || !!error || approvedSteps.size === 0}
+              disabled={loading || !!error || approvedSteps.size === 0 || revealedSteps < (plan?.steps?.length || 0)}
+              style={{ transition: 'opacity 0.3s', opacity: revealedSteps < (plan?.steps?.length || 0) ? 0.5 : 1 }}
             >
-              APPROVE & EXECUTE →
+              {revealedSteps < (plan?.steps?.length || 0) ? 'GENERATING PLAN...' : 'APPROVE & EXECUTE →'}
             </button>
           </div>
         </div>
@@ -128,14 +140,18 @@ export default function Plan() {
             <span className="t-sys">[SYS]</span> INGESTING ANALYSIS REPORT...<br />
             <span className="t-ok">SUCCESS</span> DATA LOADED (1200 ROWS, 12 COLS)<br /><br />
             
-            {plan?.steps?.map((step: any, index: number) => (
+            <style>{`@keyframes revealStep { from { opacity: 0; transform: translateY(15px); } to { opacity: 1; transform: translateY(0); } }`}</style>
+            {plan?.steps?.map((step: any, index: number) => {
+              if (index >= revealedSteps) return null;
+              return (
               <Fragment key={`term-${index}`}>
-                <span className="t-em">&gt; ANALYZING STEP {(index+1).toString().padStart(2, '0')}</span><br />
+                <span className="t-em">&gt; GENERATING STEP {(index+1).toString().padStart(2, '0')}</span><br />
                 <span className="t-sys">[LLM]</span> ACTION: {step.action}<br />
                 <span className="t-sys">[LLM]</span> REASONING: {step.reasoning}<br />
                 <span className="t-warn">CONFIDENCE: {Math.round(step.confidence_score * 100)}%</span><br /><br />
               </Fragment>
-            ))}
+              );
+            })}
             {!loading && <span className="term-cursor"></span>}
           </div>
         </div>

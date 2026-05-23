@@ -50,3 +50,16 @@ export const getPreviewData = async (datasetId: string) => {
 
   return response.json();
 };
+
+export const deleteDataset = async (datasetId: string) => {
+  const response = await fetch(`${BASE_URL}/remove_file/${datasetId}`, {
+    method: 'DELETE',
+  });
+  
+  if (!response.ok) {
+    const errorData = await response.json().catch(() => ({}));
+    throw new Error(errorData.detail || 'Failed to delete dataset');
+  }
+
+  return true;
+};

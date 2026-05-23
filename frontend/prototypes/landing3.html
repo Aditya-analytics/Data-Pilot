@@ -3,595 +3,521 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>DataForge — Refined Data Intelligence</title>
+  <title>DataPilot — Intelligent Orchestration</title>
   
   <!-- Fonts -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
 
   <style>
     /* ============================================================
-       REFINED MINIMALISM // BASE TOKENS
+       REFINED MINIMALISM & FLUID MOTION (APPLE-ESQUE)
     ============================================================ */
     :root {
-      --bg: #FAFAFA;
+      --bg: #F5F5F7;
       --surface: #FFFFFF;
-      --text-main: #111111;
-      --text-muted: #666666;
-      --text-faint: #999999;
-      --border-subtle: #EBEBEB;
-      --border-focus: #CCCCCC;
-      --accent: #000000;
+      --text-main: #1D1D1F;
+      --text-muted: #86868B;
+      --border-subtle: #E5E5EA;
+      --accent-blue: #0071E3;
+      --accent-green: #34C759;
+      --accent-red: #FF3B30;
       
       --font-sans: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
       --font-mono: 'JetBrains Mono', monospace;
       
-      --radius-sm: 6px;
-      --radius-md: 12px;
-      --radius-lg: 24px;
-      
-      --shadow-sm: 0 2px 8px rgba(0, 0, 0, 0.04);
-      --shadow-md: 0 8px 24px rgba(0, 0, 0, 0.06);
+      --shadow-float: 0 20px 40px rgba(0, 0, 0, 0.06);
+      --shadow-card: 0 4px 14px rgba(0, 0, 0, 0.03);
     }
 
-    * {
-      box-sizing: border-box;
-      margin: 0;
-      padding: 0;
-    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
 
     body {
       background-color: var(--bg);
       color: var(--text-main);
       font-family: var(--font-sans);
-      line-height: 1.6;
+      line-height: 1.5;
       -webkit-font-smoothing: antialiased;
-      -moz-osx-font-smoothing: grayscale;
+      overflow-x: hidden;
     }
 
-    a {
-      color: inherit;
-      text-decoration: none;
-      transition: color 0.2s ease;
+    /* TYPOGRAPHY */
+    h1 {
+      font-size: clamp(3rem, 6vw, 5.5rem);
+      font-weight: 700;
+      letter-spacing: -0.04em;
+      line-height: 1.05;
     }
 
-    /* ============================================================
-       UTILITIES
-    ============================================================ */
+    h2 {
+      font-size: clamp(2rem, 4vw, 3.5rem);
+      font-weight: 600;
+      letter-spacing: -0.03em;
+    }
+
+    .eyebrow {
+      font-size: 0.85rem;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.1em;
+      color: var(--text-muted);
+      margin-bottom: 1rem;
+      display: block;
+    }
+
+    /* LAYOUT & UTILS */
     .container {
       max-width: 1200px;
       margin: 0 auto;
       padding: 0 5vw;
     }
 
-    .fade-in {
+    .section { padding: 8rem 0; }
+
+    /* ANIMATIONS */
+    .reveal-up {
       opacity: 0;
-      transform: translateY(10px);
-      transition: opacity 0.8s ease, transform 0.8s ease;
+      transform: translateY(30px) scale(0.98);
+      transition: opacity 1s cubic-bezier(0.16, 1, 0.3, 1), transform 1s cubic-bezier(0.16, 1, 0.3, 1);
     }
-
-    .fade-in.visible {
+    .reveal-up.visible {
       opacity: 1;
-      transform: translateY(0);
+      transform: translateY(0) scale(1);
     }
 
-    /* ============================================================
-       NAVIGATION
-    ============================================================ */
+    /* NAV */
     nav {
-      position: sticky;
-      top: 0;
-      z-index: 100;
-      background: rgba(250, 250, 250, 0.8);
-      backdrop-filter: blur(12px);
-      -webkit-backdrop-filter: blur(12px);
-      border-bottom: 1px solid var(--border-subtle);
-      height: 70px;
+      position: fixed;
+      top: 0; left: 0; right: 0;
+      height: 60px;
+      background: rgba(245, 245, 247, 0.8);
+      backdrop-filter: blur(20px);
+      -webkit-backdrop-filter: blur(20px);
       display: flex;
       align-items: center;
-    }
-
-    .nav-inner {
-      display: flex;
       justify-content: space-between;
-      align-items: center;
-      width: 100%;
+      padding: 0 2rem;
+      z-index: 1000;
+      border-bottom: 1px solid rgba(0,0,0,0.05);
     }
 
-    .nav-brand {
-      font-size: 1.1rem;
-      font-weight: 600;
-      letter-spacing: -0.01em;
-    }
+    .nav-brand { font-weight: 600; font-size: 1.1rem; letter-spacing: -0.02em; }
+    .nav-status { display: flex; align-items: center; gap: 8px; font-size: 0.85rem; color: var(--text-muted); }
+    .status-dot { width: 8px; height: 8px; background: var(--accent-green); border-radius: 50%; box-shadow: 0 0 10px var(--accent-green); }
 
-    .nav-links {
-      display: flex;
-      gap: 2.5rem;
-    }
-
-    .nav-link {
-      font-size: 0.85rem;
-      font-weight: 500;
-      color: var(--text-muted);
-    }
-
-    .nav-link:hover {
-      color: var(--text-main);
-    }
-
-    /* ============================================================
-       HERO MODULE
-    ============================================================ */
+    /* HERO */
     .hero {
-      padding: 12vh 0 8vh;
-      text-align: center;
-    }
-
-    .hero-badge {
-      display: inline-flex;
-      align-items: center;
-      gap: 8px;
-      padding: 6px 16px;
-      background: var(--surface);
-      border: 1px solid var(--border-subtle);
-      border-radius: 100px;
-      font-size: 0.75rem;
-      font-weight: 500;
-      color: var(--text-muted);
-      margin-bottom: 2rem;
-      box-shadow: var(--shadow-sm);
-    }
-
-    .hero-badge::before {
-      content: '';
-      width: 6px;
-      height: 6px;
-      background: #10B981; /* Soft green */
-      border-radius: 50%;
-    }
-
-    h1 {
-      font-size: clamp(2.5rem, 5vw, 4.5rem);
-      font-weight: 400;
-      line-height: 1.1;
-      letter-spacing: -0.03em;
-      margin-bottom: 1.5rem;
-      color: var(--text-main);
-      max-width: 900px;
-      margin-inline: auto;
-    }
-
-    h1 span {
-      color: var(--text-muted);
-    }
-
-    .hero-desc {
-      font-size: 1.125rem;
-      color: var(--text-muted);
-      max-width: 600px;
-      margin: 0 auto 3rem;
-      line-height: 1.6;
-    }
-
-    .btn {
-      display: inline-flex;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
       align-items: center;
       justify-content: center;
-      padding: 0.875rem 2rem;
-      font-size: 0.95rem;
-      font-weight: 500;
-      border-radius: var(--radius-sm);
-      transition: all 0.2s ease;
-      cursor: pointer;
+      text-align: center;
+      padding-top: 60px;
+      position: relative;
+    }
+
+    .hero-text-wrap { max-width: 800px; margin-bottom: 4rem; z-index: 2; }
+    
+    .hero p {
+      font-size: 1.25rem;
+      color: var(--text-muted);
+      margin-top: 1.5rem;
+      max-width: 600px;
+      margin-inline: auto;
     }
 
     .btn-primary {
-      background: var(--accent);
+      background: var(--text-main);
       color: var(--surface);
-      border: 1px solid var(--accent);
+      border: none;
+      padding: 1rem 2rem;
+      border-radius: 30px;
+      font-size: 1rem;
+      font-weight: 500;
+      cursor: pointer;
+      transition: transform 0.2s, box-shadow 0.2s;
+      margin-top: 2rem;
     }
-
     .btn-primary:hover {
-      background: #333333;
-      border-color: #333333;
-      transform: translateY(-1px);
-      box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+      transform: scale(1.02);
+      box-shadow: 0 10px 20px rgba(0,0,0,0.1);
     }
 
-    /* ============================================================
-       TERMINAL / DEMO COMPONENT
-    ============================================================ */
-    .hero-demo {
-      margin-top: 5rem;
-      background: var(--surface);
+    /* GLASS TERMINAL */
+    .glass-terminal {
+      background: rgba(255, 255, 255, 0.6);
+      backdrop-filter: blur(40px);
+      -webkit-backdrop-filter: blur(40px);
       border: 1px solid var(--border-subtle);
-      border-radius: var(--radius-md);
-      box-shadow: var(--shadow-md);
-      overflow: hidden;
-      max-width: 800px;
-      margin-inline: auto;
+      border-radius: 20px;
+      width: 100%;
+      max-width: 700px;
+      box-shadow: var(--shadow-float);
       text-align: left;
+      overflow: hidden;
+      z-index: 2;
     }
-
-    .demo-header {
-      padding: 1rem 1.5rem;
+    .term-header {
+      background: rgba(255,255,255,0.4);
+      padding: 1rem;
       border-bottom: 1px solid var(--border-subtle);
       display: flex;
-      align-items: center;
       gap: 8px;
-      background: #FCFCFC;
     }
-
-    .demo-dot {
-      width: 10px;
-      height: 10px;
-      border-radius: 50%;
-      background: var(--border-focus);
-    }
-
-    .demo-body {
+    .term-dot { width: 12px; height: 12px; border-radius: 50%; }
+    .td-1 { background: #FF5F56; } .td-2 { background: #FFBD2E; } .td-3 { background: #27C93F; }
+    .term-body {
       padding: 2rem;
       font-family: var(--font-mono);
-      font-size: 0.85rem;
-      line-height: 2;
-      color: var(--text-muted);
-    }
-
-    .demo-line {
-      display: flex;
-      gap: 12px;
-      opacity: 0;
-      transform: translateY(4px);
-      animation: smoothReveal 0.4s ease forwards;
-    }
-
-    .demo-prefix { color: var(--border-focus); }
-    .demo-highlight { color: var(--text-main); font-weight: 500; }
-    .demo-success { color: #10B981; }
-
-    @keyframes smoothReveal {
-      to { opacity: 1; transform: translateY(0); }
-    }
-
-    /* ============================================================
-       PIPELINE (CLEAN GRID)
-    ============================================================ */
-    .section {
-      padding: 8rem 0;
-      border-top: 1px solid var(--border-subtle);
-    }
-
-    .section-header {
-      text-align: center;
-      margin-bottom: 5rem;
-    }
-
-    .section-title {
-      font-size: 2rem;
-      font-weight: 400;
-      letter-spacing: -0.02em;
-      margin-bottom: 1rem;
-    }
-
-    .section-subtitle {
-      color: var(--text-muted);
-      font-size: 1.05rem;
-    }
-
-    .grid-4 {
-      display: grid;
-      grid-template-columns: repeat(4, 1fr);
-      gap: 2rem;
-    }
-
-    .card {
-      padding: 2.5rem 2rem;
-      background: var(--surface);
-      border: 1px solid var(--border-subtle);
-      border-radius: var(--radius-md);
-      transition: box-shadow 0.3s ease, border-color 0.3s ease;
-    }
-
-    .card:hover {
-      box-shadow: var(--shadow-md);
-      border-color: var(--border-focus);
-    }
-
-    .card-num {
-      font-family: var(--font-mono);
-      font-size: 0.85rem;
-      color: var(--text-faint);
-      margin-bottom: 1.5rem;
-      display: block;
-    }
-
-    .card-title {
-      font-size: 1.1rem;
-      font-weight: 500;
-      margin-bottom: 0.75rem;
-      color: var(--text-main);
-    }
-
-    .card-desc {
       font-size: 0.9rem;
       color: var(--text-muted);
-      line-height: 1.6;
+      line-height: 1.8;
+      height: 200px;
     }
+    .term-line { opacity: 0; animation: fadeUp 0.3s forwards; }
+    @keyframes fadeUp { to { opacity: 1; transform: translateY(0); } from { opacity: 0; transform: translateY(10px); } }
 
-    /* ============================================================
-       METRICS / QUALITY ENGINE
-    ============================================================ */
-    .metrics-layout {
+    /* STICKY PIPELINE */
+    .pipeline-wrapper {
       display: grid;
       grid-template-columns: 1fr 1fr;
       gap: 4rem;
-      align-items: center;
+      align-items: flex-start;
     }
-
-    .metric-score {
-      font-size: 6rem;
-      font-weight: 300;
-      letter-spacing: -0.04em;
-      line-height: 1;
-      margin-bottom: 1rem;
-      color: var(--text-main);
+    .pipeline-sticky {
+      position: sticky;
+      top: 150px;
     }
-
-    .metric-label {
-      font-size: 1rem;
-      font-weight: 500;
-      color: var(--text-muted);
-      margin-bottom: 2rem;
-    }
-
-    .metric-list {
+    .pipeline-steps {
       display: flex;
       flex-direction: column;
-      gap: 1rem;
+      gap: 2rem;
     }
-
-    .metric-item {
-      display: flex;
-      justify-content: space-between;
-      padding-bottom: 1rem;
-      border-bottom: 1px solid var(--border-subtle);
-      font-size: 0.95rem;
-    }
-
-    .metric-item span:first-child { color: var(--text-muted); }
-    .metric-item span:last-child { font-weight: 500; color: var(--text-main); }
-
-    /* ============================================================
-       UPLOAD ZONE
-    ============================================================ */
-    .upload-area {
+    .pipe-card {
       background: var(--surface);
-      border: 1px dashed var(--border-focus);
-      border-radius: var(--radius-lg);
+      padding: 3rem;
+      border-radius: 24px;
+      box-shadow: var(--shadow-card);
+      border: 1px solid var(--border-subtle);
+      transition: transform 0.5s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+    .pipe-card:hover {
+      transform: scale(1.02);
+      box-shadow: var(--shadow-float);
+    }
+    .pipe-num {
+      font-family: var(--font-mono);
+      color: var(--accent-blue);
+      font-size: 1rem;
+      margin-bottom: 1rem;
+      display: block;
+    }
+    .pipe-name { font-size: 1.5rem; font-weight: 600; margin-bottom: 0.5rem; }
+    .pipe-desc { color: var(--text-muted); font-size: 1.05rem; }
+
+    /* REFINED FEATURES BENTO */
+    .bento-grid {
+      display: grid;
+      grid-template-columns: repeat(12, 1fr);
+      gap: 2rem;
+    }
+    .b-card {
+      background: var(--surface);
+      border-radius: 24px;
+      padding: 3rem;
+      box-shadow: var(--shadow-card);
+      display: flex;
+      flex-direction: column;
+    }
+    .b-span-4 { grid-column: span 4; }
+    .b-span-8 { grid-column: span 8; }
+    .b-span-6 { grid-column: span 6; }
+    .b-span-12 { grid-column: span 12; }
+
+    .b-score {
+      font-size: 5rem;
+      font-weight: 300;
+      color: var(--accent-green);
+      line-height: 1;
+      margin-top: auto;
+      font-family: var(--font-sans);
+      letter-spacing: -0.05em;
+    }
+    
+    .ai-bubble {
+      background: var(--bg);
+      padding: 1.5rem;
+      border-radius: 16px;
+      margin-top: 1rem;
+      font-size: 0.95rem;
+      color: var(--text-main);
+      border: 1px solid var(--border-subtle);
+    }
+    
+    .diff-pill {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 8px 16px;
+      border-radius: 20px;
+      font-family: var(--font-mono);
+      font-size: 0.85rem;
+      margin-top: 1rem;
+    }
+    .diff-del { background: #FFEEEE; color: var(--accent-red); text-decoration: line-through; }
+    .diff-add { background: #E8F8F5; color: var(--accent-green); }
+
+    /* UPLOAD */
+    .upload-zone {
+      background: var(--surface);
+      border: 2px dashed var(--border-subtle);
+      border-radius: 32px;
       padding: 6rem 2rem;
       text-align: center;
-      transition: all 0.2s ease;
       cursor: pointer;
+      transition: all 0.3s ease;
+    }
+    .upload-zone:hover {
+      border-color: var(--accent-blue);
+      background: #F8F9FA;
     }
 
-    .upload-area:hover {
-      border-color: var(--text-main);
-      background: #FAFAFA;
-    }
-
-    .upload-title {
-      font-size: 1.25rem;
-      font-weight: 500;
-      margin-bottom: 0.5rem;
-    }
-
-    .upload-desc {
-      font-size: 0.95rem;
-      color: var(--text-muted);
-    }
-
-    /* ============================================================
-       FOOTER
-    ============================================================ */
-    footer {
-      padding: 4rem 0;
+    /* FOOTER MARQUEE */
+    .marquee-wrap {
+      background: var(--surface);
+      padding: 2rem 0;
+      overflow: hidden;
       border-top: 1px solid var(--border-subtle);
-      margin-top: 4rem;
     }
-
-    .footer-inner {
+    .marquee {
       display: flex;
-      justify-content: space-between;
-      align-items: center;
-      font-size: 0.85rem;
+      white-space: nowrap;
+      animation: slide 20s linear infinite;
+      font-size: 2rem;
+      font-weight: 300;
       color: var(--text-muted);
     }
-
-    /* Responsive */
-    @media (max-width: 900px) {
-      .grid-4 { grid-template-columns: repeat(2, 1fr); }
-      .metrics-layout { grid-template-columns: 1fr; gap: 3rem; }
+    .marquee span { margin: 0 3rem; }
+    @keyframes slide {
+      from { transform: translateX(0); }
+      to { transform: translateX(-50%); }
     }
-    @media (max-width: 600px) {
-      .grid-4 { grid-template-columns: 1fr; }
-      .nav-links { display: none; }
-      h1 { font-size: 2.2rem; }
-      .hero { padding: 8vh 0 4vh; }
+
+    @media(max-width: 900px) {
+      .pipeline-wrapper { grid-template-columns: 1fr; }
+      .pipeline-sticky { position: static; margin-bottom: 3rem; }
+      .b-span-4, .b-span-8, .b-span-6 { grid-column: span 12; }
     }
   </style>
 </head>
 <body>
 
-  <!-- Navigation -->
+  <!-- NAV -->
   <nav>
-    <div class="container nav-inner">
-      <div class="nav-brand">DataForge</div>
-      <div class="nav-links">
-        <a href="#pipeline" class="nav-link">Architecture</a>
-        <a href="#metrics" class="nav-link">Quality Engine</a>
-      </div>
+    <div class="nav-brand">DataPilot</div>
+    <div class="nav-status">
+      <div class="status-dot"></div>
+      System Online
     </div>
   </nav>
 
-  <!-- Hero -->
-  <header class="hero container">
-    <div class="fade-in">
-      <div class="hero-badge">System Protocol Ready</div>
-      <h1>Intelligent data cleaning, <span>beautifully orchestrated.</span></h1>
-      <p class="hero-desc">
-        Upload your datasets. Our AI architecture seamlessly analyzes, plans, and executes precision cleaning operations, returning production-ready data instantly.
-      </p>
-      <button class="btn btn-primary">Start Cleaning Dataset</button>
+  <!-- HERO -->
+  <section class="hero container">
+    <div class="hero-text-wrap reveal-up">
+      <span class="eyebrow">Protocol_01: Ingest_And_Clean</span>
+      <h1>Your data.<br>Surgically cleaned.</h1>
+      <p>Upload messy datasets. DataPilot AI analyzes every column, plans a precision cleaning strategy, executes it safely, then hands you a quality-scored report.</p>
+      <button class="btn-primary">Initialize Pipeline</button>
     </div>
 
-    <!-- Minimal Terminal Demo -->
-    <div class="hero-demo fade-in">
-      <div class="demo-header">
-        <div class="demo-dot"></div>
-        <div class="demo-dot"></div>
-        <div class="demo-dot"></div>
+    <div class="glass-terminal reveal-up" style="transition-delay: 0.2s;">
+      <div class="term-header">
+        <div class="term-dot td-1"></div>
+        <div class="term-dot td-2"></div>
+        <div class="term-dot td-3"></div>
       </div>
-      <div class="demo-body" id="demo-terminal">
-        <!-- Lines inserted by JS -->
-      </div>
-    </div>
-  </header>
-
-  <!-- Pipeline Section -->
-  <section id="pipeline" class="section container">
-    <div class="section-header fade-in">
-      <h2 class="section-title">The Architecture Pipeline</h2>
-      <p class="section-subtitle">A deterministic flow from raw data to pristine output.</p>
-    </div>
-
-    <div class="grid-4">
-      <div class="card fade-in">
-        <span class="card-num">01.</span>
-        <h3 class="card-title">Ingest & Analyze</h3>
-        <p class="card-desc">FastAPI handles the upload while Dataprep scans for nulls, duplicates, and statistical anomalies.</p>
-      </div>
-      <div class="card fade-in">
-        <span class="card-num">02.</span>
-        <h3 class="card-title">LLM Planning</h3>
-        <p class="card-desc">LangChain processes the findings and outputs a strict, Pydantic-validated cleaning strategy.</p>
-      </div>
-      <div class="card fade-in">
-        <span class="card-num">03.</span>
-        <h3 class="card-title">Safe Execution</h3>
-        <p class="card-desc">The tool router maps the AI plan to PyJanitor and Pandas operations for deterministic execution.</p>
-      </div>
-      <div class="card fade-in">
-        <span class="card-num">04.</span>
-        <h3 class="card-title">Validation</h3>
-        <p class="card-desc">ydata-profiling generates comprehensive before-and-after reports to guarantee data integrity.</p>
+      <div class="term-body" id="term">
+        <!-- JS Types here -->
       </div>
     </div>
   </section>
 
-  <!-- Metrics Section -->
-  <section id="metrics" class="section container">
-    <div class="metrics-layout">
-      <div class="fade-in">
-        <h2 class="section-title" style="margin-bottom: 2rem;">Measurable Quality</h2>
-        <p class="section-subtitle" style="margin-bottom: 3rem; max-width: 400px;">
-          Every cleaning operation is tracked and scored. You get complete transparency into what changed and why.
+  <!-- PIPELINE -->
+  <section class="section container" style="margin-top: 5rem;">
+    <div class="pipeline-wrapper">
+      <div class="pipeline-sticky reveal-up">
+        <span class="eyebrow">Architecture Pipeline</span>
+        <h2>A deterministic flow.</h2>
+        <p style="color: var(--text-muted); margin-top: 1rem; font-size: 1.1rem; max-width: 400px;">
+          We separate AI planning from safe execution to guarantee your data is never hallucinated or corrupted.
         </p>
-        
-        <div class="metric-list">
-          <div class="metric-item">
-            <span>Duplicate Records Removed</span>
-            <span>847 rows</span>
-          </div>
-          <div class="metric-item">
-            <span>Null Values Imputed</span>
-            <span>142 cells (Median Strategy)</span>
-          </div>
-          <div class="metric-item">
-            <span>Type Casts Standardized</span>
-            <span>3 columns</span>
-          </div>
+      </div>
+      
+      <div class="pipeline-steps">
+        <!-- 7 Steps from landing4.html -->
+        <div class="pipe-card reveal-up">
+          <span class="pipe-num">01 // INGEST</span>
+          <div class="pipe-name">FastAPI Endpoints</div>
+          <div class="pipe-desc">Direct file upload. No middleware. Seamless integration.</div>
+        </div>
+        <div class="pipe-card reveal-up">
+          <span class="pipe-num">02 // ANALYZE</span>
+          <div class="pipe-name">Dataprep Engine</div>
+          <div class="pipe-desc">Detect nulls, duplicates, outliers instantly.</div>
+        </div>
+        <div class="pipe-card reveal-up">
+          <span class="pipe-num">03 // PLAN</span>
+          <div class="pipe-name">LangChain Orchestration</div>
+          <div class="pipe-desc">Deterministic AI planning with full reasoning transparency.</div>
+        </div>
+        <div class="pipe-card reveal-up">
+          <span class="pipe-num">04 // EXECUTE</span>
+          <div class="pipe-name">PyJanitor + Pandas</div>
+          <div class="pipe-desc">Safe execution layer. LLM decides, deterministic code executes.</div>
+        </div>
+        <div class="pipe-card reveal-up">
+          <span class="pipe-num">05 // VALIDATE</span>
+          <div class="pipe-name">Post-Clean Checks</div>
+          <div class="pipe-desc">Integrity verification, type consistency, and null reduction.</div>
+        </div>
+        <div class="pipe-card reveal-up">
+          <span class="pipe-num">06 // REPORT</span>
+          <div class="pipe-name">ydata-profiling</div>
+          <div class="pipe-desc">Generates before/after reports with actionable quality scores.</div>
+        </div>
+        <div class="pipe-card reveal-up">
+          <span class="pipe-num">07 // VISUALIZE</span>
+          <div class="pipe-name">Interactive Dashboard</div>
+          <div class="pipe-desc">Shows AI reasoning, diffs, and improvements clearly.</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- FEATURES -->
+  <section class="section container">
+    <div class="reveal-up" style="margin-bottom: 4rem; text-align: center;">
+      <span class="eyebrow">Platform Features</span>
+      <h2>Intelligence you can see.</h2>
+    </div>
+
+    <div class="bento-grid">
+      <!-- Quality Score -->
+      <div class="b-card b-span-4 reveal-up">
+        <span class="eyebrow">Quality Engine</span>
+        <h3 style="font-size: 1.5rem;">Dataset Score</h3>
+        <p style="color: var(--text-muted); margin-top: 0.5rem; font-size: 0.95rem;">Real-time scoring across missing values, duplicates, and outliers.</p>
+        <div class="b-score">94<span style="font-size: 1.5rem; color: var(--text-muted);">/100</span></div>
+      </div>
+
+      <!-- AI Planner -->
+      <div class="b-card b-span-8 reveal-up" style="transition-delay: 0.1s;">
+        <span class="eyebrow">AI Planner</span>
+        <h3 style="font-size: 1.5rem;">LLM Reasoning</h3>
+        <p style="color: var(--text-muted); margin-top: 0.5rem; font-size: 0.95rem;">Every cleaning decision is explained and validated. No hallucinations.</p>
+        <div class="ai-bubble">
+          <strong>Step 1:</strong> Drop 847 exact duplicate rows. [Conf: 0.99]
+        </div>
+        <div class="ai-bubble">
+          <strong>Step 2:</strong> Impute `age` nulls using median strategy. Skew detected.
         </div>
       </div>
 
-      <div class="fade-in" style="background: var(--surface); padding: 4rem; border: 1px solid var(--border-subtle); border-radius: var(--radius-md); text-align: center;">
-        <div class="metric-score">94</div>
-        <div class="metric-label">Final Data Quality Score</div>
-        <p style="font-size: 0.9rem; color: var(--text-muted);">Improved from 34/100</p>
+      <!-- Diffs -->
+      <div class="b-card b-span-8 reveal-up">
+        <span class="eyebrow">Before & After</span>
+        <h3 style="font-size: 1.5rem;">Cell-Level Diffs</h3>
+        <p style="color: var(--text-muted); margin-top: 0.5rem; font-size: 0.95rem;">Inspect exactly what changed row by row.</p>
+        <div style="margin-top: 1rem;">
+          <div class="diff-pill diff-del">- user_001 | 28.0 | NaN</div><br>
+          <div class="diff-pill diff-add">+ user_001 | 28.0 | Sales</div>
+        </div>
+      </div>
+
+      <!-- Exports -->
+      <div class="b-card b-span-4 reveal-up" style="transition-delay: 0.1s;">
+        <span class="eyebrow">Outputs</span>
+        <h3 style="font-size: 1.5rem;">Auditable Exports</h3>
+        <p style="color: var(--text-muted); margin-top: 0.5rem; font-size: 0.95rem;">Download everything you need.</p>
+        <div style="margin-top: auto;">
+          <div style="padding: 1rem; background: var(--bg); border-radius: 12px; margin-bottom: 0.5rem; font-weight: 500; font-size: 0.9rem;">↓ cleaned_dataset.csv</div>
+          <div style="padding: 1rem; background: var(--bg); border-radius: 12px; font-weight: 500; font-size: 0.9rem;">↓ profiling_report.html</div>
+        </div>
       </div>
     </div>
   </section>
 
-  <!-- Upload Section -->
-  <section class="section container fade-in" style="border-top: none; padding-top: 0;">
-    <div class="upload-area">
-      <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" style="margin-bottom: 1rem; color: var(--text-muted);">
-        <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
-        <polyline points="17 8 12 3 7 8"></polyline>
-        <line x1="12" y1="3" x2="12" y2="15"></line>
-      </svg>
-      <h3 class="upload-title">Drop your dataset here</h3>
-      <p class="upload-desc">Supports CSV, XLSX, and JSON files up to 500MB.</p>
+  <!-- UPLOAD -->
+  <section class="section container">
+    <div class="upload-zone reveal-up">
+      <span class="eyebrow">Upload Interface</span>
+      <h2>Drag, Drop, Transform.</h2>
+      <p style="color: var(--text-muted); margin: 1rem auto 2rem; max-width: 500px;">
+        The moment your file lands, the pipeline begins. Analysis in seconds. AI plan in under a minute. Clean dataset ready to download.
+      </p>
+      <div style="display: flex; gap: 1rem; justify-content: center; margin-bottom: 2rem;">
+        <span style="background: var(--bg); padding: 6px 12px; border-radius: 8px; font-size: 0.8rem; font-weight: 600;">.CSV</span>
+        <span style="background: var(--bg); padding: 6px 12px; border-radius: 8px; font-size: 0.8rem; font-weight: 600;">.JSON</span>
+        <span style="background: var(--bg); padding: 6px 12px; border-radius: 8px; font-size: 0.8rem; font-weight: 600;">.PARQUET</span>
+      </div>
+      <button class="btn-primary">Choose File</button>
     </div>
   </section>
 
-  <!-- Footer -->
-  <footer class="container">
-    <div class="footer-inner">
-      <span>© 2026 DataForge</span>
-      <span>Orchestration-First AI Engineering</span>
+  <!-- MARQUEE -->
+  <div class="marquee-wrap">
+    <div class="marquee">
+      <span>NO HALLUCINATIONS</span> <span>·</span>
+      <span>DETERMINISTIC EXECUTION</span> <span>·</span>
+      <span>ORCHESTRATION FIRST</span> <span>·</span>
+      <span>AI ENGINEERING</span> <span>·</span>
+      <span>NO HALLUCINATIONS</span> <span>·</span>
+      <span>DETERMINISTIC EXECUTION</span> <span>·</span>
+      <span>ORCHESTRATION FIRST</span> <span>·</span>
+      <span>AI ENGINEERING</span> <span>·</span>
     </div>
-  </footer>
+  </div>
 
   <script>
-    // Very subtle scroll reveal
-    const reveals = document.querySelectorAll('.fade-in');
+    // Smooth scroll reveal observer
     const observer = new IntersectionObserver((entries) => {
-      entries.forEach((entry, index) => {
+      entries.forEach(entry => {
         if (entry.isIntersecting) {
-          // Slight stagger effect based on order
-          setTimeout(() => {
-            entry.target.classList.add('visible');
-          }, index * 100);
-          observer.unobserve(entry.target);
+          entry.target.classList.add('visible');
         }
       });
     }, { threshold: 0.1 });
     
-    reveals.forEach(el => observer.observe(el));
+    document.querySelectorAll('.reveal-up').forEach(el => observer.observe(el));
 
-    // Minimal Terminal Animation
-    const demoLogs = [
-      { t: "Analyzing customer_data.csv...", c: "" },
-      { t: "Identified 847 duplicates.", c: "" },
-      { t: "Identified 142 missing values in 'age'.", c: "" },
-      { t: "Generating LLM cleaning plan...", c: "demo-highlight" },
-      { t: "Executing PyJanitor operations...", c: "" },
-      { t: "Validation complete. Quality score: 94/100.", c: "demo-success" }
+    // Terminal typing animation
+    const logs = [
+      "> EXECUTING STARTUP SEQUENCE",
+      "> MOUNTING DATA VOLUMES... OK",
+      "> SYSTEM READY. WAITING FOR INPUT...",
+      "> DATAPILOT INGEST CUSTOMER_DATA.CSV"
     ];
-
-    const termBox = document.getElementById('demo-terminal');
-    let idx = 0;
-
-    const typeTerminal = () => {
-      if(idx < demoLogs.length) {
+    const term = document.getElementById('term');
+    let i = 0;
+    
+    function typeLine() {
+      if(i < logs.length) {
         const div = document.createElement('div');
-        div.className = `demo-line`;
-        div.style.animationDelay = '0.1s';
-        div.innerHTML = `<span class="demo-prefix">→</span> <span class="${demoLogs[idx].c}">${demoLogs[idx].t}</span>`;
-        termBox.appendChild(div);
-        idx++;
-        setTimeout(typeTerminal, 1200);
+        div.className = 'term-line';
+        div.innerHTML = logs[i];
+        if(logs[i].includes('OK')) div.innerHTML = logs[i].replace('OK', '<span style="color: var(--accent-green)">OK</span>');
+        term.appendChild(div);
+        i++;
+        setTimeout(typeLine, 800);
       } else {
-        setTimeout(() => {
-          termBox.innerHTML = '';
-          idx = 0;
-          typeTerminal();
-        }, 5000);
+        const cursor = document.createElement('div');
+        cursor.innerHTML = '<span style="display:inline-block; width:8px; height:1em; background:var(--text-main); animation: blink 1s infinite;"></span>';
+        term.appendChild(cursor);
       }
-    };
-
-    setTimeout(typeTerminal, 800);
+    }
+    setTimeout(typeLine, 1000);
   </script>
 </body>
 </html>

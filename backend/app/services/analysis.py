@@ -45,15 +45,25 @@ class DataAnalyzer:
         # 2. Build explicit column details list
         column_details = []
         for col in df.columns:
-            column_details.append({
+            col_info = {
                 "name": col,
                 "type": data_types[col],
-                "missing_count": int(null_counts[col])
-            })
+                "missing_count": int(null_counts[col]),
+                "unique_count": int(df[col].nunique()),
+                "sample_values": [
+                    v.item() if hasattr(v, "item") else v
+                    for v in df[col].dropna().unique()[:5]
+                ]
+            }
+            # Only calculate skewness for numerical columns
+            if col in num_cols:
+                col_info["skewness"] = float(df[col].skew())
+            
+            column_details.append(col_info)
 
         # 3. Construct the exact API Contract
         stats_df = df.describe()
-        sample_df = df.sample(min(5, len(df)))
+        sample_df = df.sample(min(5, len(df)),random_state=42)
         
         summary = {
             "dataset_id": dataset_id,
