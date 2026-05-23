@@ -28,8 +28,11 @@ class DataAnalyzer:
         return csv_file
     
     def analyze_csv(self, dataset_id: str) -> dict:
+        print(f"👉 [ANALYSIS] Starting analysis for dataset: {dataset_id}")
         file = self.get_csv(dataset_id)
+        print(f"👉 [ANALYSIS] Reading CSV file: {file}")
         df = pd.read_csv(file)
+        print(f"👉 [ANALYSIS] Loaded {len(df)} rows and {len(df.columns)} columns.")
 
         # 1. Safely extract JSON-serializable dictionaries
         null_counts = df.isnull().sum().to_dict()

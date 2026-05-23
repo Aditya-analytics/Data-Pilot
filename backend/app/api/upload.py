@@ -13,17 +13,20 @@ os.makedirs(UPLOADED_DIR,exist_ok=True)
 
 @csv_router.post("/csv",status_code=201)
 async def upload_csv(file : UploadFile = File(...)):
+    print(f"📥 [UPLOAD] Received file upload request: {file.filename}")
     # 1. Validate file type
     if not file.filename.endswith('.csv'):
         raise HTTPException(status_code=400, detail="File must be a CSV")
     
     dataset_id = str(uuid.uuid4())
+    print(f"📥 [UPLOAD] Generated Dataset ID: {dataset_id}")
 
     file_path = os.path.join(UPLOADED_DIR,f"{dataset_id}.csv")
 
     try:
         with open(file_path,"wb") as buffer:
             shutil.copyfileobj(file.file,buffer)
+        print(f"✅ [UPLOAD] Successfully saved {file.filename} to {file_path}")
 
     except Exception as e:
         raise HTTPException(status_code=500,detail=f"Unable to process csv due to {str(e)}")
