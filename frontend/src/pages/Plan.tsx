@@ -86,7 +86,7 @@ export default function Plan() {
                       <div className="plan-step-info">
                         <div className="plan-step-name">{step.action}</div>
                         <div className="plan-step-desc">{step.reasoning}</div>
-                        {step.columns && (
+                        {step.columns && step.columns.length > 0 && (
                           <div style={{ marginTop: '0.5rem', fontSize: '0.65rem', fontWeight: 800 }}>
                             TARGETS: {step.columns.join(', ')}
                           </div>

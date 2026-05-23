@@ -1,43 +1,42 @@
-from json import load
-import re
+import json
 from typing import Dict
 from app.models.plan import CleaningPlan
 from app.config.configs import template
 from app.services.llm_service import setup_gemini
-from langchain_google_genai import ChatGoogleGenerativeAI
 from langchain_core.output_parsers import JsonOutputParser
 from langchain_core.prompts import ChatPromptTemplate
-from fastapi.responses import StreamingResponse
+
 
 class AIPlanner:
-    def __init__(self,report:Dict) -> None:
+    def __init__(self, report: Dict) -> None:
         self.report = report
-        self.gemini_llm = setup_gemini()
-        self.structured_llm = self.gemini_llm.with_structured_output(CleaningPlan)
+        self._llm = None
 
-    async def generate_plan(self):
-        print("🧠 [PLANNER] Constructing LangChain prompt with dataset summary...")
-        prompt = ChatPromptTemplate.from_messages(
-            [
-                ("system",template),
-                ("user","Craft a complete decision plan to clean the given dataset by given report : {report}")
-            ]
-        )           
+    @property
+    def llm(self):
+        if self._llm is None:
+            self._llm = setup_gemini()
+        return self._llm
+
+    async def generate_plan(self) -> CleaningPlan:
+        prompt = ChatPromptTemplate.from_messages([
+            ("system", template),
+            (
+                "user",
+                "Here is the dataset analysis report in JSON format:\n\n{report}\n\n"
+                "Generate a complete, ordered cleaning plan following all phases and rules defined in your instructions."
+            ),
+        ])
+        self.structured_llm = self.llm.with_structured_output(CleaningPlan)
         chain = prompt | self.structured_llm
 
-        print("🧠 [PLANNER] Invoking Gemini LLM for structured output... (Waiting for response)")
-        result = await chain.ainvoke({
-            "report":self.report
-        })
-        
-        print(f"✅ [PLANNER] Successfully generated plan with {len(result.steps)} steps!")
-        return result
-
-    
-
-   
-
-
-
-
-
+        try:
+            print("🧠 [PLANNER] Invoking Gemini for structured cleaning plan...")
+            result = await chain.ainvoke({
+                "report": json.dumps(self.report, indent=2)
+            })
+            print(f"✅ [PLANNER] Plan generated with {len(result.steps)} steps.")
+            return result
+        except Exception as e:
+            print(f"❌ [PLANNER] Plan generation failed: {e}")
+            raise RuntimeError(f"Plan generation failed: {e}") from e

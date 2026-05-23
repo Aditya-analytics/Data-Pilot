@@ -86,6 +86,15 @@ export default function Analyze() {
                 Exact Row Matches
               </span>
             </div>
+            <div className="issue-card">
+              <div className="issue-card-label">SENTINELS</div>
+              <span className={`issue-num ${(Object.values(data?.metrics?.sentinel_dirty_values || {}).reduce((a: any, b: any) => a + b, 0) as number) > 0 ? 'warn' : ''}`}>
+                {loading ? '--' : Object.values(data?.metrics?.sentinel_dirty_values || {}).reduce((a: any, b: any) => a + b, 0) as number}
+              </span>
+              <span className="issue-desc" style={{ color: (Object.values(data?.metrics?.sentinel_dirty_values || {}).reduce((a: any, b: any) => a + b, 0) as number) > 0 ? '#ff4081' : 'inherit' }}>
+                "n/a", "missing"
+              </span>
+            </div>
           </div>
         </div>
 
